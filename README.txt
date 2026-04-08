@@ -1,27 +1,25 @@
 TORNO_ICEQ - CONTROLE DE VERSÕES
 
-Versão atual: 1.11
+Versão atual: 1.12
 
 -----------------------------------
-Versão 1.1 → 1.10
+Versão 1.1 → 1.11
 -----------------------------------
-- Base completa criada
+- Estrutura completa
 - Dispatcher funcional
-- Ponte HAL criada
+- HAL base criado
 
 -----------------------------------
-Versão 1.11
+Versão 1.12
 -----------------------------------
-- Estrutura inicial de entradas HAL criada
-- Preparação para botões físicos:
-  - cycle start
-  - emergência
-  - lubrificação
-- Base para futura ligação com 7i96S (TB3 inputs)
+- Preparação para ligação real com 7i96S
+- Estrutura de inputs adaptada para GPIO
+- Base pronta para mapear TB3
+- Separação clara entre lógica e hardware
 
 -----------------------------------
 PRÓXIMOS PASSOS
 -----------------------------------
-- Mapear pinos reais da 7i96S
-- Testar entradas físicas
-- Integrar MPG (handwheel)
+- Mapear pinos reais (fio por fio)
+- Testar E-stop real
+- Testar Cycle Start real

@@ -1,10 +1,19 @@
-# INPUTS HAL - BASE
+# INPUTS HAL - PREPARADO 7i96S
 
-# Exemplo de entradas (ainda não ligado ao hardware real)
+# Substituir pelos pinos reais depois
 
-net cycle-start     => motion.digital-in-00
-net estop-in        => motion.digital-in-01
-net lube-enable     => motion.digital-in-02
+# Exemplo padrão Mesa:
+# hm2_7i96s.0.gpio.000.in
 
-# Futuro:
-# hm2_7i96.0.gpio.xxx.in
+# E-STOP
+net estop-in <= hm2_7i96s.0.gpio.000.in
+net estop-in => iocontrol.0.emc-enable-in
+
+# CYCLE START
+net cycle-start <= hm2_7i96s.0.gpio.001.in
+
+# LUBRIFICAÇÃO
+net lube-enable <= hm2_7i96s.0.gpio.002.in
+
+# SPARE INPUTS
+# net input-03 <= hm2_7i96s.0.gpio.003.in
