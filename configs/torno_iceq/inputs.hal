@@ -1,0 +1,10 @@
+# INPUTS HAL - BASE
+
+# Exemplo de entradas (ainda não ligado ao hardware real)
+
+net cycle-start     => motion.digital-in-00
+net estop-in        => motion.digital-in-01
+net lube-enable     => motion.digital-in-02
+
+# Futuro:
+# hm2_7i96.0.gpio.xxx.in
