@@ -1,29 +1,35 @@
 TORNO_ICEQ - CONTROLE DE VERSÕES
 
-Versão atual: 1.3
+Versão atual: 1.4
 
 -----------------------------------
-Versão 1.1 (Base inicial)
+Versão 1.1
 -----------------------------------
-- Estrutura inicial criada
+- Estrutura inicial
 
 -----------------------------------
 Versão 1.2
 -----------------------------------
 - Separação HAL
-- Estrutura configs/nc_files/custom
+- Estrutura base
 
 -----------------------------------
 Versão 1.3
 -----------------------------------
-- Importação base de subrotinas (estrutura inicial)
-- Criação de chamada de painel (main_panel.ngc)
-- Base inicial do M6 (tool_change.ngc)
-- Organização para futura integração do magazine
+- Base painel (main_panel.ngc)
+- Base M6 (tool_change.ngc)
+
+-----------------------------------
+Versão 1.4
+-----------------------------------
+- Estrutura inicial de chamadas do painel integrada
+- Criação de dispatcher de comandos (panel_dispatch.ngc)
+- Preparação para integração das subrotinas reais
+- Base de organização para funções (facear, tornear, utilidades)
 
 -----------------------------------
 PRÓXIMOS PASSOS
 -----------------------------------
-- Integrar subrotinas reais da porta paralela
-- Mapear botões painel (aba principal)
-- Implementar sequência real do magazine
+- Importar subrotinas reais da porta paralela
+- Vincular botões do painel (aba principal)
+- Implementar lógica real do magazine (sequência completa)
