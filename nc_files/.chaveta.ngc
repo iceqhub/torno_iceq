@@ -1,0 +1,81 @@
+(info: Chaveta)
+o<.chaveta> sub
+
+#<diam_ini>=#1      (=50 DIAM INI)
+#<prof_fina>=#2    (=5 PROF NO DIAM)
+#<passada>=#3    (=.05 PASSADA )
+#<prof_z>=#4  (=-20 PROF Z ABS)
+#<z_ini>=#5   (=0 Z INICIAL)
+#<recuo_z>=#6   (=2 RECUO Z)
+#<f_dsb>=#7   (=200 AVANÇO DE CORTE)
+#<PONTO_TROCA_X>=#8  (=80 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=#9  (=80 PONTO DE TROCA Z)
+#<TOOL>=#10  (=0 NUMERO DA FERRAMENTA)
+#<M8>=#11  (=8 OLEO SOLUVEL 9 DESLIGA)
+#<recuo_x>=#12   (=2 RECUO EM X NO CICLO)
+#<final_pt>=#13   (=3 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+
+O<G94>IF[#<f_dsb>GT1]
+G94
+O<G94>ELSE
+G95
+O<G94>ENDIF
+
+#<prof_fina_diam>=[[#<prof_fina>*2]+#<diam_ini>]
+
+
+
+
+O<TROCA>IF[#<TOOL>GT0]
+G43H#<TOOL>
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+T[#<TOOL>]M6G43
+O<TROCA>ENDIF
+
+M#<M8>
+
+
+G0G90 X#<diam_ini> Z[#<z_ini>+#<recuo_z>]
+
+O<CHAVETEIA>WHILE[#<diam_ini>LE#<prof_fina_diam>]
+
+G00 X#<diam_ini>
+G01 F#<f_dsb> Z#<prof_z>
+G00 X[#<diam_ini>-#<recuo_x>]
+Z[#<z_ini>+#<recuo_z>]
+
+#<diam_ini>=[#<diam_ini>+#<passada>]
+
+
+
+O<CHAVETEIA>ENDWHILE
+
+
+
+
+
+
+
+
+
+O<TROCA_FIM>IF[#<final_pt>NE0]
+
+O<AMBOS>IF[#<final_pt>EQ3]
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+O<AMBOS>ENDIF
+
+O<XZ>IF[#<final_pt>EQ1]
+G00G90X#<PONTO_TROCA_X>
+Z#<PONTO_TROCA_Z>
+O<XZ>ENDIF
+
+O<ZX>IF[#<final_pt>EQ2]
+G00G90Z#<PONTO_TROCA_Z>
+X#<PONTO_TROCA_X>
+O<ZX>ENDIF
+
+O<TROCA_FIM>ENDIF
+
+
+o<.chaveta> endsub
+

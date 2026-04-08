@@ -1,0 +1,121 @@
+(info: perfil)
+o<.perfil> sub
+
+#<diam_ini>=#1      (=80 DIAMETRO INICIAL)
+#<zinicial>=#2    (=2 Z INICIAL)
+#<incremento>=#3    (=2 PASSADA )
+#<sobremetal>=#4  (=0.8 SOBREMETAL)
+#<recuo>=#5   (=2 RECUO X)
+#<vcc>=#6   (=0 VCC)
+#<RPM>=#7   (=1500 RPM)
+#<f_dsb>=#8   (=0.25 AVANÇO DESB)
+#<f_acab>=#9   (=0.15 AVANÇO ACAB)
+#<acaba>=#10    (=1 ACA 1=S 0=N 2=SÓ ACA)
+#<qt_acab>=#11    (=1 QNT PASSES DE ACABAMENTO)
+#<sob_acab>=#12    (=0 SOB P/ PASSES ACABAMENTO)
+#<PONTO_TROCA_X>=#13  (=200 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=#14  (=100 PONTO DE TROCA Z)
+#<TOOL>=#15  (=1 NUMERO DA FERRAMENTA)
+#<M8>=#16  (=8 OLEO SOLUVEL 9 DESLIGA)
+#<final_pt>=#17   (=1 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+#<num_sub>=#18     (=9999 NUMERO DO SUB DO PERFIL)
+#<G71>=#19     (=71 TIPO G71 EM Z G72 EM X)
+
+
+
+O<TROCA>IF[#<TOOL>GT0]
+G43H#<TOOL>
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+T[#<TOOL>]M6G43
+O<TROCA>ENDIF
+
+O<RPM>IF[#<vcc>EQ0]
+G97S#<RPM>M3
+O<RPM>ENDIF
+
+O<VCC>IF[#<vcc>GT0]
+G96S#<vcc>D#<RPM>M3
+O<VCC>ENDIF
+
+
+O<G94>IF[#<f_dsb>GT1]
+G94
+O<G94>ELSE
+G95
+O<G94>ENDIF
+
+M#<M8>
+
+o<dsb1>if[#<acaba>ne2]
+
+G#<G71> Q#<num_sub> X#<diam_ini> Z#<zinicial> D#<sobremetal> I#<incremento> R#<recuo> F#<f_dsb>
+
+;Q = NUMERO DO SUB COM PERFIL
+;X = X INICIAL
+;Z = Z INICIAL
+;D = SOBREMETAL
+;I = INCREMENTO
+;R = RECUO POR PASSE
+;F = Avanço
+
+o<dsb1>endif
+
+
+
+
+o<acaba1>if[#<acaba>ne0]
+
+
+o<g72>if[#<G71>eq72]
+
+G70 Q#<num_sub> E0 D[#<sob_acab>*[-1]] P#<qt_acab> F#<f_acab>
+
+
+o<g72>else
+
+G70 Q#<num_sub> X#<diam_ini> Z#<zinicial> E0 D#<sob_acab> P#<qt_acab> F#<f_acab>
+
+o<g72>endif
+
+;Q = NUMERO DO SUB COM PERFIL
+;X = X INICIAL
+;Z = Z INICIAL
+;D = VALOR PARA PASSES DE ACABAMENTO EM X
+;P = NUMERO DE PASSES PARA ACABAMENTO
+;E = SOBREMETAL
+;F = Avanço
+
+o<acaba1>endif
+
+
+
+
+
+
+
+
+
+O<TROCA_FIM>IF[#<final_pt>NE0]
+
+O<AMBOS>IF[#<final_pt>EQ3]
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+O<AMBOS>ENDIF
+
+O<XZ>IF[#<final_pt>EQ1]
+G00G90X#<PONTO_TROCA_X>
+Z#<PONTO_TROCA_Z>
+O<XZ>ENDIF
+
+O<ZX>IF[#<final_pt>EQ2]
+G00G90Z#<PONTO_TROCA_Z>
+X#<PONTO_TROCA_X>
+O<ZX>ENDIF
+
+O<TROCA_FIM>ENDIF
+
+
+
+
+
+o<.perfil> endsub
+

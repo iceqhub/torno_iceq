@@ -1,9 +1,11 @@
-(PANEL DISPATCHER)
+(PANEL DISPATCHER REAL PREP)
 
-(MSG, Dispatcher ativo)
+(MSG, Dispatcher ativo - pronto para NGC reais)
 
-(Exemplo de roteamento)
-(O100 = FACEAR)
-(O200 = TORNEAR)
+(Exemplos de chamadas futuras)
+;(O100 call canal_diam)
+;(O101 call facear)
+;(O102 call perfil)
+;(O103 call rosca)
 
 M2

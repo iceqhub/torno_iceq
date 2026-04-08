@@ -1,8 +1,12 @@
-(FUNCOES BASE)
+(FUNCOES BASE REAL)
 
-(MSG, Funcoes base carregadas)
+(MSG, Funcoes preparadas para NGC reais)
 
-(O100 call face)
-(O200 call turn)
+;(call canal_diam)
+;(call facear)
+;(call perfil)
+;(call rosca)
+;(call interno)
+;(call externo)
 
 M2
