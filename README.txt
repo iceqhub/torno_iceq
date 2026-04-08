@@ -1,28 +1,25 @@
 TORNO_ICEQ - CONTROLE DE VERSÕES
 
-Versão atual: 1.8
+Versão atual: 1.9
 
 -----------------------------------
-Versão 1.1 → 1.7
+Versão 1.1 → 1.8
 -----------------------------------
 - Estrutura completa criada
-- NGC reais integrados
-- Dispatcher organizado
+- NGC integrados
+- Dispatcher ativo
 
 -----------------------------------
-Versão 1.8
+Versão 1.9
 -----------------------------------
-- Ativação inicial do dispatcher (sem comentários)
-- Integração base de chamadas reais
-- Inclusão de chamadas:
-  - M3 / M4 (spindle)
-  - M6 (magazine)
-  - conta (contador)
+- Separação por execução individual (modo botão)
+- Dispatcher reestruturado para chamadas por variável
 - Preparação para integração com painel XML real
+- Evita execução sequencial de todos os NGC
 
 -----------------------------------
 PRÓXIMOS PASSOS
 -----------------------------------
-- Integração direta com XML (botões reais)
-- Ligação com HAL (7i96S)
-- Implementação real de sequência de troca de ferramenta
+- Integração com XML (eventos de botão)
+- Ligação com HAL (entradas físicas)
+- Lógica completa de operação por comando
