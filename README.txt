@@ -1,8 +1,29 @@
-TORNO_ICEQ - Base Config
+TORNO_ICEQ - CONTROLE DE VERSÕES
 
-Config inicial limpa para desenvolvimento.
+Versão atual: 1.3
 
-Próximos passos:
-- Mapear IO (7i96S)
-- Adicionar drives
-- Integrar magazine
+-----------------------------------
+Versão 1.1 (Base inicial)
+-----------------------------------
+- Estrutura inicial criada
+
+-----------------------------------
+Versão 1.2
+-----------------------------------
+- Separação HAL
+- Estrutura configs/nc_files/custom
+
+-----------------------------------
+Versão 1.3
+-----------------------------------
+- Importação base de subrotinas (estrutura inicial)
+- Criação de chamada de painel (main_panel.ngc)
+- Base inicial do M6 (tool_change.ngc)
+- Organização para futura integração do magazine
+
+-----------------------------------
+PRÓXIMOS PASSOS
+-----------------------------------
+- Integrar subrotinas reais da porta paralela
+- Mapear botões painel (aba principal)
+- Implementar sequência real do magazine
