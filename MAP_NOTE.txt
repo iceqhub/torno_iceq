@@ -1,0 +1,9 @@
+IMPORTANTE:
+
+Este arquivo (io_map.hal) é a base do mapeamento real.
+
+Ainda NÃO ligar fisicamente sem validar próximo passo.
+
+No próximo pacote:
+→ tabela fio por fio completa
+→ ligação TB3 real

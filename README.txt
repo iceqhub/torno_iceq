@@ -1,25 +1,31 @@
 TORNO_ICEQ - CONTROLE DE VERSÕES
 
-Versão atual: 1.12
+Versão atual: 1.13
 
 -----------------------------------
-Versão 1.1 → 1.11
+Versão 1.1 → 1.12
 -----------------------------------
 - Estrutura completa
 - Dispatcher funcional
-- HAL base criado
+- HAL base + inputs 7i96S
 
 -----------------------------------
-Versão 1.12
+Versão 1.13
 -----------------------------------
-- Preparação para ligação real com 7i96S
-- Estrutura de inputs adaptada para GPIO
-- Base pronta para mapear TB3
-- Separação clara entre lógica e hardware
+- Início do mapeamento REAL da máquina
+- Criação de arquivo io_map.hal
+- Separação por blocos:
+  - Inputs (botões)
+  - Outputs (atuadores)
+  - Spindle (inversor)
+  - Encoders
+  - Drives (step/dir)
+- Base para ligação fio por fio TB3/TB2
 
 -----------------------------------
 PRÓXIMOS PASSOS
 -----------------------------------
-- Mapear pinos reais (fio por fio)
-- Testar E-stop real
-- Testar Cycle Start real
+- Mapeamento físico definitivo
+- Teste de entradas reais
+- Teste spindle 0-10V
+- Teste movimento eixo X/Z

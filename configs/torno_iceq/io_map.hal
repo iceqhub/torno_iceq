@@ -1,0 +1,72 @@
+# IO MAP - TORNO ICEQ
+
+#######################################
+# INPUTS (TB3)
+#######################################
+
+# EMERGENCIA
+net estop-in <= hm2_7i96s.0.gpio.000.in
+
+# CYCLE START
+net cycle-start <= hm2_7i96s.0.gpio.001.in
+
+# LUBRIFICACAO
+net lube-enable <= hm2_7i96s.0.gpio.002.in
+
+
+#######################################
+# OUTPUTS (TB3)
+#######################################
+
+# VALVULA TORRE
+net turret-valve => hm2_7i96s.0.gpio.010.out
+
+# SPINDLE ENABLE (X1/X2 inverter)
+net spindle-cw => hm2_7i96s.0.gpio.011.out
+net spindle-ccw => hm2_7i96s.0.gpio.012.out
+
+
+#######################################
+# SPINDLE ANALOGICO (0-10V)
+#######################################
+
+# velocidade spindle
+net spindle-speed => hm2_7i96s.0.analogout0
+
+
+#######################################
+# ENCODER SPINDLE (ABZ)
+#######################################
+
+net spindle-phase-a <= hm2_7i96s.0.encoder.00.phase-A
+net spindle-phase-b <= hm2_7i96s.0.encoder.00.phase-B
+net spindle-index   <= hm2_7i96s.0.encoder.00.index
+
+
+#######################################
+# AXIS DRIVES (STEP/DIR)
+#######################################
+
+# X AXIS
+net x-step => hm2_7i96s.0.stepgen.00.step
+net x-dir  => hm2_7i96s.0.stepgen.00.dir
+
+# Z AXIS
+net z-step => hm2_7i96s.0.stepgen.01.step
+net z-dir  => hm2_7i96s.0.stepgen.01.dir
+
+
+#######################################
+# MAGAZINE SERVO (HLTNC)
+#######################################
+
+net mag-step => hm2_7i96s.0.stepgen.02.step
+net mag-dir  => hm2_7i96s.0.stepgen.02.dir
+net mag-enable => hm2_7i96s.0.gpio.013.out
+
+
+#######################################
+# HANDWHEEL (MPG)
+#######################################
+
+# (vai ser fechado depois)
