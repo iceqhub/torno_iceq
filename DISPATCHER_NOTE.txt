@@ -1,0 +1,6 @@
+(IMPORTANTE)
+
+(Agora o dispatcher usa:)
+#<_hal[ui_command]>
+
+(Este valor virá do HAL no próximo passo)

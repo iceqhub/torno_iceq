@@ -1,25 +1,24 @@
 TORNO_ICEQ - CONTROLE DE VERSÕES
 
-Versão atual: 1.9
+Versão atual: 1.10
 
 -----------------------------------
-Versão 1.1 → 1.8
+Versão 1.1 → 1.9
 -----------------------------------
-- Estrutura completa criada
-- NGC integrados
-- Dispatcher ativo
+- Estrutura completa
+- Dispatcher por comando funcionando
 
 -----------------------------------
-Versão 1.9
+Versão 1.10
 -----------------------------------
-- Separação por execução individual (modo botão)
-- Dispatcher reestruturado para chamadas por variável
-- Preparação para integração com painel XML real
-- Evita execução sequencial de todos os NGC
+- Preparação para integração HAL → NGC
+- Introdução do conceito de variável ui_command
+- Estrutura pronta para receber sinais da 7i96S ou IHM
+- Base para controle por botão físico ou interface
 
 -----------------------------------
 PRÓXIMOS PASSOS
 -----------------------------------
-- Integração com XML (eventos de botão)
-- Ligação com HAL (entradas físicas)
-- Lógica completa de operação por comando
+- Criar ligação real no HAL (setp / net)
+- Mapear botões físicos (cycle start, etc)
+- Integrar com encoder MPG (handwheel)
