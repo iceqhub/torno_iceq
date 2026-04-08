@@ -1,4 +1,8 @@
 (FUNCOES BASE)
-(MSG, Estrutura pronta para integrar subrotinas reais)
+
+(MSG, Funcoes base carregadas)
+
+(O100 call face)
+(O200 call turn)
 
 M2

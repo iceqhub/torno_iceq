@@ -1,6 +1,9 @@
 (PANEL DISPATCHER)
-(Responsável por centralizar chamadas do painel)
 
 (MSG, Dispatcher ativo)
+
+(Exemplo de roteamento)
+(O100 = FACEAR)
+(O200 = TORNEAR)
 
 M2
