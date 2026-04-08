@@ -1,45 +1,27 @@
 TORNO_ICEQ - CONTROLE DE VERSÕES
 
-Versão atual: 1.6
+Versão atual: 1.7
 
 -----------------------------------
-Versão 1.1
+Versão 1.1 → 1.6
 -----------------------------------
-- Estrutura inicial
+- Estrutura completa criada
+- Dispatcher implementado
+- NGC reais importados
+- Base pronta para integração real
 
 -----------------------------------
-Versão 1.2
+Versão 1.7
 -----------------------------------
-- Separação HAL
-
------------------------------------
-Versão 1.3
------------------------------------
-- Base painel + M6
-
------------------------------------
-Versão 1.4
------------------------------------
-- Dispatcher + arquitetura
-
------------------------------------
-Versão 1.5
------------------------------------
-- Fluxo de usinagem base (face/turn)
-
------------------------------------
-Versão 1.6
------------------------------------
-- Integração estrutural com NGC reais definidos pelo usuário
-- Dispatcher preparado para chamadas reais
-- Functions_base preparado para integração direta com arquivos:
-  canal_diam, facear, perfil, rosca, etc
-- Limpeza de placeholders genéricos
+- Integração inicial REAL dos NGC no dispatcher
+- Estrutura de chamadas alinhada com arquivos existentes
+- Preparação para execução real das operações
+- Organização de chamadas por tipo de operação
 
 -----------------------------------
 PRÓXIMOS PASSOS
 -----------------------------------
-- Substituir chamadas pelos arquivos reais no dispatcher
-- Implementar lógica completa do M6 (magazine)
-- Integrar contador (conta.ngc)
-- Mapear encostos virtuais (seta_X/Z)
+- Mapear botões do painel (XML)
+- Integrar M6 real (magazine)
+- Integrar spindle (M3/M4 via HAL)
+- Iniciar ligação com 7i96S

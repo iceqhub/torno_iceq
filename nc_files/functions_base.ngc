@@ -1,12 +1,5 @@
 (FUNCOES BASE REAL)
 
-(MSG, Funcoes preparadas para NGC reais)
-
-;(call canal_diam)
-;(call facear)
-;(call perfil)
-;(call rosca)
-;(call interno)
-;(call externo)
+(MSG, Funcoes conectadas aos NGC reais)
 
 M2

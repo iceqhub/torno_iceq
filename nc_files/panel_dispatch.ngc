@@ -1,11 +1,28 @@
-(PANEL DISPATCHER REAL PREP)
+(PANEL DISPATCHER REAL)
 
-(MSG, Dispatcher ativo - pronto para NGC reais)
+(MSG, Dispatcher ativo - integração real)
 
-(Exemplos de chamadas futuras)
-;(O100 call canal_diam)
-;(O101 call facear)
-;(O102 call perfil)
-;(O103 call rosca)
+(OPERACOES)
+;(call canal_diam)
+;(call canal_diam2)
+;(call facear)
+;(call facear2)
+;(call perfil)
+;(call rosca)
+;(call interno)
+;(call externo)
+;(call sangrar)
+;(call chaveta)
+;(call furacao)
+
+(SISTEMA)
+;(call conta)
+;(call restaura)
+
+(ENCOSTOS)
+;(call seta_x)
+;(call seta_xneg)
+;(call seta_z)
+;(call seta_zneg)
 
 M2
