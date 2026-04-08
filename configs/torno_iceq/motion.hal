@@ -1,0 +1,5 @@
+loadrt trivkins
+loadrt motmod
+
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
