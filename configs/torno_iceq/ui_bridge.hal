@@ -1,7 +1,7 @@
-# HAL BRIDGE - UI COMMAND
+# UI BRIDGE HAL - 1.16
+# Ponte entre interface / HAL / G-code
 
-# Este sinal vai vir da IHM ou entrada física depois
+# Valor de comando para panel_dispatch.ngc
+# Mantido como base para evolução futura
 net ui-command <= motion.analog-in-00
-
-# Exporta para o G-code
 setp motion.analog-in-00-scale 1.0

@@ -1,9 +1,6 @@
-# INPUTS HAL - PREPARADO 7i96S
-
-# Substituir pelos pinos reais depois
-
-# Exemplo padrão Mesa:
-# hm2_7i96s.0.gpio.000.in
+# INPUTS HAL - 1.16
+# Responsabilidade:
+# Somente entradas físicas e sinais lógicos básicos
 
 # E-STOP
 net estop-in <= hm2_7i96s.0.gpio.000.in
@@ -12,8 +9,14 @@ net estop-in => iocontrol.0.emc-enable-in
 # CYCLE START
 net cycle-start <= hm2_7i96s.0.gpio.001.in
 
-# LUBRIFICAÇÃO
+# LUBRIFICACAO
 net lube-enable <= hm2_7i96s.0.gpio.002.in
 
+# HOME X
+net home-x <= hm2_7i96s.0.gpio.003.in
+
+# HOME Z
+net home-z <= hm2_7i96s.0.gpio.004.in
+
 # SPARE INPUTS
-# net input-03 <= hm2_7i96s.0.gpio.003.in
+# net input-05 <= hm2_7i96s.0.gpio.005.in
