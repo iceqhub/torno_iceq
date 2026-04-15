@@ -1,0 +1,28 @@
+RESPOSTAS OBJETIVAS ÀS DÚVIDAS
+
+1) Aterramento 220 e aterramento 24 são a mesma coisa?
+- Terra de proteção (PE) é o mesmo conceito de terra.
+- Mas 24V tem também o 0V / GND, que é outra coisa.
+- Então:
+  - PE = bloco verde
+  - 0V 24V = bloco preto
+
+2) Posso usar o bloco verde embaixo vindo do terra superior?
+- SIM.
+- Isso está correto.
+- Use ele como distribuição de terra de proteção.
+
+3) Posso usar o bloco verde como retorno de 24V?
+- NÃO.
+
+4) O bloco preto é todos os GND?
+- SIM, todos os GND / 0V dos circuitos 24V.
+
+5) O bloco vermelho é todos os +24V?
+- SIM.
+
+6) O que passa na direita?
+- potência / 220 / alimentação / cargas
+
+7) O que passa na esquerda?
+- sinais / encoder / step-dir / botões / sensores

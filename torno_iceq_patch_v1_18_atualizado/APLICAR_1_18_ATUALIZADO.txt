@@ -1,0 +1,9 @@
+APLICAR 1.18 ATUALIZADO
+
+Este pacote é documental.
+Não precisa substituir HAL ou INI.
+
+AÇÃO:
+- usar MAPA_1_18_ATUALIZADO.txt
+- usar DUVIDAS_1_18.txt
+- seguir somente a etapa inicial descrita

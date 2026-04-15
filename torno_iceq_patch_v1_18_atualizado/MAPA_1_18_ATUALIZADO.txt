@@ -1,0 +1,220 @@
+MAPA 1.18 ATUALIZADO - LIGAÇÃO INICIAL
+
+ORIENTAÇÃO DA MESA 7I96S
+- olhando a mesa de frente, com as escritas legíveis para você:
+- RJ45 fica à direita
+- alimentação da mesa fica perto do RJ45
+- usar 5V somente na alimentação da mesa
+
+==================================================
+1) TERRA / PE  x  GND / 0V 24V
+==================================================
+
+PE / TERRA DE PROTEÇÃO:
+- vem do terra da rede 220V
+- vai para carcaças metálicas
+- vai para o borne de terra das fontes
+- vai para o bloco VERDE
+- serve para proteção e blindagem
+
+0V / GND 24V:
+- sai do V- da fonte 24V
+- vai para o bloco PRETO
+- é o retorno dos circuitos 24V
+- é a referência elétrica das entradas e saídas 24V
+
++24V:
+- sai do V+ da fonte 24V
+- vai para o bloco VERMELHO
+
+DECISÃO CORRETA DO TEU PAINEL:
+- bloco verde = PE / terra de proteção
+- bloco preto = 0V / GND 24V
+- bloco vermelho = +24V
+
+NÃO USAR:
+- bloco verde como retorno de sensor, botão ou válvula 24V
+
+PODE FAZER:
+- manter o bloco verde alimentado a partir do terra superior
+- usar ele para:
+  - carcaças
+  - blindagens
+  - aterramento de equipamentos
+  - fonte 24V
+  - estrutura do painel
+
+==================================================
+2) FONTE 24V COLMEIA
+==================================================
+
+BORNES DE ENTRADA:
+- L = fase
+- N = neutro
+- PE = terra de proteção
+
+BORNES DE SAÍDA:
+- V- = 0V / GND 24V -> bloco PRETO
+- V+ = +24V -> bloco VERMELHO
+
+OBS:
+- o PE da fonte NÃO substitui o V-
+- o V- da fonte NÃO substitui o PE
+
+==================================================
+3) ALIMENTAÇÃO DA 7I96S
+==================================================
+
+FONTE 5V DEDICADA (MXT 5V 3A)
+- +5V da fonte -> borne +5V da 7i96S
+- GND da fonte -> borne GND da 7i96S
+
+RECOMENDAÇÃO:
+- manter GND 5V e 0V 24V em referência comum somente se necessário,
+  preferencialmente em um único ponto de referência
+- NÃO ligar 24V na alimentação da 7i96S
+
+==================================================
+4) REGRAS DAS CALHAS
+==================================================
+
+CALHAS DA DIREITA (fechadas / com tampa):
+PASSAR SOMENTE:
+- 220V
+- alimentação das fontes
+- alimentação dos drives
+- alimentação do spindle servo
+- cabos de potência de motor
+- +24V e 0V de potência para cargas mais pesadas
+  (ex: válvula, enable de driver, etc)
+
+CALHAS DA ESQUERDA (abertas / sem tampa):
+PASSAR SOMENTE:
+- sinais de botão
+- sinais de sensor
+- encoder spindle ABZ
+- step/dir
+- sinais da 7i96S
+- sinais da MPG
+- 5V da 7i96S
+
+REGRA IMPORTANTE:
+- 24V de SINAL (entrada de botão/sensor) = lado esquerdo
+- 24V de POTÊNCIA (válvula / enable / carga) = lado direito
+
+==================================================
+5) E-STOP
+==================================================
+
+LIGAÇÃO:
+- um lado do contato do E-stop -> bloco VERMELHO (+24V)
+- outro lado do contato do E-stop -> TB3 IN0
+
+COMUM DAS ENTRADAS TB3:
+- INPUT COMMON TB3 -> bloco PRETO (0V / GND 24V)
+
+FUNÇÃO:
+- E-stop = TB3 IN0
+
+==================================================
+6) CYCLE START
+==================================================
+
+LIGAÇÃO:
+- um lado do botão Cycle Start -> bloco VERMELHO (+24V)
+- outro lado do botão -> TB3 IN1
+
+COMUM DAS ENTRADAS TB3:
+- INPUT COMMON TB3 -> bloco PRETO
+
+FUNÇÃO:
+- Cycle Start = TB3 IN1
+
+==================================================
+7) SPINDLE SERVO - ENABLE BÁSICO
+==================================================
+
+OBJETIVO NESTA ETAPA:
+- somente habilitar / desabilitar o driver do spindle
+- sem fechar ainda modo híbrido RPM / angular
+
+LIGAÇÃO GENÉRICA DE ENABLE:
+- ENABLE+ / SON+ do driver spindle -> bloco VERMELHO (+24V)
+- ENABLE- / SON- do driver spindle -> TB3 OUT1
+
+FUNÇÃO:
+- Spindle Servo Enable = TB3 OUT1
+
+OBS:
+- confirmar no driver do spindle o borne real de enable / servo-on
+- se a lógica estiver invertida, ajustamos no HAL depois
+
+==================================================
+8) ENCODER DO SPINDLE (OMRON E6B2-CWZ5B)
+==================================================
+
+ALIMENTAÇÃO:
+- marrom (+V) -> bloco VERMELHO (+24V)
+- azul (0V) -> bloco PRETO
+
+SINAIS:
+- preto (A) -> ENC A
+- branco (B) -> ENC B
+- laranja (Z) -> ENC IDX
+
+BLINDAGEM:
+- ligar blindagem ao bloco VERDE / PE em um lado só
+
+ROTEAMENTO:
+- passar encoder na calha ESQUERDA
+
+==================================================
+9) O QUE NÃO LIGAR NESTA ETAPA
+==================================================
+
+NÃO LIGAR AGORA:
+- X
+- Z
+- home X
+- home Z
+- magazine
+- válvula da torre
+- eixo B
+- MPG
+- comando de rotação do spindle
+
+==================================================
+10) RESUMO DOS BLOCOS
+==================================================
+
+BLOCO VERDE
+- terra de proteção (PE)
+- carcaças
+- blindagens
+- estrutura do painel
+
+BLOCO PRETO
+- 0V / GND 24V
+- retorno de botão
+- retorno de sensor
+- retorno do encoder
+- input common da TB3
+
+BLOCO VERMELHO
+- +24V
+- alimentação de botão
+- alimentação de sensor
+- alimentação de enable
+- alimentação do encoder spindle
+
+==================================================
+11) ORDEM DE TESTE
+==================================================
+
+1. alimentar mesa 7i96S com 5V
+2. alimentar fonte 24V
+3. testar E-stop
+4. testar Cycle Start
+5. girar spindle com a mão para ver encoder
+6. testar enable do spindle servo
+7. NÃO comandar rotação ainda
