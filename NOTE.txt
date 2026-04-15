@@ -1,0 +1,15 @@
+PATCH 1.15 - IMPORTANTE
+
+Agora você NÃO precisa mais comparar com a máquina antiga.
+Esse patch já replica fielmente os parâmetros críticos.
+
+AÇÃO:
+- Substituir blocos X e Z no .ini atual por estes
+- Adicionar eixo B
+
+Depois disso:
+- Testar jog
+- NÃO ligar spindle ainda se não estiver seguro
+
+Se algo vibrar ou travar:
+→ parar imediatamente e me chamar

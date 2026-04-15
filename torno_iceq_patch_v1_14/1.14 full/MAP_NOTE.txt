@@ -1,8 +1,0 @@
-IMPORTANTE - V1.14
-
-1. O spindle principal agora é por servo, não por inversor.
-2. Esta versão foca RPM do spindle principal.
-3. O eixo B foi incluído estruturalmente.
-4. NÃO foi criado travamento automático entre B e C.
-5. O eixo C angular do spindle principal ficou apenas preparado/documentado.
-6. Ainda não ligar nada novo sem validar o próximo passo.
