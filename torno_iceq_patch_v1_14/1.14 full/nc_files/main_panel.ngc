@@ -1,0 +1,6 @@
+(MAIN PANEL ENTRY)
+(MSG, Painel principal carregado)
+
+O100 call (chamada dispatcher)
+
+M2

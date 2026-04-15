@@ -1,0 +1,481 @@
+(info: CANAL DIAM)
+o<.canal_diam> sub
+
+#<diam_ini>=#1  (=50 DIAM INI)
+#<diam_fin>=#2   (=30 DIAM FINAL)
+#<largura>=#3   (=5 LARGURA)
+#<angulo>=#4   (=0 Angulo Canal Polia)
+#<pos_z>=#5   (=-5 POS EM Z)
+#<BEDA>=#6   (=3 ESP BEDAME)
+#<passe_lat>=#7   (=2.5 PASSE LATERAL)
+#<chanfro>=#8    (=1 CHANFRO)
+#<sob_x>=#9    (=0.1 SOB X)
+#<sob_z>=#10    (=0.5 SOB Z)
+#<so_acaba>=#11  (=1 ACA 1=S 0=N 2=SÓ ACA)
+#<sobre_pass>=#12  (=1 SOBRE PASS ACABA)
+#<passada_x>=#13  (=3 Passada em X)
+#<ordem>=#14  (=0 X primeiro ou Laterais)
+#<f>=#15   (=0.05 AVANÇO DESBASTE)
+#<f_ACAB>=#16   (=0.03 AVANÇO ACABAMENTO)
+#<tempo>=#17  (=0.0 TEMPO NO FUNDO )
+#<vcc>=#18   (=0 VCC)
+#<RPM>=#19   (=1500 RPM)
+#<afasta>=#20  (=2 RECUO EM X CICLO)
+#<PONTO_TROCA_X>=#21  (=100 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=#22  (=100 PONTO DE TROCA Z)
+#<TOOL>=#23  (=0 NUMERO DA FERRAMENTA)
+#<M8>=#24  (=8 OLEO SOLUVEL 9 DESLIGA)
+#<final_pt>=#25   (=2 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+
+#<canto_dir>=[#<pos_z>-[#<largura>]]
+#<canto_esq>=[#<pos_z>-[#<BEDA>]]
+#<centro>=[[#<canto_dir>+#<canto_esq>]/2]
+
+
+o<angular>if[#<angulo>gt0]
+#<ordem>=0
+o<angular>endif
+
+#<curto>=0
+
+o<ajuste1>if[[#<largura>-#<sob_z>-#<sob_z>]le[#<BEDA>]]
+#<sob_z>=0
+o<ajuste1>endif
+
+#<espaco>=[[#<largura>-#<sob_z>-#<sob_z>]-[#<BEDA>*2]]
+#<espaco>=[#<espaco>/2]
+
+o<espaco>if[#<espaco>ge0]
+o<ajusta>if[#<sobre_pass>ge#<espaco>]
+#<sobre_pass>=#<espaco>
+o<ajusta>endif
+o<espaco>else
+#<sobre_pass>=0
+#<curto>=1
+#<angulo>=0
+o<espaco>endif
+
+O<G94>IF[#<f>GT1]
+G94
+O<G94>ELSE
+G95
+O<G94>ENDIF
+
+O<TROCA>IF[#<TOOL>GT0]
+G43H#<TOOL>
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+T[#<TOOL>]M6G43
+O<TROCA>ENDIF
+
+o<m3>if[#<RPM>lt0]
+
+O<RPM>IF[abs[#<vcc>]EQ0]
+G97S[abs[#<RPM>]]M4
+O<RPM>ENDIF
+
+O<VCC>IF[abs[#<vcc>]GT0]
+G96S[abs[#<vcc>]]D[abs[#<RPM>]]M4
+O<VCC>ENDIF
+
+o<m3>else
+
+O<RPM>IF[abs[#<vcc>]EQ0]
+G97S[abs[#<RPM>]]M3
+O<RPM>ENDIF
+
+O<VCC>IF[abs[#<vcc>]GT0]
+G96S[abs[#<vcc>]]D[abs[#<RPM>]]M3
+O<VCC>ENDIF
+
+
+o<m3>endif
+
+
+
+M#<M8>
+
+
+                                        O<EXT>IF[#<diam_ini>GT#<diam_fin>]
+
+o<ordem>if[#<ordem>eq1]
+
+o<desbasta>if[#<so_acaba>ne2]
+
+;;;;;;;;;;;;;;;;;;;ajuste externo;;;;;;;;;;;;;;;
+#<total>=[#<diam_ini>-[#<diam_fin>+#<sob_x>]]
+#<NUM_D_PASS>=fup[#<total>/#<passada_x>]
+#<passada>=[#<total>/#<NUM_D_PASS>]
+#<passada>=[[fix[#<passada>*10000]]/10000]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CALCULO PASSES LATERAIS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<LARG_NOMI>=[#<largura>-#<BEDA>-#<sob_z>-#<sob_z>]
+#<QNT_PASS>=fup[#<LARG_NOMI>/#<passe_lat>]
+o<calcula2>if[#<QNT_PASS>ge1]
+#<passe_lat>=[#<LARG_NOMI>/#<QNT_PASS>]
+#<passe_lat>=[[fix[#<passe_lat>*10000]]/10000]
+o<calcula2>endif
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+#<inic_z>=[[#<pos_z>-[#<BEDA>]]-#<sob_z>]
+#<final_z>=[[#<pos_z>-[#<largura>]]+#<sob_z>]
+
+#<pass_lat_atua>=#<inic_z>
+
+
+o<laterais>while[#<pass_lat_atua>ge#<final_z>]
+
+#<diam_seg>=#<diam_ini>
+#<x_atual>=[#<diam_ini>-#<passada>]
+
+G0G90X[#<diam_seg>+#<afasta>]
+g0g90 z#<pass_lat_atua>
+o<dsb_x>while[#<x_atual>ge[#<diam_fin>+#<sob_x>]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;desb;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+G0G90X[#<diam_seg>+#<afasta>]
+G01F#<f>X[#<x_atual>]
+o<tempo>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo>endif
+G00X[#<diam_seg>+#<afasta>]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#<diam_seg>=#<x_atual>
+#<x_atual>=[#<x_atual>-#<passada>]
+o<dsb_x>endwhile
+
+#<pass_lat_atua>=[#<pass_lat_atua>-#<passe_lat>]
+
+o<laterais>endwhile
+
+
+
+o<desbasta>endif
+
+o<ordem>else
+
+o<desbasta33>if[#<so_acaba>ne2]
+
+;;;;;;;;;;;;;;;;;;;ajuste externo;;;;;;;;;;;;;;;
+#<total>=[#<diam_ini>-[#<diam_fin>+#<sob_x>]]
+#<NUM_D_PASS>=fup[#<total>/#<passada_x>]
+#<passada>=[#<total>/#<NUM_D_PASS>]
+#<passada>=[[fix[#<passada>*10000]]/10000]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<diam_seg>=#<diam_ini>
+#<x_atual>=[#<diam_ini>-#<passada>]
+
+o<dsb_x33>while[#<x_atual>ge[#<diam_fin>+#<sob_x>]]
+
+#<cat>=[tan[#<angulo>]*[[#<diam_ini>-#<x_atual>]/2]]
+
+#<inic_z>=[[#<pos_z>-[#<BEDA>]]-#<sob_z>-#<cat>]
+#<final_z>=[[#<pos_z>-[#<largura>]]+#<sob_z>+#<cat>]
+
+;;;;;;;;;;;;;;;;;;;;;;ajuste laterais;;;;;;;;;;;;;;;;
+#<larg>=abs[[#<inic_z>-#<final_z>]]
+#<num_pass>=fup[#<larg>/#<passe_lat>]
+#<passe_la>=[#<larg>/#<num_pass>]
+#<passe_la>=[[fix[#<passe_la>*10000]]/10000]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<pass_lat_atua>=#<inic_z>
+
+
+o<laterais33>while[#<pass_lat_atua>ge#<final_z>]
+
+g0g90 z[#<pass_lat_atua>]
+G0G90X[#<diam_seg>+#<afasta>]
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;desb;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+G0G90X[#<diam_seg>+#<afasta>]
+G01F#<f>X[#<x_atual>]
+o<tempo>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo>endif
+G00X[#<diam_seg>+#<afasta>]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<pass_lat_atua>=[#<pass_lat_atua>-#<passe_la>]
+
+o<laterais33>endwhile
+G0G90X[#<diam_ini>+#<afasta>]
+#<diam_seg>=#<x_atual>
+#<x_atual>=[#<x_atual>-#<passada>]
+#<pass_lat_atua>=#<inic_z>
+
+#<cat>=[#<cat>+0.1]
+
+o<dsb_x33>endwhile
+o<desbasta33>endif
+
+o<ordem>endif
+
+o<acaba>if[#<so_acaba>ne0]
+
+o<polia>if[#<angulo>gt0]
+
+#<cat>=[tan[#<angulo>]*[[#<diam_ini>-#<diam_fin>]/2]]
+
+G0G90X[#<diam_ini>+#<afasta>]
+Z[#<canto_esq>]
+G01F#<f>X[#<diam_ini>]
+X#<diam_fin> Z[#<canto_esq>-#<cat>]
+
+g01 Z[[#<centro>-#<sobre_pass>]]
+
+G00X[#<diam_ini>+#<afasta>]
+
+Z[#<canto_dir>]
+G01F#<f>X[#<diam_ini>]
+X#<diam_fin> Z[#<canto_dir>+#<cat>]
+
+g01 Z[[#<centro>+#<sobre_pass>]]
+
+o<polia>else
+
+
+G0G90X[#<diam_ini>+#<afasta>]
+
+Z[#<canto_esq>+#<chanfro>]
+G01F#<f>X[#<diam_ini>]
+X[#<diam_ini>-[#<chanfro>*2]]Z[#<canto_esq>]
+X#<diam_fin>
+
+o<tempo3>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo3>endif
+
+o<curto3>if[#<curto>eq0]
+g01 Z[[#<centro>-#<sobre_pass>]]
+o<curto3>endif
+
+G00X[#<diam_ini>+#<afasta>]
+
+Z[#<canto_dir>-#<chanfro>]
+G01F#<f>X[#<diam_ini>]
+X[#<diam_ini>-[#<chanfro>*2]]Z[#<canto_dir>]
+X#<diam_fin>
+
+o<tempo4>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo4>endif
+
+o<curto4>if[#<curto>eq0]
+g01 Z[[#<centro>+#<sobre_pass>]]
+o<curto4>endif
+
+o<polia>endif
+
+
+o<acaba>endif
+
+G00X[#<diam_ini>+#<afasta>]
+
+
+                                                O<EXT>ELSE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+o<ordem2>if[#<ordem>eq1]
+
+
+o<desbasta3>if[#<so_acaba>ne2]
+
+;;;;;;;;;;;;;;;;;;;ajuste externo;;;;;;;;;;;;;;;
+#<total>=[[#<diam_fin>-#<sob_x>]-#<diam_ini>]
+#<NUM_D_PASS>=fup[#<total>/#<passada_x>]
+#<passada>=[#<total>/#<NUM_D_PASS>]
+#<passada>=[[fix[#<passada>*10000]]/10000]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CALCULO PASSES LATERAIS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+#<LARG_NOMI>=[#<largura>-#<BEDA>-#<sob_z>-#<sob_z>]
+#<QNT_PASS>=fup[#<LARG_NOMI>/#<passe_lat>]
+o<calcula>if[#<QNT_PASS>ge1]
+#<passe_lat>=[#<LARG_NOMI>/#<QNT_PASS>]
+#<passe_lat>=[[fix[#<passe_lat>*10000]]/10000]
+
+o<calcula>endif
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<inic_z>=[#<canto_esq>-#<sob_z>]
+#<final_z>=[#<canto_dir>+#<sob_z>]
+
+#<pass_lat_atua>=#<inic_z>
+
+
+o<laterais1>while[#<pass_lat_atua>ge#<final_z>]
+
+#<diam_seg>=#<diam_ini>
+#<x_atual>=[#<diam_ini>+#<passada>]
+
+G0G90X[#<diam_seg>-#<afasta>]
+g0g90 z#<pass_lat_atua>
+o<dsb_x>while[#<x_atual>le[#<diam_fin>-#<sob_x>]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;desb;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+G0G90X[#<diam_seg>-#<afasta>]
+G01F#<f>X[#<x_atual>]
+o<tempo>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo>endif
+G00X[#<diam_seg>-#<afasta>]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#<diam_seg>=#<x_atual>
+#<x_atual>=[#<x_atual>+#<passada>]
+o<dsb_x>endwhile
+
+#<pass_lat_atua>=[#<pass_lat_atua>-#<passe_lat>]
+
+o<laterais1>endwhile
+
+o<desbasta3>endif
+
+o<ordem2>else
+
+
+o<desbasta344>if[#<so_acaba>ne2]
+
+;;;;;;;;;;;;;;;;;;;ajuste externo;;;;;;;;;;;;;;;
+#<total>=[[#<diam_fin>-#<sob_x>]-#<diam_ini>]
+#<NUM_D_PASS>=fup[#<total>/#<passada_x>]
+#<passada>=[#<total>/#<NUM_D_PASS>]
+#<passada>=[[fix[#<passada>*10000]]/10000]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CALCULO PASSES LATERAIS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+#<LARG_NOMI>=[#<largura>-#<BEDA>-#<sob_z>-#<sob_z>]
+#<QNT_PASS>=fup[#<LARG_NOMI>/#<passe_lat>]
+o<calcula44>if[#<QNT_PASS>ge1]
+#<passe_lat>=[#<LARG_NOMI>/#<QNT_PASS>]
+#<passe_lat>=[[fix[#<passe_lat>*10000]]/10000]
+
+o<calcula44>endif
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<inic_z>=[#<canto_esq>-#<sob_z>]
+#<final_z>=[#<canto_dir>+#<sob_z>]
+
+#<pass_lat_atua>=#<inic_z>
+
+#<diam_seg>=#<diam_ini>
+#<x_atual>=[#<diam_ini>+#<passada>]
+
+o<dsb_x44>while[#<x_atual>le[#<diam_fin>-#<sob_x>]]
+
+o<laterais144>while[#<pass_lat_atua>ge#<final_z>]
+
+g0g90 z#<pass_lat_atua>
+G0G90X[#<diam_seg>-#<afasta>]
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;desb;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+G0G90X[#<diam_seg>-#<afasta>]
+G01F#<f>X[#<x_atual>]
+o<tempo44>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo44>endif
+G00X[#<diam_seg>-#<afasta>]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<pass_lat_atua>=[#<pass_lat_atua>-#<passe_lat>]
+
+
+o<laterais144>endwhile
+G0G90X[#<diam_ini>-#<afasta>]
+#<diam_seg>=#<x_atual>
+#<x_atual>=[#<x_atual>+#<passada>]
+#<pass_lat_atua>=#<inic_z>
+
+o<dsb_x44>endwhile
+
+o<desbasta344>endif
+
+
+
+
+
+o<ordem2>endif
+
+
+o<acaba1>if[#<so_acaba>ne0]
+
+G0G90X[#<diam_ini>-#<afasta>]
+
+Z[#<canto_esq>+#<chanfro>]
+G01F#<f>X[#<diam_ini>]
+X[#<diam_ini>+[#<chanfro>*2]]Z[#<canto_esq>]
+X#<diam_fin>
+
+o<tempo3>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo3>endif
+
+o<curto>if[#<curto>eq0]
+g01 Z[[#<centro>-#<sobre_pass>]]
+o<curto>endif
+
+G00X[#<diam_ini>-#<afasta>]
+
+Z[#<canto_dir>-#<chanfro>]
+G01F#<f>X[#<diam_ini>]
+X[#<diam_ini>+[#<chanfro>*2]]Z[#<canto_dir>]
+X#<diam_fin>
+
+o<tempo4>if[#<tempo>gt0]
+g4p#<tempo>
+o<tempo4>endif
+
+o<curto2>if[#<curto>eq0]
+g01 Z[[#<centro>+#<sobre_pass>]]
+o<curto2>endif
+
+
+
+
+o<acaba1>endif
+
+G00X[#<diam_ini>-#<afasta>]
+
+
+O<EXT>ENDIF
+
+
+
+
+O<TROCA_FIM>IF[#<final_pt>NE0]
+
+O<AMBOS>IF[#<final_pt>EQ3]
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+O<AMBOS>ENDIF
+
+O<XZ>IF[#<final_pt>EQ1]
+G00G90X#<PONTO_TROCA_X>
+Z#<PONTO_TROCA_Z>
+O<XZ>ENDIF
+
+O<ZX>IF[#<final_pt>EQ2]
+G00G90Z#<PONTO_TROCA_Z>
+X#<PONTO_TROCA_X>
+O<ZX>ENDIF
+
+O<TROCA_FIM>ENDIF
+
+
+
+
+
+o<.canal_diam> endsub
+
+

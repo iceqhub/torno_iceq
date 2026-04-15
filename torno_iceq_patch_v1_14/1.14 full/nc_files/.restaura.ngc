@@ -1,0 +1,11 @@
+o<.restaura>sub
+
+m68e0q[#<_ini[JOINT_1]MIN_LIMIT>]
+m68e1q[#<_ini[JOINT_1]MAX_LIMIT>]
+
+m68e2q[#<_ini[JOINT_0]MIN_LIMIT>]
+m68e3q[#<_ini[JOINT_0]MAX_LIMIT>]
+
+
+
+o<.restaura>endsub

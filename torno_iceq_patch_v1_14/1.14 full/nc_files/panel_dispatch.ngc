@@ -1,0 +1,51 @@
+(PANEL DISPATCHER CONTROLADO)
+
+(MSG, Dispatcher modo comando)
+
+#<_cmd> = #<_hal[ui_command]>
+
+O100 if [#<_cmd> EQ 1] (facear)
+    (call facear)
+O100 endif
+
+O101 if [#<_cmd> EQ 2] (perfil)
+    (call perfil)
+O101 endif
+
+O102 if [#<_cmd> EQ 3] (rosca)
+    (call rosca)
+O102 endif
+
+O103 if [#<_cmd> EQ 4] (interno)
+    (call interno)
+O103 endif
+
+O104 if [#<_cmd> EQ 5] (externo)
+    (call externo)
+O104 endif
+
+O105 if [#<_cmd> EQ 6] (sangrar)
+    (call sangrar)
+O105 endif
+
+O106 if [#<_cmd> EQ 7] (chaveta)
+    (call chaveta)
+O106 endif
+
+O107 if [#<_cmd> EQ 8] (furacao)
+    (call furacao)
+O107 endif
+
+O200 if [#<_cmd> EQ 20] (spindle cw)
+    (call m3)
+O200 endif
+
+O201 if [#<_cmd> EQ 21] (spindle ccw)
+    (call m4)
+O201 endif
+
+O300 if [#<_cmd> EQ 30] (tool change)
+    (call m6)
+O300 endif
+
+M2

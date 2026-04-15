@@ -1,0 +1,7 @@
+# HAL BRIDGE - UI COMMAND
+
+# Este sinal vai vir da IHM ou entrada física depois
+net ui-command <= motion.analog-in-00
+
+# Exporta para o G-code
+setp motion.analog-in-00-scale 1.0
