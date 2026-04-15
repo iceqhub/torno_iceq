@@ -75,3 +75,47 @@ setp spindle-b-max-rpm.gain 3000
 
 # Futuro:
 # aqui entrará a troca de modo RPM / eixo C angular
+
+#######################################
+# E-STOP REAL
+#######################################
+
+# entrada física já existe
+net estop-in <= hm2_7i96s.0.gpio.000.in
+
+# controle da máquina
+net estop-in => iocontrol.0.emc-enable-in
+
+#######################################
+# ENABLE GLOBAL
+#######################################
+
+# enable geral do sistema
+net machine-enable iocontrol.0.user-enable-out
+
+#######################################
+# SPINDLE SERVO ENABLE
+#######################################
+
+# spindle só liga se máquina habilitada
+net spindle-enable machine-enable => hm2_7i96s.0.gpio.011.out
+
+#######################################
+# B AXIS ENABLE (também protegido)
+#######################################
+
+net b-enable machine-enable => hm2_7i96s.0.gpio.012.out
+
+#######################################
+# MAGAZINE ENABLE
+#######################################
+
+net a-enable machine-enable => hm2_7i96s.0.gpio.013.out
+
+#######################################
+# OBS
+#######################################
+# Isso garante que:
+# - sem liberar E-STOP nada liga
+# - spindle não energiza sozinho
+

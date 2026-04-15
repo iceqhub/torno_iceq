@@ -1,0 +1,21 @@
+APLICAR 1.17
+
+1) Abrir arquivo:
+configs/torno_iceq/io_map.hal
+
+2) COPIAR TODO conteúdo do arquivo:
+safety_spindle_patch.hal
+
+3) COLAR NO FINAL do io_map.hal
+
+4) SALVAR
+
+5) Commit + push + pull no torno
+
+-----------------------------------
+TESTE
+-----------------------------------
+
+- ligar LinuxCNC
+- testar E-STOP
+- verificar se spindle NÃO liga sozinho
