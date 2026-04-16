@@ -1,22 +1,18 @@
-# INPUTS HAL - 1.16
-# Responsabilidade:
-# Somente entradas físicas e sinais lógicos básicos
 
-# E-STOP
-net estop-in <= hm2_7i96s.0.gpio.000.in
+# INPUTS.HAL - CORRIGIDO 7i96S
+
+# E-STOP (IN0)
+net estop-in <= hm2_7i96s.0.7i96.0.0.input-00
 net estop-in => iocontrol.0.emc-enable-in
 
-# CYCLE START
-net cycle-start <= hm2_7i96s.0.gpio.001.in
+# CYCLE START (IN1)
+net cycle-start <= hm2_7i96s.0.7i96.0.0.input-01
+net cycle-start => halui.program.run
 
-# LUBRIFICACAO
-net lube-enable <= hm2_7i96s.0.gpio.002.in
+# SPARE / FUTURO
+# IN2
+# net spare-1 <= hm2_7i96s.0.7i96.0.0.input-02
 
-# HOME X
-net home-x <= hm2_7i96s.0.gpio.003.in
+# IN3
+# net spare-2 <= hm2_7i96s.0.7i96.0.0.input-03
 
-# HOME Z
-net home-z <= hm2_7i96s.0.gpio.004.in
-
-# SPARE INPUTS
-# net input-05 <= hm2_7i96s.0.gpio.005.in
