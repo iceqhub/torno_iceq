@@ -1,14 +1,15 @@
-loadrt hm2_eth board_ip="192.168.1.121"
+loadrt hostmot2
+loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_stepgens=5"
 
 loadrt trivkins
 loadrt motmod
 
+addf hm2_7i96s.0.read servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
+addf hm2_7i96s.0.write servo-thread
+
 
 # Basic placeholder signals
 net x-pos-cmd joint.0.motor-pos-cmd
 net z-pos-cmd joint.1.motor-pos-cmd
-
-loadrt hm2_eth board_ip=10.10.10.10 config="num_encoders=1 num_stepgens=5"
-loadrt hm2_7i96s
