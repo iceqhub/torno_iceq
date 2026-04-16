@@ -7,63 +7,63 @@
 #######################################
 
 # VALVULA TORRE
-net turret-valve => hm2_7i96s.0.gpio.010.out
+#net turret-valve => hm2_7i96s.0.gpio.010.out
 
 # SPINDLE PRINCIPAL SERVO ENABLE
 # Confirmar pino real do driver depois
-net spindle-servo-enable => hm2_7i96s.0.gpio.011.out
+#net spindle-servo-enable => hm2_7i96s.0.gpio.011.out
 
 # EIXO B ENABLE
-net b-enable => hm2_7i96s.0.gpio.012.out
+#net b-enable => hm2_7i96s.0.gpio.012.out
 
 # ENABLE MAGAZINE
-net a-enable => hm2_7i96s.0.gpio.013.out
+#net a-enable => hm2_7i96s.0.gpio.013.out
 
 #######################################
 # ENCODER SPINDLE (ABZ) - OMRON
 #######################################
 
-net spindle-phase-a <= hm2_7i96s.0.encoder.00.phase-A
-net spindle-phase-b <= hm2_7i96s.0.encoder.00.phase-B
-net spindle-index   <= hm2_7i96s.0.encoder.00.index
+#net spindle-phase-a <= hm2_7i96s.0.encoder.00.phase-A
+#net spindle-phase-b <= hm2_7i96s.0.encoder.00.phase-B
+3net spindle-index   <= hm2_7i96s.0.encoder.00.index
 
 #######################################
 # X AXIS
 #######################################
 
-net x-step => hm2_7i96s.0.stepgen.00.step
-net x-dir  => hm2_7i96s.0.stepgen.00.dir
+#net x-step => hm2_7i96s.0.stepgen.00.step
+#net x-dir  => hm2_7i96s.0.stepgen.00.dir
 
 #######################################
 # Z AXIS
 #######################################
 
-net z-step => hm2_7i96s.0.stepgen.01.step
-net z-dir  => hm2_7i96s.0.stepgen.01.dir
+#net z-step => hm2_7i96s.0.stepgen.01.step
+#net z-dir  => hm2_7i96s.0.stepgen.01.dir
 
 #######################################
 # A AXIS (MAGAZINE)
 #######################################
 
-net a-step => hm2_7i96s.0.stepgen.02.step
-net a-dir  => hm2_7i96s.0.stepgen.02.dir
+#net a-step => hm2_7i96s.0.stepgen.02.step
+#net a-dir  => hm2_7i96s.0.stepgen.02.dir
 
 #######################################
 # B AXIS (FERRAMENTA ACIONADA)
 #######################################
 
-net b-step => hm2_7i96s.0.stepgen.03.step
-net b-dir  => hm2_7i96s.0.stepgen.03.dir
+#net b-step => hm2_7i96s.0.stepgen.03.step
+#net b-dir  => hm2_7i96s.0.stepgen.03.dir
 
 # PARÂMETROS AJUSTÁVEIS DO EIXO B
 # 1) Escala de RPM base
 setp spindle-b-rpm-scale.gain 1.0
 
 # 2) Relação de polia do eixo B
-setp spindle-b-polia-ratio.gain 1.0
+#setp spindle-b-polia-ratio.gain 1.0
 
 # 3) Limite máximo de RPM do eixo B
-setp spindle-b-max-rpm.gain 3000
+#setp spindle-b-max-rpm.gain 3000
 
 #######################################
 # SPINDLE PRINCIPAL - FUTURO HÍBRIDO
@@ -81,36 +81,36 @@ setp spindle-b-max-rpm.gain 3000
 #######################################
 
 # entrada física já existe
-net estop-in <= hm2_7i96s.0.gpio.000.in
+#net estop-in <= hm2_7i96s.0.gpio.000.in
 
 # controle da máquina
-net estop-in => iocontrol.0.emc-enable-in
+#net estop-in => iocontrol.0.emc-enable-in
 
 #######################################
 # ENABLE GLOBAL
 #######################################
 
 # enable geral do sistema
-net machine-enable iocontrol.0.user-enable-out
+#net machine-enable iocontrol.0.user-enable-out
 
 #######################################
 # SPINDLE SERVO ENABLE
 #######################################
 
 # spindle só liga se máquina habilitada
-net spindle-enable machine-enable => hm2_7i96s.0.gpio.011.out
+#net spindle-enable machine-enable => hm2_7i96s.0.gpio.011.out
 
 #######################################
 # B AXIS ENABLE (também protegido)
 #######################################
 
-net b-enable machine-enable => hm2_7i96s.0.gpio.012.out
+#net b-enable machine-enable => hm2_7i96s.0.gpio.012.out
 
 #######################################
 # MAGAZINE ENABLE
 #######################################
 
-net a-enable machine-enable => hm2_7i96s.0.gpio.013.out
+#net a-enable machine-enable => hm2_7i96s.0.gpio.013.out
 
 #######################################
 # OBS
