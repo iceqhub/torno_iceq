@@ -1,36 +1,19 @@
-TORNO_ICEQ - CONTROLE DE VERSÕES
+TORNO_ICEQ - PATCH 1.19 VALIDADO
 
-Versão atual: 1.17
+Objetivo:
+- corrigir a base de hardware da 7i96S
+- parar o erro de pin inexistente no inputs.hal
+- separar claramente:
+  - carregamento da placa
+  - sinais de input
+  - IO map
 
------------------------------------
-Versão 1.17
------------------------------------
-- Ativação do E-STOP funcional real
-- Integração do enable do spindle servo
-- Preparação real para teste de rotação (RPM)
-- Segurança mínima aplicada
-- Base pronta para primeiro movimento do spindle
+Decisão desta correção:
+- criar hardware_7i96s.hal
+- incluir este HAL no .ini
+- substituir inputs.hal por versão mínima e segura
+- NÃO mexer ainda em encoder, stepgen e outputs físicos além do necessário
 
------------------------------------
-IMPORTANTE
------------------------------------
-Agora já é possível:
-- testar botão de emergência real
-- energizar servo do spindle
-- validar enable / disable
-
------------------------------------
-TESTE OBRIGATÓRIO
------------------------------------
-1) Liga LinuxCNC
-2) Aperta E-STOP → máquina NÃO pode habilitar
-3) Solta E-STOP → máquina habilita
-
-Se isso falhar → PARAR
-
------------------------------------
-PRÓXIMO PASSO
------------------------------------
-- teste de rotação spindle
-- ajuste de direção
-- ajuste de escala RPM
+Escopo desta versão:
+- LinuxCNC subir sem erro de naming básico da 7i96S
+- validar E-stop e Cycle Start primeiro

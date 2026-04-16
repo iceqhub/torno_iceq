@@ -7,3 +7,6 @@ addf motion-controller servo-thread
 # Basic placeholder signals
 net x-pos-cmd joint.0.motor-pos-cmd
 net z-pos-cmd joint.1.motor-pos-cmd
+
+loadrt hm2_eth board_ip=10.10.10.10 config="num_encoders=1 num_stepgens=5"
+loadrt hm2_7i96s
