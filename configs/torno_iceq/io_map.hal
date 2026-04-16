@@ -57,7 +57,7 @@
 
 # PARÂMETROS AJUSTÁVEIS DO EIXO B
 # 1) Escala de RPM base
-setp spindle-b-rpm-scale.gain 1.0
+#setp spindle-b-rpm-scale.gain 1.0
 
 # 2) Relação de polia do eixo B
 #setp spindle-b-polia-ratio.gain 1.0
