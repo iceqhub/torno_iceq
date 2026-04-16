@@ -3,5 +3,5 @@
 
 # Valor de comando para panel_dispatch.ngc
 # Mantido como base para evolução futura
-net ui-command <= motion.analog-in-00
-setp motion.analog-in-00-scale 1.0
+#net ui-command <= motion.analog-in-00
+#setp motion.analog-in-00-scale 1.0
