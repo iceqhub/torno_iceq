@@ -3,7 +3,7 @@
 # Carregamento explícito da Mesa 7i96S
 
 loadrt hostmot2
-loadrt hm2_eth board_ip=10.10.10.10 config="num_encoders=1 num_stepgens=5"
+loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_stepgens=5"
 
 # Observação:
 # Se o IP real da tua placa for diferente, ajustar aqui.
