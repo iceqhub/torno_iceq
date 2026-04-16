@@ -25,7 +25,7 @@
 
 #net spindle-phase-a <= hm2_7i96s.0.encoder.00.phase-A
 #net spindle-phase-b <= hm2_7i96s.0.encoder.00.phase-B
-3net spindle-index   <= hm2_7i96s.0.encoder.00.index
+#3net spindle-index   <= hm2_7i96s.0.encoder.00.index
 
 #######################################
 # X AXIS
