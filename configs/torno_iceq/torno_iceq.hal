@@ -1,3 +1,5 @@
+loadrt hm2_eth board_ip="192.168.1.121"
+
 loadrt trivkins
 loadrt motmod
 
