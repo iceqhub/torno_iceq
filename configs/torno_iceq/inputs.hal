@@ -21,7 +21,10 @@ net cycle-start => halui.program.run
 ########################################
 
 #net home-x <= hm2_7i96s.0.inm.00.input-02
+#net home-x => joint.0.home-sw-in
+
 #net home-z <= hm2_7i96s.0.inm.00.input-03
+#net home-z => joint.1.home-sw-in
 
 ########################################
 # SPARES (JÁ PREPARADO)
