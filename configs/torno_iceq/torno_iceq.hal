@@ -1,6 +1,3 @@
-loadrt hostmot2
-loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_stepgens=5"
-
 loadrt trivkins
 loadrt motmod
 

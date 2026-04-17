@@ -1,11 +1,9 @@
 # hardware_7i96s.hal
-# PATCH 1.19 VALIDADO
-# Carregamento explícito da Mesa 7i96S
+# Carregamento da Mesa 7i96S (DEVE SER O PRIMEIRO)
 
 loadrt hostmot2
 loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_stepgens=5"
 
-# Observação:
-# Se o IP real da tua placa for diferente, ajustar aqui.
-# Este arquivo existe somente para garantir que os pinos hostmot2/hm2_eth
-# existam antes de inputs.hal e io_map.hal serem lidos.
+# Esse arquivo garante que:
+# - hm2_7i96s.* existe
+# - inputs.hal e io_map.hal funcionem corretamente

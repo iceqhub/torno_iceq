@@ -1,13 +1,31 @@
-# inputs.hal - PATCH 1.19 VALIDADO
-# Etapa atual: somente E-stop e Cycle Start
+# inputs.hal - PADRÃO ICEQ DEFINITIVO
+# Baseado na máquina do Raspberry (VALIDADO)
+# TB3 INPUTS → hm2_7i96s.0.inm.00.input-XX
 
-# E-STOP -> IN0
-net estop-in <= hm2_7i96s.0.gpio.000.in
-net estop-in => iocontrol.0.emc-enable-in
+########################################
+# E-STOP (ATIVO AGORA)
+########################################
 
-# CYCLE START -> IN1
-net cycle-start <= hm2_7i96s.0.gpio.001.in
+net estop-ext <= hm2_7i96s.0.inm.00.input-00
+net estop-ext => iocontrol.0.emc-enable-in
 
-# futuros (comentados por enquanto)
-# net home-x <= hm2_7i96s.0.gpio.002.in
-# net home-z <= hm2_7i96s.0.gpio.003.in
+########################################
+# CYCLE START (ATIVO AGORA)
+########################################
+
+net cycle-start <= hm2_7i96s.0.inm.00.input-01
+net cycle-start => halui.program.run
+
+########################################
+# HOMES (PRÓXIMA ETAPA)
+########################################
+
+#net home-x <= hm2_7i96s.0.inm.00.input-02
+#net home-z <= hm2_7i96s.0.inm.00.input-03
+
+########################################
+# SPARES (JÁ PREPARADO)
+########################################
+
+#net spare-04 <= hm2_7i96s.0.inm.00.input-04
+#net spare-05 <= hm2_7i96s.0.inm.00.input-05

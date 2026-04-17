@@ -77,14 +77,12 @@
 # aqui entrará a troca de modo RPM / eixo C angular
 
 #######################################
-# E-STOP REAL
+# E-STOP (REFERÊNCIA - NÃO DUPLICAR)
 #######################################
 
-# entrada física já existe
-#net estop-in <= hm2_7i96s.0.gpio.000.in
-
-# controle da máquina
-#net estop-in => iocontrol.0.emc-enable-in
+# Já tratado em inputs.hal
+#net estop-ext <= hm2_7i96s.0.inm.00.input-00
+#net estop-ext => iocontrol.0.emc-enable-in
 
 #######################################
 # ENABLE GLOBAL
