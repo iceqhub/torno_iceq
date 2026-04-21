@@ -7,7 +7,7 @@
 ########################################
 
 # Forçar gpio.000 como entrada (padrão é saída na 7i96S)
-#etp hm2_7i96s.0.gpio.000.is_output 0
+#setp hm2_7i96s.0.gpio.000.is_output 0
 
 net estop-ext <= hm2_7i96s.0.gpio.000.in_not
 net estop-ext => iocontrol.0.emc-enable-in
