@@ -1,0 +1,10 @@
+# Include your custom HAL commands here
+# This file will not be overwritten when you run PNCconf again
+
+# ----- ICEQ: Temporary software E-STOP release (TEST ONLY) ---
+
+# Força LinuxCNC a sair da emergencia
+#setp iocontrol.0.emc-enable-in true
+
+# Garante habilitação do motion
+#setp motion.enable true

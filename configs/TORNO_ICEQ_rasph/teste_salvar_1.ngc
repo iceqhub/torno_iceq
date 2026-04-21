@@ -1,0 +1,30 @@
+g90 g21 g40 g54
+g0 x0 z0
+
+S1250 M3
+g1 x-10 f200
+g4 p3
+g1 x0 f200
+g4 p3
+g1 z-20 f200
+g4 p3
+g1 z0 f200
+g4 p3
+g1 x-10 f200
+g4 p3
+g1 x0 f200
+g4 p3
+g1 z-20 f200
+g4 p3
+g1 z0 f200
+g4 p3
+g1 x-10 f200
+g4 p3
+g1 x0 f200
+g4 p3
+g1 z-20 f200
+g4 p3
+g1 z0 f200
+g4 p3
+
+m30
