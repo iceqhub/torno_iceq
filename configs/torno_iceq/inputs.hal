@@ -6,18 +6,8 @@
 # E-STOP (ATIVO AGORA)
 ########################################
 
-loadrt and2 count=1
-addf and2.0 servo-thread
-
-# E-STOP físico + enable interno
-net estop-chain-ok <= hm2_7i96s.0.inm.00.input-00
-net estop-user-ok  <= iocontrol.0.user-enable-out
-
-net estop-chain-ok => and2.0.in0
-net estop-user-ok  => and2.0.in1
-
-net estop-ok <= and2.0.out
-net estop-ok => iocontrol.0.emc-enable-in
+net estop-ext <= hm2_7i96s.0.inm.00.input-00-not
+net estop-ext => iocontrol.0.emc-enable-in
 
 ########################################
 # CYCLE START (ATIVO AGORA)
