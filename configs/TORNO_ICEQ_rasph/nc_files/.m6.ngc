@@ -1,0 +1,90 @@
+o<.m6> sub
+
+O<TASK>IF[#<_task>EQ1]
+
+    #<req_tool> = #<_SELECTED_TOOL>
+
+    ; -----------------------------
+    ; Validacao: aceita 1..16
+    ; -----------------------------
+    o<erro_hi>if[#<req_tool>gt16]
+        (msg,Ferramenta pedida nao existe)
+        G4 P999
+    o<erro_hi>endif
+
+    o<erro_lo>if[#<req_tool>le0]
+        (msg,Ferramenta pedida nao existe)
+        G4 P999
+    o<erro_lo>endif
+
+    ; -----------------------------
+    ; Torre referenciada? (seu registrador #5390)
+    ; -----------------------------
+    o<ref>if[#5390eq0]
+        (debug,REFERENCIE A TORRE)
+        G4 P999
+    o<ref>endif
+
+    #<cur_tool> = #5390
+
+    ; -----------------------------
+    ; Mapeamento fisico (1..8)
+    ;   phys = ((tool-1) MOD 8) + 1
+    ; -----------------------------
+    #<cur_phys> = [[[#<cur_tool> - 1] MOD 8] + 1]
+    #<req_phys> = [[[#<req_tool> - 1] MOD 8] + 1]
+
+    ; -----------------------------
+    ; Se posicao fisica ja eh a mesma: nao move torre
+    ; Apenas aplica tool logico + H
+    ; -----------------------------
+    o<samepos>if[#<cur_phys>eq#<req_phys>]
+        M61 Q#<req_tool>
+        G43 H#<req_tool>
+        #5390 = #<req_tool>
+    o<samepos>endif
+
+    ; -----------------------------
+    ; Se mudou posicao fisica: faz troca mecanica
+    ; -----------------------------
+    o<troca>if[#<cur_phys>ne#<req_phys>]
+
+        M64 P6
+        M64 P7
+        G4 P0.05
+
+        #<tombos> = [#<req_phys> - #<cur_phys>]
+
+        O<DIR>IF[#<req_phys>GT#<cur_phys>]
+            #<dir> = 1
+        O<DIR>ELSE
+            #<dir> = -1
+        O<DIR>ENDIF
+
+        O<POSITIVO>IF[ABS[#<tombos>]LE3]
+            #<angulo> = [#<tombos> * 45]
+        O<POSITIVO>ELSE
+            #<tombos> = [ABS[#<tombos>] - 6]
+            #<angulo> = [#<tombos> * 45 * #<dir>]
+        O<POSITIVO>ENDIF
+
+        #5390 = 0
+
+        G0 G91 C#<angulo>
+        G90
+
+        M65 P6
+        G4 P0.05
+        M65 P7
+
+        M61 Q#<req_tool>
+        G43 H#<req_tool>
+
+        #5390 = #<req_tool>
+
+    o<troca>endif
+
+O<TASK>ENDIF
+
+o<.m6> endsub
+M2
