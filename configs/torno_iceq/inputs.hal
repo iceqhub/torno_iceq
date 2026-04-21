@@ -6,14 +6,14 @@
 # E-STOP (ATIVO AGORA)
 ########################################
 
-net estop-ext <= hm2_7i96s.0.inm.00.input-00-not
+net estop-ext <= hm2_7i96s.0.gpio.000.in_not
 net estop-ext => iocontrol.0.emc-enable-in
 
 ########################################
 # CYCLE START (ATIVO AGORA)
 ########################################
 
-net cycle-start <= hm2_7i96s.0.inm.00.input-01
+net cycle-start <= hm2_7i96s.0.gpio.001.in
 net cycle-start => halui.program.run
 
 ########################################
