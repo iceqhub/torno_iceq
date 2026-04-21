@@ -360,11 +360,9 @@ net coolant-flood     <=  iocontrol.0.coolant-flood
 
 # --- TURRET / TOOLCHANGE ---
 # P6 (M64/M65 P6) -> solenoide travamento torre
-# net turret-lock     <=  motion.digital-out-06   =>  hm2_7i96s.0.gpio.024.out
-# P7 (M64/M65 P7) -> enable drive torre
-# net turret-enable   <=  motion.digital-out-07   =>  hm2_7i96s.0.gpio.025.out
-
 net turret-lock    <=  motion.digital-out-06   =>  hm2_7i96s.0.outm.00.output-04
+
+# P7 (M64/M65 P7) -> enable drive torre
 net turret-enable  <=  motion.digital-out-07   =>  hm2_7i96s.0.outm.00.output-05
 
 
