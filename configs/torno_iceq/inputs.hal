@@ -6,25 +6,13 @@
 # E-STOP (ATIVO AGORA)
 ########################################
 
-#setp hm2_7i96s.0.gpio.032.is_output 0
-#setp hm2_7i96s.0.gpio.033.is_output 0
-
-# Forçar gpio.000 como entrada (padrão é saída na 7i96S)
-#setp hm2_7i96s.0.gpio.000.is_output 0
-
-net estop-ext     <=  hm2_7i96s.0.inm.00.input-00
-
-#net estop-ext <= hm2_7i96s.0.gpio.032.in_not
-net estop-ext => iocontrol.0.emc-enable-in
-
-# Loop de confirmação - necessário para E-stop funcionar nos dois sentidos
-#net estop-loop iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in
+net estop-ext  <=  hm2_7i96s.0.inm.00.input-00
 
 ########################################
 # CYCLE START (ATIVO AGORA)
 ########################################
 
-net cycle-start <= hm2_7i96s.0.gpio.033.in
+net cycle-start <=  hm2_7i96s.0.inm.00.input-01
 net cycle-start => halui.program.run
 
 ########################################
