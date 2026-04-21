@@ -2,13 +2,20 @@
 # Baseado na máquina do Raspberry (VALIDADO)
 # TB3 INPUTS → hm2_7i96s.0.inm.00.input-XX
 
+########################################
+# E-STOP (correto de verdade v2)
+########################################
+
+net estop-ext <= hm2_7i96s.0.inm.00.input-00
+net estop-ext => iocontrol.0.emc-enable-in
+
 
 ########################################
 # E-STOP (correto de verdade)
 ########################################
 
-net estop-ext <= hm2_7i96s.0.inm.00.input-00-not
-net estop-ext => iocontrol.0.emc-enable-in
+#net estop-ext <= hm2_7i96s.0.inm.00.input-00-not
+#net estop-ext => iocontrol.0.emc-enable-in
 
 ########################################
 # E-STOP (ATIVO AGORA)
