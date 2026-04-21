@@ -1,5 +1,5 @@
-loadusr -W iocontrol
-loadusr -W halui
+#loadusr -W iocontrol
+#loadusr -W halui
 
 loadrt trivkins
 loadrt motmod
