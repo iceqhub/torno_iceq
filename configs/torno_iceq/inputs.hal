@@ -13,7 +13,7 @@ net estop-ext <= hm2_7i96s.0.gpio.000.in_not
 net estop-ext => iocontrol.0.emc-enable-in
 
 # Loop de confirmação - necessário para E-stop funcionar nos dois sentidos
-net estop-loop iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in
+#net estop-loop iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in
 
 ########################################
 # CYCLE START (ATIVO AGORA)
