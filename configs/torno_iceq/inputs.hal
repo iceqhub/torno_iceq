@@ -6,6 +6,9 @@
 # E-STOP (ATIVO AGORA)
 ########################################
 
+setp hm2_7i96s.0.gpio.000.is_output 0
+setp hm2_7i96s.0.gpio.001.is_output 0
+
 # Forçar gpio.000 como entrada (padrão é saída na 7i96S)
 #setp hm2_7i96s.0.gpio.000.is_output 0
 
