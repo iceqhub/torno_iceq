@@ -2,7 +2,7 @@
 # Carregamento da Mesa 7i96S (DEVE SER O PRIMEIRO)
 
 loadrt hostmot2
-loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_stepgens=5 num_gpio=20"
+loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_stepgens=5"
 
 # Esse arquivo garante que:
 # - hm2_7i96s.* existe
