@@ -6,7 +6,7 @@
 # E-STOP (ATIVO AGORA)
 ########################################
 
-net estop-ext  <=  hm2_7i96s.0.gpio.000.in_not
+net estop-ext  <=  hm2_7i96s.0.gpio.000.in
 net estop-ext => iocontrol.0.emc-enable-in
 
 ########################################
