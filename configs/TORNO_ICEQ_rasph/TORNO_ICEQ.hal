@@ -64,16 +64,16 @@ net coolant-flood  =>     hm2_7i96s.0.ssr.00.out-03
 net estop-ext     <=  hm2_7i96s.0.inm.00.input-00
 
 # --- HOME-X ---
-net home-x     <=  hm2_7i96s.0.inm.00.input-01
+net home-x     <=  hm2_7i96s.0.inm.00.input-02
 
 # --- HOME-Z ---
-net home-z     <=  hm2_7i96s.0.inm.00.input-02
+net home-z     <=  hm2_7i96s.0.inm.00.input-03
 
 # --- CYCLE-START ---
-net cycle-start     <=  hm2_7i96s.0.inm.00.input-04
+net cycle-start     <=  hm2_7i96s.0.inm.00.input-01
 
 # --- CYCLE-STOP (ABORT) ---
-net cycle-stop      <=  hm2_7i96s.0.inm.00.input-05
+#net cycle-stop      <=  hm2_7i96s.0.inm.00.input-05
 
 #*******************
 #  AXIS X JOINT 0
