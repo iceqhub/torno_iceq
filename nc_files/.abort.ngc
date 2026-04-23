@@ -1,0 +1,18 @@
+o<.abort> sub
+
+g54g18g40g21g7
+
+G10 L2 P1 R0
+G10 L2 P2 R0
+G10 L2 P3 R0
+G10 L2 P4 R0
+G10 L2 P5 R0
+G10 L2 P6 R0
+
+m65p6
+m65p7
+m65p8
+
+
+o<.abort> endsub
+

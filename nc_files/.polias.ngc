@@ -1,0 +1,174 @@
+(info: perfil polias)
+o<.polias> sub
+
+#<diam_ext>=#1      (=75 DIAMETRO EXTERNO)
+#<padrao>=#2      (=1 A=1 B=2 C=3 D=4 E=5)
+#<num_can>=#3      (=3 NUMERO DE CANAIS)
+#<zinicial>=#4    (=2 Z INICIAL)
+#<incremento>=#5    (=1 PASSADA )
+#<sobremetal>=#6  (=0.8 SOBREMETAL)
+#<recuo>=#7   (=2 RECUO X)
+#<vcc>=#8   (=0 VCC)
+#<RPM>=#9   (=1500 RPM)
+#<f_dsb>=#10   (=0.25 AVANÇO DESB)
+#<f_acab>=#11   (=0.15 AVANÇO ACAB)
+#<acaba>=#12    (=1 ACA 1=S 0=N 2=SÓ ACA)
+#<PONTO_TROCA_X>=#13  (=200 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=#14  (=100 PONTO DE TROCA Z)
+#<TOOL>=#15  (=1 NUMERO DA FERRAMENTA)
+#<M8>=#16  (=8 OLEO SOLUVEL 9 DESLIGA)
+#<final_pt>=#17   (=1 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+
+
+
+#<_ANGULO>=34
+O<DEF-ANGULO>IF[#<diam_ext>GT170]
+#<_ANGULO>=38
+O<DEF-ANGULO>ENDIF
+
+#<_diam_ext>=#<diam_ext>
+#<_zinicial>=#<zinicial>
+#<_f_acab>=#<f_acab>
+#<_num_can>=#<num_can>
+#<_recuo>=#<recuo>
+#<_TOOL>=#<TOOL>
+
+O<POLIA_A>IF[#<padrao>EQ1]
+#<_TTT>=9.5
+#<_SSS>=15
+#<_WWW>=13
+#<_YYY>=3
+#<_ZZZ>=2
+#<_HHH>=13
+#<_KKK>=5
+#<_XXX>=5
+O<POLIA_A>ENDIF
+
+O<POLIA_B>IF[#<padrao>EQ2]
+#<_TTT>=11.5
+#<_SSS>=19
+#<_WWW>=17
+#<_YYY>=3
+#<_ZZZ>=2
+#<_HHH>=17
+#<_KKK>=6.5
+#<_XXX>=6.25
+O<POLIA_B>ENDIF
+
+O<POLIA_C>IF[#<padrao>EQ3]
+#<_TTT>=15.25
+#<_SSS>=25.5
+#<_WWW>=22.5
+#<_YYY>=4
+#<_ZZZ>=3
+#<_HHH>=22
+#<_KKK>=9.5
+#<_XXX>=8.25
+O<POLIA_C>ENDIF
+
+O<POLIA_D>IF[#<padrao>EQ4]
+#<_TTT>=22
+#<_SSS>=36.5
+#<_WWW>=32
+#<_YYY>=6
+#<_ZZZ>=4.5
+#<_HHH>=28
+#<_KKK>=12.5
+#<_XXX>=11
+O<POLIA_D>ENDIF
+
+O<POLIA_E>IF[#<padrao>EQ5]
+#<_TTT>=27.25
+#<_SSS>=44.5
+#<_WWW>=38.5
+#<_YYY>=8
+#<_ZZZ>=6
+#<_HHH>=33
+#<_KKK>=16
+#<_XXX>=13
+O<POLIA_E>ENDIF
+
+
+#<G71>=71
+
+
+O<TROCA>IF[#<TOOL>GT0]
+G43H#<TOOL>
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+T[#<TOOL>]M6G43
+O<TROCA>ENDIF
+
+O<RPM>IF[#<vcc>EQ0]
+G97S#<RPM>M3
+O<RPM>ENDIF
+
+O<VCC>IF[#<vcc>GT0]
+G96S#<vcc>D#<RPM>M3
+O<VCC>ENDIF
+
+
+O<G94>IF[#<f_dsb>GT1]
+G94
+O<G94>ELSE
+G95
+O<G94>ENDIF
+
+M#<M8>
+
+o<dsb1>if[#<acaba>ne2]
+
+G#<G71> Q1234 X[#<diam_ext>+#<recuo>] Z#<zinicial> D#<sobremetal> I#<incremento> R#<recuo> F#<f_dsb>
+
+;Q = NUMERO DO SUB COM PERFIL
+;X = X INICIAL
+;Z = Z INICIAL
+;D = SOBREMETAL
+;I = INCREMENTO
+;R = RECUO POR PASSE
+;F = Avanço
+
+o<dsb1>endif
+
+
+
+
+o<acaba1>if[#<acaba>ne0]
+
+
+O1234CALL
+
+
+o<acaba1>endif
+
+
+
+
+
+
+
+
+
+O<TROCA_FIM>IF[#<final_pt>NE0]
+
+O<AMBOS>IF[#<final_pt>EQ3]
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+O<AMBOS>ENDIF
+
+O<XZ>IF[#<final_pt>EQ1]
+G00G90X#<PONTO_TROCA_X>
+Z#<PONTO_TROCA_Z>
+O<XZ>ENDIF
+
+O<ZX>IF[#<final_pt>EQ2]
+G00G90Z#<PONTO_TROCA_Z>
+X#<PONTO_TROCA_X>
+O<ZX>ENDIF
+
+O<TROCA_FIM>ENDIF
+
+
+
+
+
+o<.polias> endsub
+

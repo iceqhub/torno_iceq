@@ -1,0 +1,21 @@
+o9125sub
+
+
+;;;;;;;externo g71;;;;;perfil traseiro canto base de corte 125mm;;;;;;;;;;;;
+
+
+G00X132z2
+G01Z0
+X137z-2.5
+z-2.9
+
+
+;;;G00X120z2;;;
+;;;G01Z0;;;
+;;;X128z-4;;;
+
+
+
+
+
+o9125endsub

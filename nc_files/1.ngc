@@ -1,0 +1,17 @@
+o1sub
+
+
+G00G90
+X8Z2
+G01Z0
+X10Z-1
+G01Z-8
+G02Z-10X14R2
+G01X20
+X16Z-20
+X30
+
+
+
+
+o1endsub

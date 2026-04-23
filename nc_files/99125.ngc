@@ -1,0 +1,20 @@
+o99125sub
+
+
+;;;;;;;externo g71;;;;;perfil frontal canto base de corte de 125mm;;;;;;;;;;;;
+
+G00X132z2
+G01Z0
+X137z-2.5
+z-9.4
+x140
+
+
+;;G00X120z2;;
+;;G01Z0;;
+;;X125z-2.5;;
+;;z-9.4;;
+;;x128;;
+
+
+o99125endsub

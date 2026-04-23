@@ -1,2 +1,176 @@
-# Include your custom_postgui HAL commands here
-# This file will not be overwritten when you run PNCconf again
+# custom_postgui.hal — TORNO ICEQ — 7i96S
+# Gerado a partir da migração da porta paralela (ClassicLadder removido)
+# Executado APÓS o painel PyVCP carregar
+# Versão: 1.0
+
+# ============================================================
+# RPM — Leitura do encoder do spindle para o painel PyVCP
+# ============================================================
+loadrt scale count=6
+loadrt lowpass count=1
+loadrt abs count=1
+loadrt near count=1
+loadrt time
+
+addf scale.0           servo-thread
+addf scale.1           servo-thread
+addf scale.2           servo-thread
+addf scale.3           servo-thread
+addf scale.4           servo-thread
+addf scale.5           servo-thread
+addf lowpass.0         servo-thread
+addf abs.0             servo-thread
+addf near.0            servo-thread
+addf time.0            servo-thread
+
+# Filtro lowpass + abs + scale para exibir RPM no painel
+setp scale.0.gain 60
+setp lowpass.0.gain 0.100000
+net spindle-vel-fb-rps        =>  lowpass.0.in
+net spindle-fb-filtered-rps   lowpass.0.out  =>  abs.0.in
+net spindle-fb-filtered-abs-rps  abs.0.out   =>  scale.0.in
+net spindle-fb-filtered-abs-rpm  scale.0.out =>  pyvcp.spindle-speed
+
+# Spindle at-speed indicator
+net spindle-vel-cmd-rps-abs    =>  near.0.in1
+net spindle-vel-fb-rps         =>  near.0.in2
+setp near.0.scale 2.0
+net spindle-at-speed           <=  near.0.out
+net spindle-at-speed           =>  pyvcp.spindle-at-speed-led
+
+# ============================================================
+# LIMITES DINÂMICOS — exporta limites para analog-out (restaura.ngc)
+# ============================================================
+net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
+net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
+net limit-x-min  ini.x.min_limit  =>  motion.analog-out-02
+net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
+
+# ============================================================
+# TEMPORIZADOR DE CICLO
+# ============================================================
+# not.0 já carregado no torno_iceq.hal
+net cycle-timer    time.0.start   <=  not.0.out
+net cycle-seconds  pyvcp.time-seconds  <=  time.0.seconds
+net cycle-minutes  pyvcp.time-minutes  <=  time.0.minutes
+net cycle-hours    pyvcp.time-hours    <=  time.0.hours
+
+# ============================================================
+# NÚMERO DA FERRAMENTA ATIVA
+# ============================================================
+net tool-number  iocontrol.0.tool-number  =>  pyvcp.tool-number
+
+# ============================================================
+# POSIÇÃO ENCODER TORRE
+# ============================================================
+net torre-pos  pyvcp.pos-encoder
+
+# ============================================================
+# BOTÕES DE TROCA DE FERRAMENTA (T01~T16) → MDI commands
+# Indexação: mdi-command-00 a mdi-command-14 = T01~T15
+#            mdi-command-30 = T16
+# ============================================================
+net tool-1   halui.mdi-command-00  <=  pyvcp.tool-1
+net tool-2   halui.mdi-command-01  <=  pyvcp.tool-2
+net tool-3   halui.mdi-command-02  <=  pyvcp.tool-3
+net tool-4   halui.mdi-command-03  <=  pyvcp.tool-4
+net tool-5   halui.mdi-command-04  <=  pyvcp.tool-5
+net tool-6   halui.mdi-command-05  <=  pyvcp.tool-6
+net tool-7   halui.mdi-command-06  <=  pyvcp.tool-7
+net tool-8   halui.mdi-command-07  <=  pyvcp.tool-8
+net tool-9   halui.mdi-command-08  <=  pyvcp.tool-9
+net tool-10  halui.mdi-command-09  <=  pyvcp.tool-10
+net tool-11  halui.mdi-command-10  <=  pyvcp.tool-11
+net tool-12  halui.mdi-command-11  <=  pyvcp.tool-12
+net tool-13  halui.mdi-command-12  <=  pyvcp.tool-13
+net tool-14  halui.mdi-command-13  <=  pyvcp.tool-14
+net tool-15  halui.mdi-command-14  <=  pyvcp.tool-15
+net tool-16  halui.mdi-command-30  <=  pyvcp.tool-16
+
+# ============================================================
+# BOTÕES DE ENCOSTO / SETA
+# ============================================================
+net SETARX      halui.mdi-command-18  <=  pyvcp.seta-x
+net SETARXNEG   halui.mdi-command-19  <=  pyvcp.seta-xneg
+net SETARZ      halui.mdi-command-20  <=  pyvcp.seta-z
+net SETARZ-NEG  halui.mdi-command-23  <=  pyvcp.seta-z-neg
+net RESTAURAR   halui.mdi-command-21  <=  pyvcp.restaura
+
+# ============================================================
+# BOTÕES DE MANUTENÇÃO
+# ============================================================
+net reset-py    halui.mdi-command-24  <=  pyvcp.resetar
+net ativa-py    halui.mdi-command-25  <=  pyvcp.ativa
+net desativa-py halui.mdi-command-26  <=  pyvcp.desativa
+net sole-py     halui.mdi-command-27  <=  pyvcp.solenoide
+net cw-py       halui.mdi-command-28  <=  pyvcp.gira-cw-py
+net ccw-py      halui.mdi-command-29  <=  pyvcp.gira-ccw-py
+
+# ============================================================
+# PLACA (ABRE/FECHA) — SSR out-00 e out-01
+# Substituição do parport.0.pin-08/09 da porta paralela
+# ============================================================
+# ATENÇÃO: turret-lock e turret-enable já estão no torno_iceq.hal
+# conectados a ssr.00.out-00 e ssr.00.out-01 via motion.digital-out-06/07
+# Os botões do painel disparam via MDI (M64P6 / M65P6)
+# Aqui apenas conectamos os LEDs de feedback:
+net led-ABRE   pyvcp.LED-ABRE   <=  hm2_7i96s.0.ssr.00.out-00
+net led-FECHA  pyvcp.LED-FECHA  <=  hm2_7i96s.0.ssr.00.out-01
+
+# ============================================================
+# CONTRA-PONTA (AVANÇA/RECUA) — SSR out-02 e out-03
+# ============================================================
+net led-AVANCA  pyvcp.LED-AVANCA  <=  hm2_7i96s.0.ssr.00.out-02
+net led-RECUA   pyvcp.LED-RECUA   <=  hm2_7i96s.0.ssr.00.out-03
+
+# ============================================================
+# LEDs DE STATUS
+# ============================================================
+# LED drivers X/Z/Spindle OK (ligar a sinal de enable ou fault do driver)
+# Por enquanto conecta ao machine-is-enabled como placeholder
+net led-xz     pyvcp.led-xz        <=  motion.motion-enabled
+
+# LED botão emergência físico
+net led-emg-but  pyvcp.led-emg-but  <=  hm2_7i96s.0.inm.00.input-00
+
+# LED emergência MPG (input-05 — ajuste conforme sua fiação)
+#net led-emg-but-mani  pyvcp.led-emg-but-mani  <=  hm2_7i96s.0.inm.00.input-05
+
+# Eixo selecionado (placeholder — conectar ao MPG quando implementado)
+#net led-x   pyvcp.LED-SEL-X   <=  classicladder.0.out-11   # implementar via HAL logic
+#net led-z   pyvcp.LED-SEL-Z   <=  classicladder.0.out-12
+#net led-off pyvcp.LED-SEL-OFF <=  classicladder.0.out-37
+
+# ============================================================
+# GAMA (seleção de faixa de velocidade via radiobutton PyVCP)
+# ============================================================
+net GAMA-HI  pyvcp.gama.C  =>  motion.digital-in-00
+net GAMA-LO  pyvcp.gama.A  =>  motion.digital-in-01
+
+# ============================================================
+# CONTADOR DE PEÇAS
+# ============================================================
+# O contador é gerenciado pelo .conta.ngc
+# pyvcp.PECAS recebe o valor via sinal abaixo (implementar com s32 HAL)
+# net CONTA-PECA  pyvcp.PECAS  <=  motion.digital-out-...
+# Por ora deixar desconectado — implementar com comp counter futuramente
+
+# ============================================================
+# PRESET (spinbox para preset do contador)
+# ============================================================
+# net preset  pyvcp.preset  (sem destino por ora — implementar com contador)
+
+# ============================================================
+# DIGITAL OUTS — exporta para uso nas subrotinas NGC
+# ============================================================
+net dout-00  <=  motion.digital-out-00
+net dout-01  <=  motion.digital-out-01
+net dout-02  <=  motion.digital-out-02
+net dout-03  <=  motion.digital-out-03
+net dout-04  <=  motion.digital-out-04
+net dout-05  <=  motion.digital-out-05
+
+# ============================================================
+# NOTIFICAÇÕES — limpa alertas do AXIS
+# ============================================================
+# net clear  axisui.notifications-clear  (descomente se necessário)

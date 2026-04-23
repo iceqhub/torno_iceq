@@ -1,0 +1,87 @@
+o1234sub
+
+;#<_diam_ext>
+;#<_zinicial>
+;#<_num_can>
+;#<_TOOL>
+;#<_recuo>
+;#<_f_acab>
+;#<_ANGULO>
+;#<_TTT>
+;#<_SSS>
+;#<_WWW>
+;#<_YYY>
+;#<_ZZZ>
+;#<_HHH>
+;#<_KKK>
+;#<_XXX>
+
+#<DIAM_INT>=[#<_diam_ext>-[2*#<_HHH>]]
+
+#<ANGULO>=[#<_ANGULO>/2]
+#<CATETO>=[#<_HHH>*TAN[#<ANGULO>]]
+#<ZFUND>=[#<_WWW>-[2*#<CATETO>]]
+
+
+G00 G90 X[#<_diam_ext>+2] Z#<_zinicial>
+G01 G42 D#<_TOOL> F#<_f_acab> X[#<_diam_ext>] Z0
+G01 F#<_f_acab> Z-#<_YYY>
+G01 X#<DIAM_INT> Z-[#<_YYY>+#<CATETO>]
+G01 Z-[#<_YYY>+#<CATETO>+#<ZFUND>]
+G01 X#<_diam_ext> Z-[#<_YYY>+#<CATETO>+#<ZFUND>+#<CATETO>]
+G01 Z-[#<_YYY>+#<CATETO>+#<ZFUND>+#<CATETO>+#<_ZZZ>]
+
+O<111>IF[#<_num_can>GT1]
+
+#<PASSO>=[#<_WWW>+#<_ZZZ>]
+
+G01 X#<DIAM_INT> Z-[#<_YYY>+#<PASSO>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>]
+G01 X#<_diam_ext> Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>+#<_ZZZ>]
+
+
+O<222>IF[#<_num_can>GT2]
+#<PASSO>=[#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>]
+
+G01 X#<DIAM_INT> Z-[#<_YYY>+#<PASSO>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>]
+G01 X#<_diam_ext> Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>+#<_ZZZ>]
+
+O<333>IF[#<_num_can>GT3]
+#<PASSO>=[#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>]
+
+G01 X#<DIAM_INT> Z-[#<_YYY>+#<PASSO>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>]
+G01 X#<_diam_ext> Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>+#<_ZZZ>]
+
+O<444>IF[#<_num_can>GT4]
+#<PASSO>=[#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>]
+
+G01 X#<DIAM_INT> Z-[#<_YYY>+#<PASSO>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>]
+G01 X#<_diam_ext> Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>+#<_ZZZ>]
+
+
+O<555>IF[#<_num_can>GT5]
+#<PASSO>=[#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>+#<_WWW>+#<_ZZZ>]
+
+G01 X#<DIAM_INT> Z-[#<_YYY>+#<PASSO>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>]
+G01 X#<_diam_ext> Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>]
+G01 Z-[#<_YYY>+#<PASSO>+#<CATETO>+#<ZFUND>+#<CATETO>+#<_ZZZ>]
+
+
+
+O<555>ENDIF
+O<444>ENDIF
+O<333>ENDIF
+O<222>ENDIF
+O<111>ENDIF
+
+G01 X[#<_diam_ext>+#<_recuo>]
+
+o1234endsub

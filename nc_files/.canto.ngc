@@ -1,0 +1,225 @@
+(info: Canto)
+o<.canto> sub
+
+#<DIAM>=#1      (=50 DIAMETRO)
+#<POS_Z>=#2    (=0 POS EM Z)
+#<canto>=#3    (=2 CANTO +=CHANFRO -=RAIO)
+#<ANGULO>=#4    (=45 ANGULO )
+#<SAIDA>=#5  (=0.25 SAIDA)
+#<RECUO_Z>=#6   (=2 RECUO Z)
+#<IN_EXT>=#7   (=1 EXT=1 INT=2)
+#<vcc>=#8   (=0 VCC)
+#<RPM>=#9   (=1500 RPM)
+#<f_acab>=#10   (=0.15 AVANÇO ACAB)
+#<PONTO_TROCA_X>=#11  (=200 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=#12  (=100 PONTO DE TROCA Z)
+#<TOOL>=#13  (=0 NUMERO DA FERRAMENTA)
+#<final_pt>=#14   (=3 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+
+O<G94>IF[#<f_acab>GT1]
+G94
+O<G94>ELSE
+G95
+O<G94>ENDIF
+
+
+
+O<TROCA>IF[#<TOOL>GT0]
+G43H#<TOOL>
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+T[#<TOOL>]M6G43
+O<TROCA>ENDIF
+
+
+o<m3>if[#<RPM>lt0]
+
+O<RPM>IF[abs[#<vcc>]EQ0]
+G97S[abs[#<RPM>]]M4
+O<RPM>ENDIF
+
+O<VCC>IF[abs[#<vcc>]GT0]
+G96S[abs[#<vcc>]]D[abs[#<RPM>]]M4
+O<VCC>ENDIF
+
+o<m3>else
+
+
+O<RPM>IF[abs[#<vcc>]EQ0]
+G97S[abs[#<RPM>]]M3
+O<RPM>ENDIF
+
+O<VCC>IF[abs[#<vcc>]GT0]
+G96S[abs[#<vcc>]]D[abs[#<RPM>]]M3
+O<VCC>ENDIF
+
+
+o<m3>endif
+
+
+
+
+M8
+
+O<RAIO_CHANFRO>IF[#<canto>GT0]
+
+
+#<CATETO>=[TAN[#<ANGULO>]*#<canto>]
+
+
+o<esquerdo>if[#<DIAM>gt0]
+
+
+O<EXT>IF[#<IN_EXT>EQ1]
+
+G00 X[#<DIAM>-[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+X#<DIAM> Z[#<POS_Z>-#<CATETO>]
+X[#<DIAM>+#<SAIDA>]Z[#<POS_Z>-#<CATETO>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT>ELSE
+
+
+G00 X[#<DIAM>+[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+X#<DIAM> Z[#<POS_Z>-#<CATETO>]
+X[#<DIAM>-#<SAIDA>]Z[#<POS_Z>-#<CATETO>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT>ENDIF
+
+
+o<esquerdo>else
+
+
+
+O<EXT4>IF[#<IN_EXT>EQ1]
+
+G00 X[#<DIAM>+[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+X#<DIAM> Z[#<POS_Z>-#<CATETO>]
+X[#<DIAM>-#<SAIDA>]Z[#<POS_Z>-#<CATETO>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT4>ELSE
+
+
+G00 X[#<DIAM>-[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+X#<DIAM> Z[#<POS_Z>-#<CATETO>]
+X[#<DIAM>+#<SAIDA>]Z[#<POS_Z>-#<CATETO>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT4>ENDIF
+
+
+o<esquerdo>endif
+
+
+O<RAIO_CHANFRO>ELSE
+
+#<canto>=ABS[#<canto>]
+
+o<esquerdo1>if[#<DIAM>gt0]
+
+
+O<EXT1>IF[#<IN_EXT>EQ1]
+
+
+
+G00 X[#<DIAM>-[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+G03X#<DIAM> Z[#<POS_Z>-#<canto>]R#<canto>
+G01X[#<DIAM>+#<SAIDA>]Z[#<POS_Z>-#<canto>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT1>ELSE
+
+
+G00 X[#<DIAM>+[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+G02X#<DIAM> Z[#<POS_Z>-#<canto>]R#<canto>
+G01X[#<DIAM>-#<SAIDA>]Z[#<POS_Z>-#<canto>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT1>ENDIF
+
+
+o<esquerdo1>else
+
+
+
+O<EXT2>IF[#<IN_EXT>EQ1]
+
+G00 X[#<DIAM>+[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+G02X#<DIAM> Z[#<POS_Z>-#<canto>]R#<canto>
+G01X[#<DIAM>-#<SAIDA>]Z[#<POS_Z>-#<canto>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT2>ELSE
+
+
+G00 X[#<DIAM>-[#<canto>*2]]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+G01 Z#<POS_Z> F#<f_acab>
+G03X#<DIAM> Z[#<POS_Z>-#<canto>]R#<canto>
+G01X[#<DIAM>+#<SAIDA>]Z[#<POS_Z>-#<canto>-#<SAIDA>]
+G00 Z[#<POS_Z>+#<RECUO_Z>]
+
+O<EXT2>ENDIF
+
+
+o<esquerdo1>endif
+
+
+
+
+
+
+
+
+
+
+
+O<RAIO_CHANFRO>ENDIF
+
+O<TROCA_FIM>IF[#<final_pt>NE0]
+
+O<AMBOS>IF[#<final_pt>EQ3]
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+O<AMBOS>ENDIF
+
+O<XZ>IF[#<final_pt>EQ1]
+G00G90X#<PONTO_TROCA_X>
+Z#<PONTO_TROCA_Z>
+O<XZ>ENDIF
+
+O<ZX>IF[#<final_pt>EQ2]
+G00G90Z#<PONTO_TROCA_Z>
+X#<PONTO_TROCA_X>
+O<ZX>ENDIF
+
+O<TROCA_FIM>ENDIF
+
+
+
+
+
+o<.canto> endsub
+

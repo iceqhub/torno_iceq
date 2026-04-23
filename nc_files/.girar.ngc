@@ -1,0 +1,53 @@
+O<.girar>SUB
+
+
+
+o<erro5>if[#1eq0]
+(DEBUG,ERRO FERRAMENTA CHAMADA 0)
+G4P9999
+o<erro5>endif
+
+O<GIRA>IF[#<_hal[carousel.0.current-position]>ne#1]
+;;(DEBUG,GIRANDO PARA #1)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GIRAR-CARROCEL;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;determina giro;;;;;;;;;;;;;
+m68e4q#1
+g4p.2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;ativa carrocel;;;;;;;;;;;;
+m64p8
+g4p.2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;aguarda girar;;;;;;;;;;;;;
+G4P1
+m66 p8 l3 q15
+o<erro>if[#5399eq-1]
+(msg,Erro no Carrocel)
+o<tool_change> endsub
+o<erro>endif
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;desativa carrocel;;;;;;;;;;;;
+g4p.1
+g4p.1
+m65p8
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+O<GIRA>ENDIF
+
+#<_primeira_troca>=0
+
+
+
+
+
+
+O<.girar>ENDSUB

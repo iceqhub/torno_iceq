@@ -1,0 +1,38 @@
+(ngcgui: FEATURE 240508:12.27.27)
+(ngcgui: files: </home/cnc/linuxcnc/nc_files/.ngcgui_start.ngc /home/cnc/linuxcnc/nc_files/.canal_diam.ngc /home/cnc/linuxcnc/nc_files/.ngcgui_FIN.ngc>)
+(ngcgui: feature line added) #<_feature:> = 0
+(ngcgui: remaining_features line added) #<_remaining_features:> = 0
+(ngcgui: preamble file: /home/cnc/linuxcnc/nc_files/.ngcgui_start.ngc)
+g18 g21 g40 g90 g95 g54 g7
+g64 p0.02
+(ngcgui: call subroutine file: /home/cnc/linuxcnc/nc_files/.canal_diam.ngc)
+(ngcgui: positional parameters:)
+(         #1 =     diam_ini =         27.9)
+(         #2 =     diam_fin =         29.8)
+(         #3 =      largura =          1.5)
+(         #4 =       angulo =            0)
+(         #5 =        pos_z =         -9.3)
+(         #6 =         beda =          1.5)
+(         #7 =    passe_lat =          2.5)
+(         #8 =      chanfro =            0)
+(         #9 =        sob_x =          0.1)
+(        #10 =        sob_z =          0.5)
+(        #11 =     so_acaba =            1)
+(        #12 =   sobre_pass =            1)
+(        #13 =    passada_x =            3)
+(        #14 =        ordem =            0)
+(        #15 =            f =         0.05)
+(        #16 =       f_acab =         0.03)
+(        #17 =        tempo =          0.0)
+(        #18 =          vcc =          130)
+(        #19 =          rpm =          500)
+(        #20 =       afasta =          0.5)
+(        #21 = ponto_troca_x =         27.9)
+(        #22 = ponto_troca_z =           40)
+(        #23 =         tool =            1)
+(        #24 =           m8 =            8)
+(        #25 =     final_pt =            2)
+o<.canal_diam> call [27.9][29.8][1.5][0][-9.3][1.5][2.5][0][0.1][0.5][1][1][3][0][0.05][0.03][0.0][130][500][0.5][27.9][40][1][8][2]
+(ngcgui: postamble file: /home/cnc/linuxcnc/nc_files/.ngcgui_FIN.ngc)
+
+(ngcgui: m2 line added) m2 (g54 activated)

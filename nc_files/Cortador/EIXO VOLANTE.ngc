@@ -1,0 +1,37 @@
+(ngcgui: FEATURE 251001:06.41.19)
+(ngcgui: files: </home/cnc/linuxcnc/nc_files/.ngcgui_start.ngc /home/cnc/linuxcnc/nc_files/.externo.ngc /home/cnc/linuxcnc/nc_files/.ngcgui_FIN.ngc>)
+(ngcgui: feature line added) #<_feature:> = 0
+(ngcgui: remaining_features line added) #<_remaining_features:> = 0
+(ngcgui: preamble file: /home/cnc/linuxcnc/nc_files/.ngcgui_start.ngc)
+g18 g21 g40 g90 g95 g54 g7
+g64 p0.02
+(ngcgui: call subroutine file: /home/cnc/linuxcnc/nc_files/.externo.ngc)
+(ngcgui: positional parameters:)
+(         #1 =     diam_ini =         14.5)
+(         #2 =    diam_fina =         11.8)
+(         #3 =      passada =          0.4)
+(         #4 =       prof_z =         -7.5)
+(         #5 =   raio_fundo =            0)
+(         #6 =      chanfro =            0)
+(         #7 =        z_ini =            1)
+(         #8 =      recuo_z =            2)
+(         #9 =      sobre_x =          0.1)
+(        #10 =      sobre_z =         0.15)
+(        #11 =         coni =         0.00)
+(        #12 =        acaba =            1)
+(        #13 =        canto =            2)
+(        #14 =        f_dsb =          0.2)
+(        #15 =       f_acab =         0.15)
+(        #16 =          vcc =           90)
+(        #17 =          rpm =          900)
+(        #18 = ponto_troca_x =            2)
+(        #19 = ponto_troca_z =           50)
+(        #20 =         tool =            1)
+(        #21 =           m8 =            8)
+(        #22 =      recuo_x =            2)
+(        #23 =        facea =            0)
+(        #24 =     final_pt =            3)
+o<.externo> call [14.5][11.8][0.4][-7.5][0][0][1][2][0.1][0.15][0.00][1][2][0.2][0.15][90][900][2][50][1][8][2][0][3]
+(ngcgui: postamble file: /home/cnc/linuxcnc/nc_files/.ngcgui_FIN.ngc)
+
+(ngcgui: m2 line added) m2 (g54 activated)

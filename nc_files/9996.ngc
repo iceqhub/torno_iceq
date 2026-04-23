@@ -1,0 +1,15 @@
+o9996sub
+
+
+
+;;;;;;;externo g71;;;;;perfil frontal base padrao 140;;;;;;;;;;;;
+
+G00x43z5
+G01Z0
+x50z-4
+x132
+x139.83z-7.5
+
+
+
+o9996endsub

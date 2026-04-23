@@ -1,0 +1,21 @@
+o9993sub
+
+
+;;;;;;;externo g71;;;;;perfil traseiro canto base de corte;;;;;;;;;;;;
+
+
+G00X120z2
+G01Z0
+X125z-2.5
+z-2.9
+
+
+;;;G00X120z2;;;
+;;;G01Z0;;;
+;;;X128z-4;;;
+
+
+
+
+
+o9993endsub

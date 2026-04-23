@@ -1,0 +1,147 @@
+(info: Rosca Sem Fim)
+;o<.sem_fim> sub
+
+#<diam_ini>=#1      (=50 DIAM. INICIAL)
+#<diam_fina>=#2    (=40 DIAM. FINAL)
+#<passada>=#3    (=0.25 PASSADA )
+#<z_inic>=#4  (=-30 Z INICIAL ABS)
+#<z_final>=#5  (=-60 Z FINAL ABS)
+#<recuo_z>=#6   (=5 AFAST INIC Z)
+#<passo>=#7   (=15 PASSO DA ROSCA)
+#<bedame>=#8   (=3 ESP DO BEDAME)
+#<passe_lat>=#9   (=2.5 PASSE LATERAL)
+#<largura>=#10   (=15 LARGURA INICIAL FILETE)
+#<angulo>=#11   (=10 ANGULO DO FILETE)
+#<RPM>=#12   (=100 RPM)
+#<afasta>=#13  (=2 RECUO EM X CICLO)
+#<PONTO_TROCA_X>=#14  (=150 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=#15  (=150 PONTO DE TROCA Z)
+#<TOOL>=#16  (=0 NUMERO DA FERRAMENTA)
+#<M8>=#17  (=8 OLEO SOLUVEL 9 DESLIGA)
+#<final_pt>=#18   (=3 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+#<tempo_rpm>=#19   (=0.0 TEMPO ESPERA ATINGIR RPM)
+
+
+#<diam_ini>=28     (=50 DIAM. INICIAL)
+#<diam_fina>=10.5    (=40 DIAM. FINAL)
+#<passada>=2    (=0.25 PASSADA )
+#<z_inic>=-0  (=-30 Z INICIAL ABS)
+#<z_final>=-40  (=-60 Z FINAL ABS)
+#<recuo_z>=0   (=5 AFAST INIC Z)
+#<passo>=20   (=15 PASSO DA ROSCA)
+#<bedame>=3   (=4 ESP DO BEDAME)
+#<passe_lat>=1.   (=2.5 PASSE LATERAL)
+#<largura_ini>=10   (=15 LARGURA INICIAL FILETE)
+#<angulo>=10   (=10 ANGULO DO FILETE)
+#<RPM>=130   (=100 RPM)
+#<afasta>=2  (=2 RECUO EM X CICLO)
+#<PONTO_TROCA_X>=150  (=150 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=150  (=150 PONTO DE TROCA Z)
+#<TOOL>=0  (=0 NUMERO DA FERRAMENTA)
+#<M8>=9  (=8 OLEO SOLUVEL 9 DESLIGA)
+#<final_pt>=3   (=3 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+#<tempo_rpm>=0   (=0.0 TEMPO ESPERA ATINGIR RPM)
+
+
+
+
+
+O<TROCA>IF[#<TOOL>GT0]
+G43H#<TOOL>
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+T[#<TOOL>]M6G43
+O<TROCA>ENDIF
+
+
+M#<M8>
+
+G97S#<RPM>M3
+
+G4P#<tempo_rpm>
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AJUSTE DIAMETRO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#<TOTAL>=[#<diam_ini>-#<diam_fina>]
+#<NUM_D_PASS>=ROUND[#<TOTAL>/#<passada>]
+#<passada>=[#<TOTAL>/#<NUM_D_PASS>]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#<diam_corte>=[#<diam_ini>-#<passada>]
+#<passada_calc>=[#<passada>]
+
+o<prof>while[#<diam_corte>ge#<diam_fina>]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CALCULO PASSES LATERAIS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#<cat_op>=[tan[#<angulo>]*#<passada_calc>]
+
+#<largura>=[#<largura_ini>-#<cat_op>-#<cat_op>]
+#<LARG_NOMI>=[#<largura>-#<bedame>]
+#<LARG_NOMI>=[[fix[#<LARG_NOMI>*10000]]/10000]
+
+
+o<zero>if[#<LARG_NOMI>le0]
+#<LARG_NOMI>=[#<bedame>+0.001]
+#<QNT_PASS>=1
+#<passe_lat>=#<LARG_NOMI>
+#<passe_lat>=[[fix[#<passe_lat>*10000]]/10000]
+
+o<zero>else
+#<QNT_PASS>=ROUND[#<LARG_NOMI>/#<passe_lat>]
+#<passe_lat>=[#<LARG_NOMI>/#<QNT_PASS>]
+#<passe_lat>=[[fix[#<passe_lat>*10000]]/10000]
+o<zero>endif
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+#<pass_lat_atua>=[#<passe_lat>-#<passe_lat>]
+
+G00 G90 Z[#<z_inic>+#<recuo_z>-#<cat_op>]
+G00 G90 X#<diam_corte>
+
+o<laterais>while[#<pass_lat_atua>le#<LARG_NOMI>]
+
+#<pass_lat_atua>=[#<pass_lat_atua>+#<passe_lat>]
+
+G00 G90 X#<diam_corte>
+G33 K#<passo> Z#<z_final>
+;g94
+;G01 F1000 Z#<z_final>
+g4p.8
+G00 X[#<diam_ini>+#<afasta>]
+G00 G90 Z[#<z_inic>+#<recuo_z>-#<pass_lat_atua>-#<cat_op>]
+
+
+o<laterais>endwhile
+
+#<passada_calc>=[#<passada_calc>+#<passada>]
+#<diam_corte>=[#<diam_corte>-#<passada>]
+
+o<prof>endwhile
+
+
+
+
+
+O<TROCA_FIM>IF[#<final_pt>NE0]
+
+O<AMBOS>IF[#<final_pt>EQ3]
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+O<AMBOS>ENDIF
+
+O<XZ>IF[#<final_pt>EQ1]
+G00G90X#<PONTO_TROCA_X>
+Z#<PONTO_TROCA_Z>
+O<XZ>ENDIF
+
+O<ZX>IF[#<final_pt>EQ2]
+G00G90Z#<PONTO_TROCA_Z>
+X#<PONTO_TROCA_X>
+O<ZX>ENDIF
+
+O<TROCA_FIM>ENDIF
+
+
+
+
+;o<.sem_fim> endsub
+M30

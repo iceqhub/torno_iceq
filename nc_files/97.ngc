@@ -1,0 +1,10 @@
+o97sub
+
+;;;;;;;interno g71;;;;;perfil frontal base padrao 112,7;;;;;;;;;;;;
+
+G00x104z2
+G01Z0
+x112.71z-7
+
+
+o97endsub

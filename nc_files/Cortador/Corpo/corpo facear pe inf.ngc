@@ -1,0 +1,52 @@
+g0g21g90g54
+
+;riscar a peça, mover z -0.2 para dentro e zera o z em z2, peça termina na media entre menor 15.4 maior 17.0
+
+s213 f70 m3
+;aproxima do z2 x270 em g0
+g0 z2 x270
+;USINA em z2
+g1 x10 f70
+;recuar para z3
+g0 z3
+;recua para x 270
+g0 x270
+;aproxima em z1.5
+g0 z1.5
+
+;USINA em z1.5
+g1 x10 f70
+;recuar para z2.5
+g0 z2.5
+;recua para x 270
+g0 x270
+;aproxima em z1
+g0 z1.0
+
+;USINA em z1
+g1 x10 f70
+;recuar para z2
+g0 z2
+;recua para x270
+g0 x270
+;aproxima em z0.5
+g0 z0.5
+
+;USINA em z0.5
+g1 x10 f70
+;recuar para z1.5
+g0 z1.5
+;recua para x270
+g0 x270
+;aproxima em z0
+g0 z0
+
+;USINA em z0
+g1 x10 f70
+;recua em z30 FIM
+g0 z50
+;recua para x270 FIM
+g0 x270
+
+m30
+

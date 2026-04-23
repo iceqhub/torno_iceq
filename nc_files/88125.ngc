@@ -1,0 +1,12 @@
+o88125sub
+
+;;;;;;;interno g71;;;;;perfil frontal base padrao 125;;;;;;;;;;;;
+
+G00x43z2
+G01Z0
+x50z-4
+x117
+x125z-7
+
+
+o88125endsub

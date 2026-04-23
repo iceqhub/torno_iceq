@@ -1,0 +1,15 @@
+o9994sub
+
+
+;;;;;;;externo g71;;;;;perfil frontal rebaixo base de corte;;;;;;;;;;;;
+
+G00X-1z2
+G01Z0
+z-0.5
+X100
+
+
+
+
+
+o9994endsub

@@ -1,0 +1,107 @@
+(info: CUT OFF)
+o<.cutoff> sub
+
+#<diam_ini>=#1  (=50 DIAM INI)
+#<diam_fin>=#2   (=-1 DIAM FINAL)
+#<COMP>=#3   (=5 COMPRIMENTO)
+#<BEDA>=#4   (=3 ESP BEDAME)
+#<chanfro>=#5    (=2 CHANFRO)
+#<f>=#6   (=0.05 AVANÇO DSB)
+#<vcc>=#7   (=200 VCC)
+#<RPM>=#8   (=1500 RPM)
+#<afasta>=#9  (=2 RECUO EM X CICLO)
+#<PONTO_TROCA_X>=#10  (=200 PONTO DE TROCA X)
+#<PONTO_TROCA_Z>=#11  (=100 PONTO DE TROCA Z)
+#<TOOL>=#12  (=6 NUMERO DA FERRAMENTA)
+#<M8>=#13  (=8 OLEO SOLUVEL 9 DESLIGA)
+#<final_pt>=#14   (=1 FINAL PONTO DE TROCA 0=NAO 1=XZ 2=ZX 3=JUNTOS)
+
+O<G94>IF[#<f>GT1]
+G94
+O<G94>ELSE
+G95
+O<G94>ENDIF
+
+O<TROCA>IF[#<TOOL>GT0]
+G43H#<TOOL>
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+T[#<TOOL>]M6G43
+O<TROCA>ENDIF
+
+
+O<RPM>IF[#<vcc>EQ0]
+G97S#<RPM>M3
+O<RPM>ENDIF
+
+O<VCC>IF[#<vcc>GT0]
+G96S#<vcc>D#<RPM>M3
+O<VCC>ENDIF
+
+M#<M8>
+
+
+
+o<esquerdo>if[#<diam_ini>gt0]
+
+
+
+
+G0G90X[#<diam_ini>+#<afasta>]
+Z-[#<COMP>+#<BEDA>]
+G01F#<f>X[#<diam_ini>-[#<chanfro>*2]]
+G00X[#<diam_ini>+#<afasta>]
+Z-[[#<COMP>+#<BEDA>]-#<chanfro>]
+G01F#<f>X[#<diam_ini>]
+X[#<diam_ini>-[#<chanfro>*2]]Z-[#<COMP>+#<BEDA>]
+X#<diam_fin>
+G00X[#<diam_ini>+#<afasta>]
+
+
+o<esquerdo>else
+
+
+
+G0G90X[#<diam_ini>-#<afasta>]
+Z-[#<COMP>+#<BEDA>]
+G01F#<f>X[#<diam_ini>+[#<chanfro>*2]]
+G00X[#<diam_ini>-#<afasta>]
+Z-[[#<COMP>+#<BEDA>]-#<chanfro>]
+G01F#<f>X[#<diam_ini>]
+X[#<diam_ini>+[#<chanfro>*2]]Z-[#<COMP>+#<BEDA>]
+X#<diam_fin>
+G00X[#<diam_ini>-#<afasta>]
+
+
+
+
+
+
+
+o<esquerdo>endif
+
+
+O<TROCA_FIM>IF[#<final_pt>NE0]
+
+O<AMBOS>IF[#<final_pt>EQ3]
+G00G90X#<PONTO_TROCA_X>Z#<PONTO_TROCA_Z>
+O<AMBOS>ENDIF
+
+O<XZ>IF[#<final_pt>EQ1]
+G00G90X#<PONTO_TROCA_X>
+Z#<PONTO_TROCA_Z>
+O<XZ>ENDIF
+
+O<ZX>IF[#<final_pt>EQ2]
+G00G90Z#<PONTO_TROCA_Z>
+X#<PONTO_TROCA_X>
+O<ZX>ENDIF
+
+O<TROCA_FIM>ENDIF
+
+
+
+
+
+o<.cutoff> endsub
+
+

@@ -1,0 +1,32 @@
+(ngcgui: FEATURE 241004:12.12.23)
+(ngcgui: files: </home/cnc/linuxcnc/nc_files/.ngcgui_start.ngc /home/cnc/linuxcnc/nc_files/.perfil.ngc /home/cnc/linuxcnc/nc_files/.ngcgui_FIN.ngc>)
+(ngcgui: feature line added) #<_feature:> = 0
+(ngcgui: remaining_features line added) #<_remaining_features:> = 0
+(ngcgui: preamble file: /home/cnc/linuxcnc/nc_files/.ngcgui_start.ngc)
+g18 g21 g40 g90 g95 g54 g7
+g64 p0.02
+(ngcgui: call subroutine file: /home/cnc/linuxcnc/nc_files/.perfil.ngc)
+(ngcgui: positional parameters:)
+(         #1 =     diam_ini =       112.67)
+(         #2 =     zinicial =            2)
+(         #3 =   incremento =         0.35)
+(         #4 =   sobremetal =          0.1)
+(         #5 =        recuo =            2)
+(         #6 =          vcc =          180)
+(         #7 =          rpm =         1300)
+(         #8 =        f_dsb =         0.15)
+(         #9 =       f_acab =         0.15)
+(        #10 =        acaba =            1)
+(        #11 =      qt_acab =            1)
+(        #12 =     sob_acab =         0.05)
+(        #13 = ponto_troca_x =          113)
+(        #14 = ponto_troca_z =           40)
+(        #15 =         tool =            1)
+(        #16 =           m8 =            8)
+(        #17 =     final_pt =            1)
+(        #18 =      num_sub =         9998)
+(        #19 =          g71 =           71)
+o<.perfil> call [112.67][2][0.35][0.1][2][180][1300][0.15][0.15][1][1][0.05][113][40][1][8][1][9998][71]
+(ngcgui: postamble file: /home/cnc/linuxcnc/nc_files/.ngcgui_FIN.ngc)
+
+(ngcgui: m2 line added) m2 (g54 activated)
