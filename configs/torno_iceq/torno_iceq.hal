@@ -360,12 +360,14 @@ net coolant-flood     <=  iocontrol.0.coolant-flood
 
 # --- TURRET / TOOLCHANGE ---
 # Solenoide torre (P6)
-net turret-lock <= motion.digital-out-06
-net turret-lock => hm2_7i96s.0.gpio.025.out
+#net turret-lock <= motion.digital-out-06
+#net turret-lock => hm2_7i96s.0.gpio.025.out
+net turret-lock   <= motion.digital-out-06  =>  hm2_7i96s.0.ssr.00.out-00
+net turret-enable <= motion.digital-out-07  =>  hm2_7i96s.0.ssr.00.out-01
 
 # Enable drive torre (P7)
-net turret-enable <= motion.digital-out-07
-net turret-enable => hm2_7i96s.0.gpio.026.out
+#net turret-enable <= motion.digital-out-07
+#net turret-enable => hm2_7i96s.0.gpio.026.out
 
 
 # --- Probe ---
