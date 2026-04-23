@@ -50,7 +50,7 @@ net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
 # TEMPORIZADOR DE CICLO
 # ============================================================
 # not.0 já carregado no torno_iceq.hal
-net cycle-timer    time.0.start   <=  not.0.out
+net prog-not-paused    time.0.start
 net cycle-seconds  pyvcp.time-seconds  <=  time.0.seconds
 net cycle-minutes  pyvcp.time-minutes  <=  time.0.minutes
 net cycle-hours    pyvcp.time-hours    <=  time.0.hours
