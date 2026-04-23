@@ -1,637 +1,249 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <pyvcp>
 
-
 <tabs>
     <names>["Geral", "Tempo e Contador", "Limites", "Manutencao"]</names>
     <vbox> <!-- Geral -->
 
-
+<!-- RPM: max ajustado para 1500 conforme relação de polia do servo -->
 <labelframe text="RPM">
 <font>("Helvetica",10)</font>
-                <bar>
-                        <halpin>"spindle-speed"</halpin>
-                        <max_>3500</max_>
-                </bar>
-<hbox>
-                <label>
-                        <text>"RPM OK:"</text>
-                        <font>("Helvetica",10)</font>
-                </label>
-               
-                    <led>
-                        <halpin>"spindle-at-speed-led"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"red"</off_color>
-                    </led>
-  </hbox>      
-<labelframe text="GAMA-ALAVANCAS-EM:">
-<font>("Helvetica",10)</font>
-                <radiobutton>
-                    <choices>["A","B","C"]</choices>
-                    <halpin>"gama"</halpin>        
-                    <initval>1</initval>  
-                    <orient>HORIZONTAL</orient>
-                </radiobutton>
-
-  </labelframe>
-  </labelframe>
-
-
-
-
-
-
-
+    <bar>
+        <halpin>"spindle-speed"</halpin>
+        <max_>1500</max_>
+    </bar>
+    <hbox>
+        <label>
+            <text>"RPM OK:"</text>
+            <font>("Helvetica",10)</font>
+        </label>
+        <led>
+            <halpin>"spindle-at-speed-led"</halpin>
+            <size>15</size>
+            <on_color>"green"</on_color>
+            <off_color>"red"</off_color>
+        </led>
+    </hbox>
+<!-- GAMA removido: servo motor não precisa de troca de faixa -->
+</labelframe>
 
 <labelframe text="Eixo Selecionado">
 <font>("Helvetica",10)</font>
-
     <hbox>
-                <label>
-                        <text>"X"</text>
-                        <font>("Helvetica",8)</font>
-                </label>
-
-                    <led>
-                        <halpin>"LED-SEL-X"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"black"</off_color>
-                    </led>
-
-                <label>
-                        <text>"Z"</text>
-                        <font>("Helvetica",8)</font>
-                </label>
-
-                    <led>
-                        <halpin>"LED-SEL-Z"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"black"</off_color>
-                    </led>
-                <label>
-                        <text>"OFF"</text>
-                        <font>("Helvetica",8)</font>
-                </label>
-
-
-                    <led>
-                        <halpin>"LED-SEL-OFF"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"black"</off_color>
-                    </led>
-
-
+        <label>
+            <text>"X"</text>
+            <font>("Helvetica",8)</font>
+        </label>
+        <led>
+            <halpin>"LED-SEL-X"</halpin>
+            <size>15</size>
+            <on_color>"green"</on_color>
+            <off_color>"black"</off_color>
+        </led>
+        <label>
+            <text>"Z"</text>
+            <font>("Helvetica",8)</font>
+        </label>
+        <led>
+            <halpin>"LED-SEL-Z"</halpin>
+            <size>15</size>
+            <on_color>"green"</on_color>
+            <off_color>"black"</off_color>
+        </led>
+        <label>
+            <text>"OFF"</text>
+            <font>("Helvetica",8)</font>
+        </label>
+        <led>
+            <halpin>"LED-SEL-OFF"</halpin>
+            <size>15</size>
+            <on_color>"green"</on_color>
+            <off_color>"black"</off_color>
+        </led>
     </hbox>
-
-
-  </labelframe>
-
- 
-
-
+</labelframe>
 
 <labelframe text="Troca Ferramenta">
 <font>("Helvetica",10)</font>
     <hbox>
-      <button>
-      <halpin>"tool-1"</halpin>
-      <text>"T01"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-2"</halpin>
-      <text>"T02"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-3"</halpin>
-      <text>"T03"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-4"</halpin>
-      <text>"T04"</text>
-      <bd>3</bd>
-      </button>
+        <button><halpin>"tool-1"</halpin><text>"T01"</text><bd>3</bd></button>
+        <button><halpin>"tool-2"</halpin><text>"T02"</text><bd>3</bd></button>
+        <button><halpin>"tool-3"</halpin><text>"T03"</text><bd>3</bd></button>
+        <button><halpin>"tool-4"</halpin><text>"T04"</text><bd>3</bd></button>
     </hbox>
-
     <hbox>
-      <button>
-      <halpin>"tool-5"</halpin>
-      <text>"T05"</text>
-      <bd>3</bd>
-      </button>
-
-      <button>
-      <halpin>"tool-6"</halpin>
-      <text>"T06"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-7"</halpin>
-      <text>"T07"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-8"</halpin>
-      <text>"T08"</text>
-      <bd>3</bd>
-      </button>
+        <button><halpin>"tool-5"</halpin><text>"T05"</text><bd>3</bd></button>
+        <button><halpin>"tool-6"</halpin><text>"T06"</text><bd>3</bd></button>
+        <button><halpin>"tool-7"</halpin><text>"T07"</text><bd>3</bd></button>
+        <button><halpin>"tool-8"</halpin><text>"T08"</text><bd>3</bd></button>
     </hbox>
-
-
-<hbox>
-      <button>
-      <halpin>"tool-9"</halpin>
-      <text>"T09"</text>
-      <bd>3</bd>
-      </button>
-
-      <button>
-      <halpin>"tool-10"</halpin>
-      <text>"T10"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-11"</halpin>
-      <text>"T11"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-12"</halpin>
-      <text>"T12"</text>
-      <bd>3</bd>
-      </button>
-    </hbox>
-
-
-<hbox>
-      <button>
-      <halpin>"tool-13"</halpin>
-      <text>"T13"</text>
-      <bd>3</bd>
-      </button>
-
-      <button>
-      <halpin>"tool-14"</halpin>
-      <text>"T14"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-15"</halpin>
-      <text>"T15"</text>
-      <bd>3</bd>
-      </button>
-      <button>
-      <halpin>"tool-16"</halpin>
-      <text>"T16"</text>
-      <bd>3</bd>
-      </button>
-    </hbox>
-
-
-<labelframe text="Ferramenta Ativa">
-<font>("Helvetica",10)</font>
     <hbox>
-     <s32>
-        <halpin>"tool-number"</halpin>
-        <font>("Helvetica",10)</font>
-        <format>"2d"</format>
-        <width>2</width>
-      </s32>
+        <button><halpin>"tool-9"</halpin><text>"T09"</text><bd>3</bd></button>
+        <button><halpin>"tool-10"</halpin><text>"T10"</text><bd>3</bd></button>
+        <button><halpin>"tool-11"</halpin><text>"T11"</text><bd>3</bd></button>
+        <button><halpin>"tool-12"</halpin><text>"T12"</text><bd>3</bd></button>
     </hbox>
-  </labelframe>
-
-
-  </labelframe>
-
-
-
-<hbox>
-<label>
-<text>"Tempo Ciclo"</text>
-<font>("Helvetica",12)</font>
-</label>
-<u32>
-<halpin>"time-hours"</halpin>
-<font>("Helvetica",12)</font>
-<format>"2d"</format>
-</u32>
-<label>
-<text>":"</text>
-<font>("Helvetica",12)</font>
-</label>
-<u32>
-<halpin>"time-minutes"</halpin>
-<font>("Helvetica",12)</font>
-<format>"2d"</format>
-</u32>
-<label>
-<text>":"</text>
-<font>("Helvetica",12)</font>
-</label>
-<u32>
-<halpin>"time-seconds"</halpin>
-<font>("Helvetica",12)</font>
-<format>"2d"</format>
-</u32>
-</hbox>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<button>
-      <halpin>"seta-x"</halpin>
-      <text>"     SETA-X-EXTERNO  "</text>
-      <bd>8</bd>
-      </button>
-
-      <button>
-      <halpin>"seta-xneg"</halpin>
-      <text>"     SETA-X-INTERNO  "</text>
-      <bd>8</bd>
-      </button>
-
-
-      <button>
-      <halpin>"seta-z"</halpin>
-      <text>"     SETA-Z       "</text>
-      <bd>8</bd>
-      </button>
-
-      <button>
-      <halpin>"seta-z-neg"</halpin>
-      <text>"SETA-Z-NEG-CONTRA-PONTA"</text>
-      <bd>8</bd>
-      </button>
-
-
-      <button>
-      <halpin>"restaura"</halpin>
-      <text>"    RESTAURA      "</text>
-      <bd>8</bd>
-      </button>
-
-
-
-
-<labelframe text="Emergencia">
-<font>("Helvetica",10)</font>
- <vbox>
-
- <hbox>
-
-<led>
-  <halpin>"led-xz"</halpin> 
-  <size>20</size> 
-  <on_color>"green"</on_color>
-  <off_color>"red"</off_color>
-</led>
-<label text="Drivers-X Z SPINDLE"/>
-
-
- </hbox>
-
-
- <hbox>
-<led>
-  <halpin>"led-emg-but"</halpin> 
-  <size>20</size> 
-  <on_color>"red"</on_color>
-  <off_color>"green"</off_color>
-</led>
-<label text="Botao de EMG     "/>
- </hbox>
-
-
- <hbox>
-<led>
-  <halpin>"led-emg-but-mani"</halpin> 
-  <size>20</size> 
-  <on_color>"red"</on_color>
-  <off_color>"green"</off_color>
-</led>
-<label text="Botao de EMG-MPG"/>
- </hbox>
-
-
-
-
-
- </vbox>
-  </labelframe>
-
-
-
-
-
-
-
-
-
-
-
-</vbox>
-
-
-    <vbox> <!-- Tempo e Contador -->
-
-
-
-<vbox>
-         <relief>RIDGE</relief>         
-         <bd>6</bd>
-
-
-<hbox>
-<label>
-<text>"QNT-PECAS"</text>
-<font>("Helvetica",12)</font>
-</label>
-<s32>
-<halpin>"PECAS"</halpin>
-<font>("Helvetica",12)</font>
-<format>"2d"</format>
-</s32>
-</hbox>
-
-
-<button>
-      <halpin>"reset"</halpin>
-      <text>"Seta Contador"</text>
-      <bd>3</bd>
-      </button>
-
-
-<labelframe text="MODO MANUAL">
-<font>("Helvetica",10)</font>
+    <hbox>
+        <button><halpin>"tool-13"</halpin><text>"T13"</text><bd>3</bd></button>
+        <button><halpin>"tool-14"</halpin><text>"T14"</text><bd>3</bd></button>
+        <button><halpin>"tool-15"</halpin><text>"T15"</text><bd>3</bd></button>
+        <button><halpin>"tool-16"</halpin><text>"T16"</text><bd>3</bd></button>
+    </hbox>
+    <labelframe text="Ferramenta Ativa">
+    <font>("Helvetica",10)</font>
+        <hbox>
+            <s32>
+                <halpin>"tool-number"</halpin>
+                <font>("Helvetica",10)</font>
+                <format>"2d"</format>
+                <width>2</width>
+            </s32>
+        </hbox>
+    </labelframe>
 </labelframe>
 
+<hbox>
+    <label><text>"Tempo Ciclo"</text><font>("Helvetica",12)</font></label>
+    <u32><halpin>"time-hours"</halpin><font>("Helvetica",12)</font><format>"2d"</format></u32>
+    <label><text>":"</text><font>("Helvetica",12)</font></label>
+    <u32><halpin>"time-minutes"</halpin><font>("Helvetica",12)</font><format>"2d"</format></u32>
+    <label><text>":"</text><font>("Helvetica",12)</font></label>
+    <u32><halpin>"time-seconds"</halpin><font>("Helvetica",12)</font><format>"2d"</format></u32>
+</hbox>
 
+<button><halpin>"seta-x"</halpin><text>"     SETA-X-EXTERNO  "</text><bd>8</bd></button>
+<button><halpin>"seta-xneg"</halpin><text>"     SETA-X-INTERNO  "</text><bd>8</bd></button>
+<button><halpin>"seta-z"</halpin><text>"     SETA-Z          "</text><bd>8</bd></button>
+<button><halpin>"seta-z-neg"</halpin><text>"SETA-Z-NEG-CONTRA-PONTA"</text><bd>8</bd></button>
+<button><halpin>"restaura"</halpin><text>"    RESTAURA         "</text><bd>8</bd></button>
 
-
-<spinbox>
-<halpin>"preset"</halpin>
-<min_>0</min_>
-<max_>3000</max_>
-<initval>0</initval>
-<resolution>1</resolution>
-<format>"2.0f"</format>
-<font>("Arial",12)</font>
-</spinbox>
-
-
-
-
-
+<!-- EMERGENCIA: led-xz agora cobre X Z SPINDLE C e B (feito via machine-is-enabled) -->
+<!-- led-emg-but-mani removido: MPG não tem botão de emergência -->
+<labelframe text="Emergencia">
+<font>("Helvetica",10)</font>
+    <vbox>
+        <hbox>
+            <led>
+                <halpin>"led-xz"</halpin>
+                <size>20</size>
+                <on_color>"green"</on_color>
+                <off_color>"red"</off_color>
+            </led>
+            <label text="Drivers X Z C B SPINDLE"/>
+        </hbox>
+        <hbox>
+            <led>
+                <halpin>"led-emg-but"</halpin>
+                <size>20</size>
+                <on_color>"red"</on_color>
+                <off_color>"green"</off_color>
+            </led>
+            <label text="Botao de EMG"/>
+        </hbox>
+    </vbox>
+</labelframe>
 
     </vbox>
 
-</vbox>
+    <vbox> <!-- Tempo e Contador -->
+        <vbox>
+            <relief>RIDGE</relief>
+            <bd>6</bd>
+            <hbox>
+                <label><text>"QNT-PECAS"</text><font>("Helvetica",12)</font></label>
+                <s32><halpin>"PECAS"</halpin><font>("Helvetica",12)</font><format>"2d"</format></s32>
+            </hbox>
+            <button><halpin>"reset"</halpin><text>"Seta Contador"</text><bd>3</bd></button>
+            <labelframe text="MODO MANUAL"><font>("Helvetica",10)</font></labelframe>
+            <spinbox>
+                <halpin>"preset"</halpin>
+                <min_>0</min_>
+                <max_>3000</max_>
+                <initval>0</initval>
+                <resolution>1</resolution>
+                <format>"2.0f"</format>
+                <font>("Arial",12)</font>
+            </spinbox>
+        </vbox>
+    </vbox>
 
     <vbox> <!-- Limites -->
-
-<vbox>
-
-
-         <relief>RIDGE</relief>         
-         <bd>6</bd>
-
-      
-
-
-    </vbox>
-
+        <vbox>
+            <relief>RIDGE</relief>
+            <bd>6</bd>
+        </vbox>
     </vbox>
 
     <vbox> <!-- Manutencao -->
 
-<labelframe text="PLACA                    ">
-<font>("Helvetica",10)</font>
-
-    <vbox>
-
-    <hbox>
-      <button>
-      <halpin>"abrir"</halpin>
-      <text>"ABRE                               "</text>
-      <bd>3</bd>
-      </button>
-
-                    <led>
-                        <halpin>"LED-ABRE"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"black"</off_color>
-                    </led>
-    </hbox>
-
-    </vbox>
-
-    <vbox>
-
-    <hbox>
-      <button>
-      <halpin>"fechar"</halpin>
-      <text>"FECHA                             "</text>
-      <bd>3</bd>
-      </button>
-
-                    <led>
-                        <halpin>"LED-FECHA"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"black"</off_color>
-                    </led>
-    </hbox>
-
-    </vbox>
-
-  </labelframe>
-
-
-
-
-<labelframe text="CONTRA-PONTA">
-<font>("Helvetica",10)</font>
-
-    <vbox>
-
-    <hbox>
-      <button>
-      <halpin>"recua"</halpin>
-      <text>"RECUA                               "</text>
-      <bd>3</bd>
-      </button>
-
-                    <led>
-                        <halpin>"LED-RECUA"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"black"</off_color>
-                    </led>
-    </hbox>
-
-    </vbox>
-
-    <vbox>
-
-    <hbox>
-      <button>
-      <halpin>"avanca"</halpin>
-      <text>"AVANCA                             "</text>
-      <bd>3</bd>
-      </button>
-
-                    <led>
-                        <halpin>"LED-AVANCA"</halpin> 
-                        <size>15</size> 
-                        <on_color>"green"</on_color>
-                        <off_color>"black"</off_color>
-                    </led>
-    </hbox>
-
-    </vbox>
-
-    <hbox>
-
-                <label>
-                        <text>" "</text>
-                        <font>("Helvetica",3)</font>
-                </label>
-
-
-    </hbox>
-
-
-  </labelframe>
-
-
-<labelframe text="Adaptive-Feed">
-<font>("Helvetica",10)</font>
-
-
-      <button>
-      <halpin>"ativa"</halpin>
-      <text>"ativa"</text>
-      <bd>3</bd>
-      </button>
-
-      <button>
-      <halpin>"desativa"</halpin>
-      <text>"desativa"</text>
-      <bd>3</bd>
-      </button>
-
-
-  </labelframe>
-
-<labelframe text="POS-Encoder-Torre">
-<font>("Helvetica",10)</font>
-
-    <hbox>
-     <number>
-        <halpin>"pos-encoder"</halpin>
+        <labelframe text="PLACA">
         <font>("Helvetica",10)</font>
-        <format>"2d"</format>
-        <width>4</width>
-      </number>
-    </hbox>  
+            <hbox>
+                <button><halpin>"abrir"</halpin><text>"ABRE"</text><bd>3</bd></button>
+                <led><halpin>"LED-ABRE"</halpin><size>15</size><on_color>"green"</on_color><off_color>"black"</off_color></led>
+            </hbox>
+            <hbox>
+                <button><halpin>"fechar"</halpin><text>"FECHA"</text><bd>3</bd></button>
+                <led><halpin>"LED-FECHA"</halpin><size>15</size><on_color>"green"</on_color><off_color>"black"</off_color></led>
+            </hbox>
+        </labelframe>
 
+        <labelframe text="CONTRA-PONTA">
+        <font>("Helvetica",10)</font>
+            <hbox>
+                <button><halpin>"recua"</halpin><text>"RECUA"</text><bd>3</bd></button>
+                <led><halpin>"LED-RECUA"</halpin><size>15</size><on_color>"green"</on_color><off_color>"black"</off_color></led>
+            </hbox>
+            <hbox>
+                <button><halpin>"avanca"</halpin><text>"AVANCA"</text><bd>3</bd></button>
+                <led><halpin>"LED-AVANCA"</halpin><size>15</size><on_color>"green"</on_color><off_color>"black"</off_color></led>
+            </hbox>
+        </labelframe>
 
-  </labelframe>
+        <labelframe text="Adaptive-Feed">
+        <font>("Helvetica",10)</font>
+            <button><halpin>"ativa"</halpin><text>"ativa"</text><bd>3</bd></button>
+            <button><halpin>"desativa"</halpin><text>"desativa"</text><bd>3</bd></button>
+        </labelframe>
 
-<labelframe text="Solenoide">
-<font>("Helvetica",10)</font>
+        <labelframe text="POS-Encoder-Torre">
+        <font>("Helvetica",10)</font>
+            <hbox>
+                <number>
+                    <halpin>"pos-encoder"</halpin>
+                    <font>("Helvetica",10)</font>
+                    <format>"2d"</format>
+                    <width>4</width>
+                </number>
+            </hbox>
+        </labelframe>
 
- <hbox>
+        <labelframe text="Solenoide">
+        <font>("Helvetica",10)</font>
+            <hbox>
+                <button><halpin>"solenoide"</halpin><text>"Ativa"</text><bd>8</bd></button>
+            </hbox>
+        </labelframe>
 
-      <button>
-      <halpin>"solenoide"</halpin>
-      <text>"Ativa"</text>
-      <bd>8</bd>
-      </button>
+        <labelframe text="Girar-torre">
+        <font>("Helvetica",10)</font>
+            <hbox>
+                <button><halpin>"gira-cw-py"</halpin><text>"CW"</text><bd>8</bd></button>
+            </hbox>
+            <hbox>
+                <button><halpin>"gira-ccw-py"</halpin><text>"CCW"</text><bd>8</bd></button>
+            </hbox>
+        </labelframe>
 
-          </hbox>
-  </labelframe>
-
-
-<labelframe text="Girar-torre">
-<font>("Helvetica",10)</font>
-
- <hbox>
-
-      <button>
-      <halpin>"gira-cw-py"</halpin>
-      <text>"CW"</text>
-      <bd>8</bd>
-      </button>
-
-          </hbox>
-
- <hbox>
-
-      <button>
-      <halpin>"gira-ccw-py"</halpin>
-      <text>"CCW"</text>
-      <bd>8</bd>
-      </button>
-
-          </hbox>
-
-
-  </labelframe>
-
-
-
-<labelframe text="Reset">
-<font>("Helvetica",10)</font>
-
- <hbox>
-
-      <button>
-      <halpin>"resetar"</halpin>
-      <text>"Reset"</text>
-      <bd>8</bd>
-      </button>
-
-          </hbox>
-  </labelframe>
-
-
-
-
-
-
-
-
+        <labelframe text="Reset">
+        <font>("Helvetica",10)</font>
+            <hbox>
+                <button><halpin>"resetar"</halpin><text>"Reset"</text><bd>8</bd></button>
+            </hbox>
+        </labelframe>
 
     </vbox>
-
 
 </tabs>
-
 
 </pyvcp>
