@@ -66,16 +66,16 @@ setp hm2_7i96s.0.stepgen.timer-number 1
 # ============================================================
 
 # --- SPINDLE-ENABLE ---
-net spindle-enable  =>  hm2_7i96s.0.ssr.00.out-00
+#net spindle-enable  =>  hm2_7i96s.0.ssr.00.out-00
 
 # --- SPINDLE-CW ---
-net spindle-cw      =>  hm2_7i96s.0.ssr.00.out-01
+#net spindle-cw      =>  hm2_7i96s.0.ssr.00.out-01
 
 # --- SPINDLE-CCW ---
-net spindle-ccw     =>  hm2_7i96s.0.ssr.00.out-02
+#net spindle-ccw     =>  hm2_7i96s.0.ssr.00.out-02
 
 # --- COOLANT-FLOOD ---
-net coolant-flood   =>  hm2_7i96s.0.ssr.00.out-03
+#net coolant-flood   =>  hm2_7i96s.0.ssr.00.out-03
 
 
 # ============================================================
