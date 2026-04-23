@@ -128,6 +128,7 @@ setp   hm2_7i96s.0.stepgen.00.step_type        0
 setp   hm2_7i96s.0.stepgen.00.control-type     1
 setp   hm2_7i96s.0.stepgen.00.maxaccel         [JOINT_0]STEPGEN_MAXACCEL
 setp   hm2_7i96s.0.stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
+setp   hm2_7i96s.0.stepgen.00.dirinvert true
 
 net x-pos-cmd    <= joint.0.motor-pos-cmd
 net x-vel-cmd    <= joint.0.vel-cmd
