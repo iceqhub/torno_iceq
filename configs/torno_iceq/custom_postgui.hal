@@ -1,45 +1,56 @@
 # custom_postgui.hal — TORNO ICEQ — 7i96S
-# Gerado a partir da migração da porta paralela (ClassicLadder removido)
 # Executado APÓS o painel PyVCP carregar
-# Versão: 1.0
+# Versão: 1.2 — sem conflitos de sinais
+#
+# SINAIS JÁ DEFINIDOS NO torno_iceq.hal (NÃO redefine aqui):
+#   turret-lock     <= motion.digital-out-06 => ssr.00.out-00
+#   turret-enable   <= motion.digital-out-07 => ssr.00.out-01
+#   prog-not-paused <= not.0.out
+#   prog-is-idle    <= halui.program.is-idle
+#   prog-is-running <= halui.program.is-running
+#   prog-is-paused  <= halui.program.is-paused
+#   machine-is-enabled <= motion.motion-enabled
+#   spindle-vel-fb-rps <= encoder.00.velocity
+#   spindle-vel-cmd-rps-abs <= spindle.0.speed-out-rps-abs
+#   spindle-at-speed
+#   estop-ext <= inm.00.input-00
 
-# ============================================================
-# RPM — Leitura do encoder do spindle para o painel PyVCP
-# ============================================================
 loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
 loadrt near count=1
 loadrt time
 
-addf scale.0           servo-thread
-addf scale.1           servo-thread
-addf scale.2           servo-thread
-addf scale.3           servo-thread
-addf scale.4           servo-thread
-addf scale.5           servo-thread
-addf lowpass.0         servo-thread
-addf abs.0             servo-thread
-addf near.0            servo-thread
-addf time.0            servo-thread
-
-# Filtro lowpass + abs + scale para exibir RPM no painel
-setp scale.0.gain 60
-setp lowpass.0.gain 0.100000
-net spindle-vel-fb-rps        =>  lowpass.0.in
-net spindle-fb-filtered-rps   lowpass.0.out  =>  abs.0.in
-net spindle-fb-filtered-abs-rps  abs.0.out   =>  scale.0.in
-net spindle-fb-filtered-abs-rpm  scale.0.out =>  pyvcp.spindle-speed
-
-# Spindle at-speed indicator
-net spindle-vel-cmd-rps-abs    =>  near.0.in1
-net spindle-vel-fb-rps         =>  near.0.in2
-setp near.0.scale 2.0
-net spindle-at-speed           <=  near.0.out
-net spindle-at-speed           =>  pyvcp.spindle-at-speed-led
+addf scale.0    servo-thread
+addf scale.1    servo-thread
+addf scale.2    servo-thread
+addf scale.3    servo-thread
+addf scale.4    servo-thread
+addf scale.5    servo-thread
+addf lowpass.0  servo-thread
+addf abs.0      servo-thread
+addf near.0     servo-thread
+addf time.0     servo-thread
 
 # ============================================================
-# LIMITES DINÂMICOS — exporta limites para analog-out (restaura.ngc)
+# RPM — exibe no painel PyVCP
+# ============================================================
+setp scale.0.gain 60
+setp lowpass.0.gain 0.100000
+net spindle-vel-fb-rps       =>  lowpass.0.in
+net spindle-fb-filtered-rps  lowpass.0.out  =>  abs.0.in
+net spindle-fb-abs-rps       abs.0.out      =>  scale.0.in
+net spindle-fb-abs-rpm       scale.0.out    =>  pyvcp.spindle-speed
+
+# Spindle at-speed indicator
+net spindle-vel-cmd-rps-abs  =>  near.0.in1
+net spindle-vel-fb-rps       =>  near.0.in2
+setp near.0.scale 2.0
+net spindle-at-speed         <=  near.0.out
+net spindle-at-speed         =>  pyvcp.spindle-at-speed-led
+
+# ============================================================
+# LIMITES DINÂMICOS para restaura.ngc
 # ============================================================
 net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
 net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
@@ -48,12 +59,12 @@ net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
 
 # ============================================================
 # TEMPORIZADOR DE CICLO
+# prog-not-paused já definido no torno_iceq.hal
 # ============================================================
-# not.0 já carregado no torno_iceq.hal
-net prog-not-paused    time.0.start
-net cycle-seconds  pyvcp.time-seconds  <=  time.0.seconds
-net cycle-minutes  pyvcp.time-minutes  <=  time.0.minutes
-net cycle-hours    pyvcp.time-hours    <=  time.0.hours
+net prog-not-paused  =>  time.0.start
+net cycle-seconds    pyvcp.time-seconds  <=  time.0.seconds
+net cycle-minutes    pyvcp.time-minutes  <=  time.0.minutes
+net cycle-hours      pyvcp.time-hours    <=  time.0.hours
 
 # ============================================================
 # NÚMERO DA FERRAMENTA ATIVA
@@ -61,14 +72,7 @@ net cycle-hours    pyvcp.time-hours    <=  time.0.hours
 net tool-number  iocontrol.0.tool-number  =>  pyvcp.tool-number
 
 # ============================================================
-# POSIÇÃO ENCODER TORRE
-# ============================================================
-net torre-pos  pyvcp.pos-encoder
-
-# ============================================================
-# BOTÕES DE TROCA DE FERRAMENTA (T01~T16) → MDI commands
-# Indexação: mdi-command-00 a mdi-command-14 = T01~T15
-#            mdi-command-30 = T16
+# BOTÕES DE TROCA DE FERRAMENTA T01~T16
 # ============================================================
 net tool-1   halui.mdi-command-00  <=  pyvcp.tool-1
 net tool-2   halui.mdi-command-01  <=  pyvcp.tool-2
@@ -107,61 +111,32 @@ net cw-py       halui.mdi-command-28  <=  pyvcp.gira-cw-py
 net ccw-py      halui.mdi-command-29  <=  pyvcp.gira-ccw-py
 
 # ============================================================
-# PLACA (ABRE/FECHA) — SSR out-00 e out-01
-# Substituição do parport.0.pin-08/09 da porta paralela
+# LEDs PLACA / CONTRA-PONTA
+# Lê o sinal HAL (não o pino físico) — sem conflito
+# turret-lock e turret-enable já definidos no torno_iceq.hal
 # ============================================================
-# ATENÇÃO: turret-lock e turret-enable já estão no torno_iceq.hal
-# conectados a ssr.00.out-00 e ssr.00.out-01 via motion.digital-out-06/07
-# Os botões do painel disparam via MDI (M64P6 / M65P6)
-# Aqui apenas conectamos os LEDs de feedback:
-net led-ABRE   pyvcp.LED-ABRE   <=  hm2_7i96s.0.ssr.00.out-00
-net led-FECHA  pyvcp.LED-FECHA  <=  hm2_7i96s.0.ssr.00.out-01
+net turret-lock    =>  pyvcp.LED-ABRE
+net turret-enable  =>  pyvcp.LED-FECHA
 
-# ============================================================
-# CONTRA-PONTA (AVANÇA/RECUA) — SSR out-02 e out-03
-# ============================================================
-net led-AVANCA  pyvcp.LED-AVANCA  <=  hm2_7i96s.0.ssr.00.out-02
-net led-RECUA   pyvcp.LED-RECUA   <=  hm2_7i96s.0.ssr.00.out-03
+# LED AVANCA/RECUA (SSR out-02 e out-03 — ainda não usados)
+# Descomentar quando implementar contra-ponta:
+#net contra-avanca  =>  pyvcp.LED-AVANCA
+#net contra-recua   =>  pyvcp.LED-RECUA
 
 # ============================================================
 # LEDs DE STATUS
 # ============================================================
-# LED drivers X/Z/Spindle OK (ligar a sinal de enable ou fault do driver)
-# Por enquanto conecta ao machine-is-enabled como placeholder
-net led-xz     pyvcp.led-xz        <=  motion.motion-enabled
-
-# LED botão emergência físico
-net led-emg-but  pyvcp.led-emg-but  <=  hm2_7i96s.0.inm.00.input-00
-
-# LED emergência MPG (input-05 — ajuste conforme sua fiação)
-#net led-emg-but-mani  pyvcp.led-emg-but-mani  <=  hm2_7i96s.0.inm.00.input-05
-
-# Eixo selecionado (placeholder — conectar ao MPG quando implementado)
-#net led-x   pyvcp.LED-SEL-X   <=  classicladder.0.out-11   # implementar via HAL logic
-#net led-z   pyvcp.LED-SEL-Z   <=  classicladder.0.out-12
-#net led-off pyvcp.LED-SEL-OFF <=  classicladder.0.out-37
+net machine-is-enabled  =>  pyvcp.led-xz
+net estop-ext           =>  pyvcp.led-emg-but
 
 # ============================================================
-# GAMA (seleção de faixa de velocidade via radiobutton PyVCP)
+# GAMA — seleção de faixa de velocidade
 # ============================================================
 net GAMA-HI  pyvcp.gama.C  =>  motion.digital-in-00
 net GAMA-LO  pyvcp.gama.A  =>  motion.digital-in-01
 
 # ============================================================
-# CONTADOR DE PEÇAS
-# ============================================================
-# O contador é gerenciado pelo .conta.ngc
-# pyvcp.PECAS recebe o valor via sinal abaixo (implementar com s32 HAL)
-# net CONTA-PECA  pyvcp.PECAS  <=  motion.digital-out-...
-# Por ora deixar desconectado — implementar com comp counter futuramente
-
-# ============================================================
-# PRESET (spinbox para preset do contador)
-# ============================================================
-# net preset  pyvcp.preset  (sem destino por ora — implementar com contador)
-
-# ============================================================
-# DIGITAL OUTS — exporta para uso nas subrotinas NGC
+# DIGITAL OUTS — disponíveis para subrotinas NGC
 # ============================================================
 net dout-00  <=  motion.digital-out-00
 net dout-01  <=  motion.digital-out-01
@@ -169,8 +144,3 @@ net dout-02  <=  motion.digital-out-02
 net dout-03  <=  motion.digital-out-03
 net dout-04  <=  motion.digital-out-04
 net dout-05  <=  motion.digital-out-05
-
-# ============================================================
-# NOTIFICAÇÕES — limpa alertas do AXIS
-# ============================================================
-# net clear  axisui.notifications-clear  (descomente se necessário)
