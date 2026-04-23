@@ -1,51 +1,33 @@
 o<.m6> sub
 
-
 #<tool> = #<_selected_tool>     (1..16)
 
-
 o<erro2> if [#<tool> GT 16]
-  (msg,Ferramenta Pedida Não Existe)
+  (msg,Ferramenta Pedida Nao Existe)
   G4 P1
   M2
 o<erro2> endif
 o<erro3> if [#<tool> LE 0]
-  (msg,Ferramenta Pedida Não Existe)
+  (msg,Ferramenta Pedida Nao Existe)
   G4 P1
   M2
 o<erro3> endif
 
-o<ref>if[#5390eq0]
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-(debug,REFERENCIE A TORRE)
-G4P999
-o<ref>endif
-
-#<pocket> = [#<tool> - 8 * FIX[#<tool> / 9]]
-
-
+; Torre usa servo HLTNC com encoder absoluto - nao precisa de referencia
+; #5390 inicializado em 1 se ainda nao definido
 o<initpos> if [#5390 EQ 0]
   #5390 = 1
 o<initpos> endif
 
+#<pocket> = [#<tool> - 8 * FIX[#<tool> / 9]]
 
 M64 P6         (abre torre)
 M64 P7         (enable driver C)
 G4 P3          (pequena pausa para destravar)
 
-
 #<tombos> = [ #<pocket> - #5390 ]   (pode ser negativo)
 
-
-( metade do magazine = 4 )
+; metade do magazine = 4
 o<aj1> if [#<tombos> GT 4]
   #<tombos> = [ #<tombos> - 8 ]
 o<aj1> endif
@@ -53,9 +35,7 @@ o<aj2> if [#<tombos> LT -4]
   #<tombos> = [ #<tombos> + 8 ]
 o<aj2> endif
 
-
 #<angulo> = [ #<tombos> * 45.0 ]
-
 
 G90
 G0 G91 C#<angulo>
@@ -64,10 +44,8 @@ G4 P3 (pausa depois do giro)
 
 #5390 = #<pocket>
 
-
 M65 P6         (fecha torre)
 M65 P7         (disable driver C)
-
 
 M6 T#<tool>
 G43 H#<tool>
