@@ -130,10 +130,7 @@ net machine-is-enabled  =>  pyvcp.led-xz
 net estop-ext           =>  pyvcp.led-emg-but
 
 # ============================================================
-# GAMA — seleção de faixa de velocidade
 # ============================================================
-net GAMA-HI  pyvcp.gama.C  =>  motion.digital-in-00
-net GAMA-LO  pyvcp.gama.A  =>  motion.digital-in-01
 
 # ============================================================
 # DIGITAL OUTS — disponíveis para subrotinas NGC
