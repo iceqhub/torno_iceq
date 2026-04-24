@@ -11,6 +11,7 @@ loadrt abs count=1
 loadrt near count=1
 loadrt time
 loadrt comp count=4
+loadrt and2 names=enc-xneg,enc-xpos,enc-zneg,enc-zpos
 
 addf scale.0    servo-thread
 addf scale.1    servo-thread
@@ -26,6 +27,10 @@ addf comp.0     servo-thread
 addf comp.1     servo-thread
 addf comp.2     servo-thread
 addf comp.3     servo-thread
+addf enc-xneg   servo-thread
+addf enc-xpos   servo-thread
+addf enc-zneg   servo-thread
+addf enc-zpos   servo-thread
 
 # ============================================================
 # RPM
@@ -61,21 +66,35 @@ net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
 # Z neg: dispara quando limit-z-min > z-pos-fb
 # Z pos: dispara quando z-pos-fb > limit-z-max
 # ============================================================
-net limit-x-min  =>  comp.0.in0
-net x-pos-fb     =>  comp.0.in1
-net x-neg-limit  <=  comp.0.out
+# comp calcula se passou do encosto
+# and2 só ativa o fim de curso se máquina estiver ligada
+net limit-x-min      =>  comp.0.in0
+net x-pos-fb         =>  comp.0.in1
+net comp-xneg-raw    <=  comp.0.out
+net comp-xneg-raw    =>  enc-xneg.in0
+net machine-is-on    =>  enc-xneg.in1
+net x-neg-limit      <=  enc-xneg.out
 
-net x-pos-fb     =>  comp.1.in0
-net limit-x-max  =>  comp.1.in1
-net x-pos-limit  <=  comp.1.out
+net x-pos-fb         =>  comp.1.in0
+net limit-x-max      =>  comp.1.in1
+net comp-xpos-raw    <=  comp.1.out
+net comp-xpos-raw    =>  enc-xpos.in0
+net machine-is-on    =>  enc-xpos.in1
+net x-pos-limit      <=  enc-xpos.out
 
-net limit-z-min  =>  comp.2.in0
-net z-pos-fb     =>  comp.2.in1
-net z-neg-limit  <=  comp.2.out
+net limit-z-min      =>  comp.2.in0
+net z-pos-fb         =>  comp.2.in1
+net comp-zneg-raw    <=  comp.2.out
+net comp-zneg-raw    =>  enc-zneg.in0
+net machine-is-on    =>  enc-zneg.in1
+net z-neg-limit      <=  enc-zneg.out
 
-net z-pos-fb     =>  comp.3.in0
-net limit-z-max  =>  comp.3.in1
-net z-pos-limit  <=  comp.3.out
+net z-pos-fb         =>  comp.3.in0
+net limit-z-max      =>  comp.3.in1
+net comp-zpos-raw    <=  comp.3.out
+net comp-zpos-raw    =>  enc-zpos.in0
+net machine-is-on    =>  enc-zpos.in1
+net z-pos-limit      <=  enc-zpos.out
 
 # ============================================================
 # TEMPORIZADOR
