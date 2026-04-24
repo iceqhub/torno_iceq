@@ -1,9 +1,9 @@
 # custom_postgui.hal — TORNO ICEQ — 7i96S
-# Versão: 1.5 — encostos virtuais via comp, sem wcomp
+# Versão: 1.6 — encostos virtuais funcionais
 # Executado APÓS o painel PyVCP carregar
 
 # ============================================================
-# COMPONENTES ADICIONAIS
+# COMPONENTES
 # ============================================================
 loadrt scale count=6
 loadrt lowpass count=1
@@ -28,7 +28,7 @@ addf comp.2     servo-thread
 addf comp.3     servo-thread
 
 # ============================================================
-# RPM — exibe no painel PyVCP
+# RPM
 # ============================================================
 setp scale.0.gain 60
 setp lowpass.0.gain 0.100000
@@ -37,7 +37,6 @@ net spindle-fb-filtered-rps  lowpass.0.out  =>  abs.0.in
 net spindle-fb-abs-rps       abs.0.out      =>  scale.0.in
 net spindle-fb-abs-rpm       scale.0.out    =>  pyvcp.spindle-speed
 
-# Spindle at-speed indicator
 net spindle-vel-cmd-rps-abs  =>  near.0.in1
 net spindle-vel-fb-rps       =>  near.0.in2
 setp near.0.scale 2.0
@@ -45,7 +44,9 @@ net spindle-at-speed         <=  near.0.out
 net spindle-at-speed         =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
-# LIMITES DINÂMICOS — analog-out alimenta ini.x/z.min/max_limit
+# LIMITES DINÂMICOS
+# analog-out inicializado pelo .startup.ngc
+# Conexão direta: analog-out => ini.N.min/max_limit
 # ============================================================
 net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
 net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
@@ -53,18 +54,12 @@ net limit-x-min  ini.x.min_limit  =>  motion.analog-out-02
 net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
 
 # ============================================================
-# ENCOSTOS VIRTUAIS — bloqueia jog manual
-# comp.N.out = TRUE quando in0 > in1
-# comp.N.out-not = TRUE quando in0 <= in1
-#
-# X negativo: para quando x-pos-fb <= limit-x-min
-#   comp.0: in0=limit-x-min, in1=x-pos-fb → out=TRUE quando min > fb → neg-limit
-# X positivo: para quando x-pos-fb >= limit-x-max
-#   comp.1: in0=x-pos-fb, in1=limit-x-max → out=TRUE quando fb > max → pos-limit
-# Z negativo: para quando z-pos-fb <= limit-z-min
-#   comp.2: in0=limit-z-min, in1=z-pos-fb → out=TRUE quando min > fb → neg-limit
-# Z positivo: para quando z-pos-fb >= limit-z-max
-#   comp.3: in0=z-pos-fb, in1=limit-z-max → out=TRUE quando fb > max → pos-limit
+# ENCOSTOS VIRTUAIS via comp
+# comp.out = TRUE quando in0 > in1
+# X neg: dispara quando limit-x-min > x-pos-fb (passou do encosto negativo)
+# X pos: dispara quando x-pos-fb > limit-x-max (passou do encosto positivo)
+# Z neg: dispara quando limit-z-min > z-pos-fb
+# Z pos: dispara quando z-pos-fb > limit-z-max
 # ============================================================
 net limit-x-min  =>  comp.0.in0
 net x-pos-fb     =>  comp.0.in1
@@ -83,7 +78,7 @@ net limit-z-max  =>  comp.3.in1
 net z-pos-limit  <=  comp.3.out
 
 # ============================================================
-# TEMPORIZADOR DE CICLO
+# TEMPORIZADOR
 # ============================================================
 net prog-not-paused  =>  time.0.start
 net cycle-seconds    pyvcp.time-seconds  <=  time.0.seconds
@@ -91,12 +86,12 @@ net cycle-minutes    pyvcp.time-minutes  <=  time.0.minutes
 net cycle-hours      pyvcp.time-hours    <=  time.0.hours
 
 # ============================================================
-# NÚMERO DA FERRAMENTA ATIVA
+# FERRAMENTA ATIVA
 # ============================================================
 net tool-number  iocontrol.0.tool-number  =>  pyvcp.tool-number
 
 # ============================================================
-# BOTÕES DE TROCA DE FERRAMENTA T01~T16
+# BOTÕES FERRAMENTAS
 # ============================================================
 net tool-1   halui.mdi-command-00  <=  pyvcp.tool-1
 net tool-2   halui.mdi-command-01  <=  pyvcp.tool-2
@@ -116,7 +111,7 @@ net tool-15  halui.mdi-command-14  <=  pyvcp.tool-15
 net tool-16  halui.mdi-command-30  <=  pyvcp.tool-16
 
 # ============================================================
-# BOTÕES DE ENCOSTO / SETA
+# ENCOSTOS / SETA
 # ============================================================
 net SETARX      halui.mdi-command-18  <=  pyvcp.seta-x
 net SETARXNEG   halui.mdi-command-19  <=  pyvcp.seta-xneg
@@ -125,7 +120,7 @@ net SETARZ-NEG  halui.mdi-command-23  <=  pyvcp.seta-z-neg
 net RESTAURAR   halui.mdi-command-21  <=  pyvcp.restaura
 
 # ============================================================
-# BOTÕES DE MANUTENÇÃO
+# MANUTENÇÃO
 # ============================================================
 net reset-py    halui.mdi-command-24  <=  pyvcp.resetar
 net ativa-py    halui.mdi-command-25  <=  pyvcp.ativa
@@ -135,19 +130,15 @@ net cw-py       halui.mdi-command-28  <=  pyvcp.gira-cw-py
 net ccw-py      halui.mdi-command-29  <=  pyvcp.gira-ccw-py
 
 # ============================================================
-# LEDs PLACA / CONTRA-PONTA
+# LEDs
 # ============================================================
 net turret-lock    =>  pyvcp.LED-ABRE
 net turret-enable  =>  pyvcp.LED-FECHA
-
-# ============================================================
-# LEDs DE STATUS
-# ============================================================
 net machine-is-enabled  =>  pyvcp.led-xz
 net estop-ext           =>  pyvcp.led-emg-but
 
 # ============================================================
-# DIGITAL OUTS — disponíveis para subrotinas NGC
+# DIGITAL OUTS
 # ============================================================
 net dout-00  <=  motion.digital-out-00
 net dout-01  <=  motion.digital-out-01
