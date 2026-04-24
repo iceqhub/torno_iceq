@@ -401,5 +401,5 @@ net estop-ext  =>  iocontrol.0.emc-enable-in
 
 
 # --- Tool change ---
-loadusr -W hal_manualtoolchange
-net tool-prepare-loopback  iocontrol.0.tool-prepare  =>  iocontrol.0.tool-prepared
+net tool-prepare-loopback  iocontrol.0.tool-prepare   =>  iocontrol.0.tool-prepared
+net tool-change-loopback   iocontrol.0.tool-change    =>  iocontrol.0.tool-changed
