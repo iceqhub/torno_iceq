@@ -141,3 +141,42 @@ net dout-02  <=  motion.digital-out-02
 net dout-03  <=  motion.digital-out-03
 net dout-04  <=  motion.digital-out-04
 net dout-05  <=  motion.digital-out-05
+
+# ============================================================
+# ENCOSTOS VIRTUAIS — bloqueia jog manual no limite setado
+# Usa wcomp (window comparator):
+#   out=TRUE quando valor está FORA da janela [bottom, top]
+#   ou seja: quando pos-fb < min OU pos-fb > max
+# ============================================================
+loadrt wcomp count=4
+addf wcomp.0  servo-thread
+addf wcomp.1  servo-thread
+addf wcomp.2  servo-thread
+addf wcomp.3  servo-thread
+
+# Z negativo: ativa fim de curso quando pos-fb <= limit-z-min
+# wcomp.out=TRUE quando in está dentro de [bottom,top]
+# Queremos TRUE quando pos-fb < min → colocamos min como top, -9999 como bottom
+setp wcomp.0.bottom  -9999.0
+net limit-z-min   =>  wcomp.0.top
+net z-pos-fb      =>  wcomp.0.in
+net z-neg-limit   <=  wcomp.0.out
+
+# Z positivo: ativa fim de curso quando pos-fb >= limit-z-max
+# Queremos TRUE quando pos-fb > max → colocamos max como bottom, 9999 como top
+net limit-z-max   =>  wcomp.1.bottom
+setp wcomp.1.top   9999.0
+net z-pos-fb      =>  wcomp.1.in
+net z-pos-limit   <=  wcomp.1.out
+
+# X negativo: ativa fim de curso quando pos-fb <= limit-x-min
+setp wcomp.2.bottom  -9999.0
+net limit-x-min   =>  wcomp.2.top
+net x-pos-fb      =>  wcomp.2.in
+net x-neg-limit   <=  wcomp.2.out
+
+# X positivo: ativa fim de curso quando pos-fb >= limit-x-max
+net limit-x-max   =>  wcomp.3.bottom
+setp wcomp.3.top   9999.0
+net x-pos-fb      =>  wcomp.3.in
+net x-pos-limit   <=  wcomp.3.out
