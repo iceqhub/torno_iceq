@@ -17,3 +17,5 @@ Decisão desta correção:
 Escopo desta versão:
 - LinuxCNC subir sem erro de naming básico da 7i96S
 - validar E-stop e Cycle Start primeiro
+
+halcmd show pin | grep -i "axis\|limit" | grep -v "step\|dir\|enc\|home\|inm\|gpio"

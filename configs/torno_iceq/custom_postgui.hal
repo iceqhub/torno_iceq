@@ -56,10 +56,6 @@ net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
 net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
 net limit-x-min  ini.x.min_limit  =>  motion.analog-out-02
 net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
-net limit-z-min  =>  axis.z.min-position-limit
-net limit-z-max  =>  axis.z.max-position-limit
-net limit-x-min  =>  axis.x.min-position-limit
-net limit-x-max  =>  axis.x.max-position-limit
 
 # ============================================================
 # TEMPORIZADOR DE CICLO
