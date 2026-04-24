@@ -29,6 +29,10 @@ loadrt hostmot2
 loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_pwmgens=0 num_stepgens=4"
 setp    hm2_7i96s.0.watchdog.timeout_ns 100000000
 loadrt pid names=pid.x,pid.z,pid.s
+loadrt scale count=6
+loadrt lowpass count=1
+loadrt abs count=1
+loadrt near count=1
 
 # ============================================================
 # BOTÕES FÍSICOS (CYCLE-START como RUN/PAUSE/RESUME + STOP)
@@ -52,6 +56,15 @@ addf oneshot.0                 servo-thread
 addf oneshot.1                 servo-thread
 addf or2.0                     servo-thread
 addf not.0                     servo-thread
+addf scale.0                   servo-thread
+addf scale.1                   servo-thread
+addf scale.2                   servo-thread
+addf scale.3                   servo-thread
+addf scale.4                   servo-thread
+addf scale.5                   servo-thread
+addf lowpass.0                 servo-thread
+addf abs.0                     servo-thread
+addf near.0                    servo-thread
 addf and2.0                    servo-thread
 addf and2.1                    servo-thread
 addf and2.2                    servo-thread
