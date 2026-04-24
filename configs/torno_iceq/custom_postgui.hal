@@ -1,63 +1,50 @@
-# custom_postgui.hal — TORNO ICEQ — 7i96S — Versão 1.8
-# Executado APÓS o painel PyVCP carregar
+# custom_postgui.hal — TORNO ICEQ — 7i96S
+# Baseado diretamente na configuração funcional da porta paralela
+# Removido: classicladder, parport, encoder MPG
+# Versão: 2.0
 
-loadrt scale count=6
-loadrt lowpass count=1
-loadrt abs count=1
-loadrt near count=1
-loadrt time
-
-addf scale.0    servo-thread
-addf scale.1    servo-thread
-addf scale.2    servo-thread
-addf scale.3    servo-thread
-addf scale.4    servo-thread
-addf scale.5    servo-thread
-addf lowpass.0  servo-thread
-addf abs.0      servo-thread
-addf near.0     servo-thread
-addf time.0     servo-thread
+# ============================================================
+# ENCOSTOS VIRTUAIS
+# Direção correta: ini.N.min/max_limit => analog-out
+# ini.N é atualizado internamente pelo M68 via LinuxCNC
+# analog-out guarda o valor para leitura pelas subrotinas NGC
+# ============================================================
+net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
+net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
+net limit-x-min  ini.x.min_limit  =>  motion.analog-out-02
+net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
 
 # ============================================================
 # RPM
 # ============================================================
 setp scale.0.gain 60
 setp lowpass.0.gain 0.100000
-net spindle-vel-fb-rps       =>  lowpass.0.in
-net spindle-fb-filtered-rps  lowpass.0.out  =>  abs.0.in
-net spindle-fb-abs-rps       abs.0.out      =>  scale.0.in
-net spindle-fb-abs-rpm       scale.0.out    =>  pyvcp.spindle-speed
+net spindle-vel-fb-rps               =>  lowpass.0.in
+net spindle-fb-filtered-rps          lowpass.0.out  =>  abs.0.in
+net spindle-fb-filtered-abs-rps      abs.0.out      =>  scale.0.in
+net spindle-fb-filtered-abs-rpm      scale.0.out    =>  pyvcp.spindle-speed
 
-net spindle-vel-cmd-rps-abs  =>  near.0.in1
-net spindle-vel-fb-rps       =>  near.0.in2
+net spindle-vel-cmd-rps-abs          =>  near.0.in1
+net spindle-vel-fb-rps               =>  near.0.in2
 setp near.0.scale 2.0
-net spindle-at-speed         <=  near.0.out
-net spindle-at-speed         =>  pyvcp.spindle-at-speed-led
-
-# ============================================================
-# ENCOSTOS VIRTUAIS
-# analog-out guarda o valor do encosto (M68 escreve)
-# ini.N.min/max_limit recebe o valor e limita movimento
-# Funciona para MDI e programa — jog respeita via soft limit
-# Inicialização: .startup.ngc seta -9999/9999 após machine-on
-# ============================================================
-net limit-z-min  motion.analog-out-00  =>  ini.1.min_limit
-net limit-z-max  motion.analog-out-01  =>  ini.1.max_limit
-net limit-x-min  motion.analog-out-02  =>  ini.0.min_limit
-net limit-x-max  motion.analog-out-03  =>  ini.0.max_limit
+net spindle-at-speed                 <=  near.0.out
+net spindle-at-speed                 =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
 # TEMPORIZADOR
+# not.0 já carregado no torno_iceq.hal
 # ============================================================
-net prog-not-paused  =>  time.0.start
-net cycle-seconds    pyvcp.time-seconds  <=  time.0.seconds
-net cycle-minutes    pyvcp.time-minutes  <=  time.0.minutes
-net cycle-hours      pyvcp.time-hours    <=  time.0.hours
+loadrt time
+addf time.0 servo-thread
+net cycle-timer    time.0.start   <=  not.0.out
+net cycle-seconds  pyvcp.time-seconds  <=  time.0.seconds
+net cycle-minutes  pyvcp.time-minutes  <=  time.0.minutes
+net cycle-hours    pyvcp.time-hours    <=  time.0.hours
 
 # ============================================================
 # FERRAMENTA ATIVA
 # ============================================================
-net tool-number  iocontrol.0.tool-number  =>  pyvcp.tool-number
+net tool_numb  iocontrol.0.tool-number  =>  pyvcp.tool-number
 
 # ============================================================
 # BOTÕES FERRAMENTAS
@@ -85,8 +72,8 @@ net tool-16  halui.mdi-command-30  <=  pyvcp.tool-16
 net SETARX      halui.mdi-command-18  <=  pyvcp.seta-x
 net SETARXNEG   halui.mdi-command-19  <=  pyvcp.seta-xneg
 net SETARZ      halui.mdi-command-20  <=  pyvcp.seta-z
-net SETARZ-NEG  halui.mdi-command-23  <=  pyvcp.seta-z-neg
 net RESTAURAR   halui.mdi-command-21  <=  pyvcp.restaura
+net SETARZ-NEG  halui.mdi-command-23  <=  pyvcp.seta-z-neg
 
 # ============================================================
 # MANUTENÇÃO
