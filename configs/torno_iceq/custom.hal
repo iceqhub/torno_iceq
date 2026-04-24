@@ -1,0 +1,16 @@
+# custom.hal — TORNO ICEQ
+# Inicializa sinais de encosto com valores extremos
+# Executado ANTES do postgui, DEPOIS do motion estar carregado
+
+# Cria os sinais de encosto e conecta aos analog-out
+# analog-out é pino OUT do motion - alimenta os sinais
+net limit-z-min  motion.analog-out-00
+net limit-z-max  motion.analog-out-01
+net limit-x-min  motion.analog-out-02
+net limit-x-max  motion.analog-out-03
+
+# Conecta sinais aos limites dinâmicos dos eixos
+net limit-z-min  =>  ini.z.min_limit
+net limit-z-max  =>  ini.z.max_limit
+net limit-x-min  =>  ini.x.min_limit
+net limit-x-max  =>  ini.x.max_limit
