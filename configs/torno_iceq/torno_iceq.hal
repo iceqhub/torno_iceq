@@ -248,8 +248,8 @@ setp   pid.s.error-previous-target true
 
 net spindle-index-enable  =>  pid.s.index-enable
 net spindle-enable        =>  pid.s.enable
-net spindle-vel-cmd-rpm-abs     => pid.s.command
-net spindle-vel-fb-rpm-abs      => pid.s.feedback
+net spindle-vel-cmd-rps-abs     => pid.s.command
+net spindle-vel-fb-rps          => pid.s.feedback
 net spindle-output        <=  pid.s.output
 
 # --- StepGen para spindle servo ---
