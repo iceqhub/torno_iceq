@@ -1,23 +1,11 @@
-# custom_postgui.hal — TORNO ICEQ — 7i96S
-# Versão: 1.7 — encostos virtuais com inicialização correta
-#
-# LÓGICA DOS ENCOSTOS:
-# - analog-out-00..03 guardam os valores dos encostos
-# - Inicializados com valores EXTREMOS (-9999/9999) = sem encosto ativo
-# - M68 E0..E3 nos .ngc sobrescreve com posição atual ao setar encosto
-# - .restaura.ngc sobrescreve com limites do INI ao restaurar
-# - comp.0..3 compara pos-fb com os encostos
-# - and2.4..7 só ativa fim de curso se machine-is-on=TRUE
-#
-# IMPORTANTE: NÃO conectar ini.x.min_limit => analog-out aqui
-# porque isso sobrescreveria os valores extremos iniciais
+# custom_postgui.hal — TORNO ICEQ — 7i96S — Versão 1.8
+# Executado APÓS o painel PyVCP carregar
 
 loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
 loadrt near count=1
 loadrt time
-loadrt comp count=4
 
 addf scale.0    servo-thread
 addf scale.1    servo-thread
@@ -29,14 +17,6 @@ addf lowpass.0  servo-thread
 addf abs.0      servo-thread
 addf near.0     servo-thread
 addf time.0     servo-thread
-addf comp.0     servo-thread
-addf comp.1     servo-thread
-addf comp.2     servo-thread
-addf comp.3     servo-thread
-addf and2.4     servo-thread
-addf and2.5     servo-thread
-addf and2.6     servo-thread
-addf and2.7     servo-thread
 
 # ============================================================
 # RPM
@@ -56,53 +36,15 @@ net spindle-at-speed         =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
 # ENCOSTOS VIRTUAIS
-# analog-out do motion guarda valor do encosto (escrito por M68)
-# Conecta analog-out aos sinais e aos limites dinamicos ini.N
+# analog-out guarda o valor do encosto (M68 escreve)
+# ini.N.min/max_limit recebe o valor e limita movimento
+# Funciona para MDI e programa — jog respeita via soft limit
+# Inicialização: .startup.ngc seta -9999/9999 após machine-on
 # ============================================================
-net limit-z-min  motion.analog-out-00
-net limit-z-max  motion.analog-out-01
-net limit-x-min  motion.analog-out-02
-net limit-x-max  motion.analog-out-03
-
-net limit-z-min  =>  ini.1.min_limit
-net limit-z-max  =>  ini.1.max_limit
-net limit-x-min  =>  ini.0.min_limit
-net limit-x-max  =>  ini.0.max_limit
-
-# comp: dispara quando posição ultrapassou o encosto
-# comp.out = TRUE quando in0 > in1
-net limit-x-min  =>  comp.0.in0
-net x-pos-fb     =>  comp.0.in1
-net comp-xneg    <=  comp.0.out
-
-net x-pos-fb     =>  comp.1.in0
-net limit-x-max  =>  comp.1.in1
-net comp-xpos    <=  comp.1.out
-
-net limit-z-min  =>  comp.2.in0
-net z-pos-fb     =>  comp.2.in1
-net comp-zneg    <=  comp.2.out
-
-net z-pos-fb     =>  comp.3.in0
-net limit-z-max  =>  comp.3.in1
-net comp-zpos    <=  comp.3.out
-
-# and2: só ativa fim de curso quando máquina estiver ligada
-net comp-xneg     =>  and2.4.in0
-net machine-is-on =>  and2.4.in1
-net x-neg-limit   <=  and2.4.out
-
-net comp-xpos     =>  and2.5.in0
-net machine-is-on =>  and2.5.in1
-net x-pos-limit   <=  and2.5.out
-
-net comp-zneg     =>  and2.6.in0
-net machine-is-on =>  and2.6.in1
-net z-neg-limit   <=  and2.6.out
-
-net comp-zpos     =>  and2.7.in0
-net machine-is-on =>  and2.7.in1
-net z-pos-limit   <=  and2.7.out
+net limit-z-min  motion.analog-out-00  =>  ini.1.min_limit
+net limit-z-max  motion.analog-out-01  =>  ini.1.max_limit
+net limit-x-min  motion.analog-out-02  =>  ini.0.min_limit
+net limit-x-max  motion.analog-out-03  =>  ini.0.max_limit
 
 # ============================================================
 # TEMPORIZADOR
