@@ -1,25 +1,16 @@
 # custom_postgui.hal — TORNO ICEQ — 7i96S
+# Versão: 1.5 — encostos virtuais via comp, sem wcomp
 # Executado APÓS o painel PyVCP carregar
-# Versão: 1.2 — sem conflitos de sinais
-#
-# SINAIS JÁ DEFINIDOS NO torno_iceq.hal (NÃO redefine aqui):
-#   turret-lock     <= motion.digital-out-06 => ssr.00.out-00
-#   turret-enable   <= motion.digital-out-07 => ssr.00.out-01
-#   prog-not-paused <= not.0.out
-#   prog-is-idle    <= halui.program.is-idle
-#   prog-is-running <= halui.program.is-running
-#   prog-is-paused  <= halui.program.is-paused
-#   machine-is-enabled <= motion.motion-enabled
-#   spindle-vel-fb-rps <= encoder.00.velocity
-#   spindle-vel-cmd-rps-abs <= spindle.0.speed-out-rps-abs
-#   spindle-at-speed
-#   estop-ext <= inm.00.input-00
 
+# ============================================================
+# COMPONENTES ADICIONAIS
+# ============================================================
 loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
 loadrt near count=1
 loadrt time
+loadrt comp count=4
 
 addf scale.0    servo-thread
 addf scale.1    servo-thread
@@ -31,6 +22,10 @@ addf lowpass.0  servo-thread
 addf abs.0      servo-thread
 addf near.0     servo-thread
 addf time.0     servo-thread
+addf comp.0     servo-thread
+addf comp.1     servo-thread
+addf comp.2     servo-thread
+addf comp.3     servo-thread
 
 # ============================================================
 # RPM — exibe no painel PyVCP
@@ -50,7 +45,7 @@ net spindle-at-speed         <=  near.0.out
 net spindle-at-speed         =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
-# LIMITES DINÂMICOS para restaura.ngc
+# LIMITES DINÂMICOS — analog-out alimenta ini.x/z.min/max_limit
 # ============================================================
 net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
 net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
@@ -58,8 +53,37 @@ net limit-x-min  ini.x.min_limit  =>  motion.analog-out-02
 net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
 
 # ============================================================
+# ENCOSTOS VIRTUAIS — bloqueia jog manual
+# comp.N.out = TRUE quando in0 > in1
+# comp.N.out-not = TRUE quando in0 <= in1
+#
+# X negativo: para quando x-pos-fb <= limit-x-min
+#   comp.0: in0=limit-x-min, in1=x-pos-fb → out=TRUE quando min > fb → neg-limit
+# X positivo: para quando x-pos-fb >= limit-x-max
+#   comp.1: in0=x-pos-fb, in1=limit-x-max → out=TRUE quando fb > max → pos-limit
+# Z negativo: para quando z-pos-fb <= limit-z-min
+#   comp.2: in0=limit-z-min, in1=z-pos-fb → out=TRUE quando min > fb → neg-limit
+# Z positivo: para quando z-pos-fb >= limit-z-max
+#   comp.3: in0=z-pos-fb, in1=limit-z-max → out=TRUE quando fb > max → pos-limit
+# ============================================================
+net limit-x-min  =>  comp.0.in0
+net x-pos-fb     =>  comp.0.in1
+net x-neg-limit  <=  comp.0.out
+
+net x-pos-fb     =>  comp.1.in0
+net limit-x-max  =>  comp.1.in1
+net x-pos-limit  <=  comp.1.out
+
+net limit-z-min  =>  comp.2.in0
+net z-pos-fb     =>  comp.2.in1
+net z-neg-limit  <=  comp.2.out
+
+net z-pos-fb     =>  comp.3.in0
+net limit-z-max  =>  comp.3.in1
+net z-pos-limit  <=  comp.3.out
+
+# ============================================================
 # TEMPORIZADOR DE CICLO
-# prog-not-paused já definido no torno_iceq.hal
 # ============================================================
 net prog-not-paused  =>  time.0.start
 net cycle-seconds    pyvcp.time-seconds  <=  time.0.seconds
@@ -112,25 +136,15 @@ net ccw-py      halui.mdi-command-29  <=  pyvcp.gira-ccw-py
 
 # ============================================================
 # LEDs PLACA / CONTRA-PONTA
-# Lê o sinal HAL (não o pino físico) — sem conflito
-# turret-lock e turret-enable já definidos no torno_iceq.hal
 # ============================================================
 net turret-lock    =>  pyvcp.LED-ABRE
 net turret-enable  =>  pyvcp.LED-FECHA
-
-# LED AVANCA/RECUA (SSR out-02 e out-03 — ainda não usados)
-# Descomentar quando implementar contra-ponta:
-#net contra-avanca  =>  pyvcp.LED-AVANCA
-#net contra-recua   =>  pyvcp.LED-RECUA
 
 # ============================================================
 # LEDs DE STATUS
 # ============================================================
 net machine-is-enabled  =>  pyvcp.led-xz
 net estop-ext           =>  pyvcp.led-emg-but
-
-# ============================================================
-# ============================================================
 
 # ============================================================
 # DIGITAL OUTS — disponíveis para subrotinas NGC
