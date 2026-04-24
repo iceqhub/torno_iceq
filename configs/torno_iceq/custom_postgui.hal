@@ -56,8 +56,19 @@ net spindle-at-speed         =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
 # ENCOSTOS VIRTUAIS
-# Sinais limit-z/x-min/max criados no custom.hal
-# M68 nos .ngc sobrescreve analog-out ao setar encosto
+# analog-out do motion guarda valor do encosto (escrito por M68)
+# Conecta analog-out aos sinais e aos limites dinamicos ini.N
+# ============================================================
+net limit-z-min  motion.analog-out-00
+net limit-z-max  motion.analog-out-01
+net limit-x-min  motion.analog-out-02
+net limit-x-max  motion.analog-out-03
+
+net limit-z-min  =>  ini.1.min_limit
+net limit-z-max  =>  ini.1.max_limit
+net limit-x-min  =>  ini.0.min_limit
+net limit-x-max  =>  ini.0.max_limit
+
 # comp: dispara quando posição ultrapassou o encosto
 # comp.out = TRUE quando in0 > in1
 net limit-x-min  =>  comp.0.in0

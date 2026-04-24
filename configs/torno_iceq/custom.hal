@@ -1,12 +1,3 @@
 # custom.hal — TORNO ICEQ
-# Conecta analog-out aos sinais de encosto e limites dinâmicos
-
-net limit-z-min  motion.analog-out-00
-net limit-z-max  motion.analog-out-01
-net limit-x-min  motion.analog-out-02
-net limit-x-max  motion.analog-out-03
-
-net limit-z-min  =>  ini.1.min_limit
-net limit-z-max  =>  ini.1.max_limit
-net limit-x-min  =>  ini.0.min_limit
-net limit-x-max  =>  ini.0.max_limit
+# Reservado para customizações futuras
+# Conexões de encosto virtual estão no custom_postgui.hal
