@@ -1,10 +1,17 @@
 # custom_postgui.hal — TORNO ICEQ — 7i96S
-# Versão: 1.6 — encostos virtuais funcionais
-# Executado APÓS o painel PyVCP carregar
+# Versão: 1.7 — encostos virtuais com inicialização correta
+#
+# LÓGICA DOS ENCOSTOS:
+# - analog-out-00..03 guardam os valores dos encostos
+# - Inicializados com valores EXTREMOS (-9999/9999) = sem encosto ativo
+# - M68 E0..E3 nos .ngc sobrescreve com posição atual ao setar encosto
+# - .restaura.ngc sobrescreve com limites do INI ao restaurar
+# - comp.0..3 compara pos-fb com os encostos
+# - and2.4..7 só ativa fim de curso se machine-is-on=TRUE
+#
+# IMPORTANTE: NÃO conectar ini.x.min_limit => analog-out aqui
+# porque isso sobrescreveria os valores extremos iniciais
 
-# ============================================================
-# COMPONENTES
-# ============================================================
 loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
@@ -48,52 +55,55 @@ net spindle-at-speed         <=  near.0.out
 net spindle-at-speed         =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
-# LIMITES DINÂMICOS
-# analog-out inicializado pelo .startup.ngc
-# Conexão direta: analog-out => ini.N.min/max_limit
+# ENCOSTOS VIRTUAIS
+# analog-out inicializados com valores extremos
+# M68 nos .ngc sobrescreve ao setar encosto
 # ============================================================
-net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
-net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
-net limit-x-min  ini.x.min_limit  =>  motion.analog-out-02
-net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
+setp motion.analog-out-00 -9999.0
+setp motion.analog-out-01  9999.0
+setp motion.analog-out-02 -9999.0
+setp motion.analog-out-03  9999.0
 
-# ============================================================
-# ENCOSTOS VIRTUAIS via comp
+# Sinais que carregam os valores dos encostos
+net limit-z-min  motion.analog-out-00
+net limit-z-max  motion.analog-out-01
+net limit-x-min  motion.analog-out-02
+net limit-x-max  motion.analog-out-03
+
+# comp: dispara quando posição ultrapassou o encosto
 # comp.out = TRUE quando in0 > in1
-# X neg: dispara quando limit-x-min > x-pos-fb (passou do encosto negativo)
-# X pos: dispara quando x-pos-fb > limit-x-max (passou do encosto positivo)
-# Z neg: dispara quando limit-z-min > z-pos-fb
-# Z pos: dispara quando z-pos-fb > limit-z-max
-# ============================================================
-# comp calcula se passou do encosto
-# and2 só ativa o fim de curso se máquina estiver ligada
-net limit-x-min      =>  comp.0.in0
-net x-pos-fb         =>  comp.0.in1
-net comp-xneg-raw    <=  comp.0.out
-net comp-xneg-raw    =>  and2.4.in0
-net machine-is-on    =>  and2.4.in1
-net x-neg-limit      <=  and2.4.out
+net limit-x-min  =>  comp.0.in0
+net x-pos-fb     =>  comp.0.in1
+net comp-xneg    <=  comp.0.out
 
-net x-pos-fb         =>  comp.1.in0
-net limit-x-max      =>  comp.1.in1
-net comp-xpos-raw    <=  comp.1.out
-net comp-xpos-raw    =>  and2.5.in0
-net machine-is-on    =>  and2.5.in1
-net x-pos-limit      <=  and2.5.out
+net x-pos-fb     =>  comp.1.in0
+net limit-x-max  =>  comp.1.in1
+net comp-xpos    <=  comp.1.out
 
-net limit-z-min      =>  comp.2.in0
-net z-pos-fb         =>  comp.2.in1
-net comp-zneg-raw    <=  comp.2.out
-net comp-zneg-raw    =>  and2.6.in0
-net machine-is-on    =>  and2.6.in1
-net z-neg-limit      <=  and2.6.out
+net limit-z-min  =>  comp.2.in0
+net z-pos-fb     =>  comp.2.in1
+net comp-zneg    <=  comp.2.out
 
-net z-pos-fb         =>  comp.3.in0
-net limit-z-max      =>  comp.3.in1
-net comp-zpos-raw    <=  comp.3.out
-net comp-zpos-raw    =>  and2.7.in0
-net machine-is-on    =>  and2.7.in1
-net z-pos-limit      <=  and2.7.out
+net z-pos-fb     =>  comp.3.in0
+net limit-z-max  =>  comp.3.in1
+net comp-zpos    <=  comp.3.out
+
+# and2: só ativa fim de curso quando máquina estiver ligada
+net comp-xneg     =>  and2.4.in0
+net machine-is-on =>  and2.4.in1
+net x-neg-limit   <=  and2.4.out
+
+net comp-xpos     =>  and2.5.in0
+net machine-is-on =>  and2.5.in1
+net x-pos-limit   <=  and2.5.out
+
+net comp-zneg     =>  and2.6.in0
+net machine-is-on =>  and2.6.in1
+net z-neg-limit   <=  and2.6.out
+
+net comp-zpos     =>  and2.7.in0
+net machine-is-on =>  and2.7.in1
+net z-pos-limit   <=  and2.7.out
 
 # ============================================================
 # TEMPORIZADOR
@@ -150,8 +160,8 @@ net ccw-py      halui.mdi-command-29  <=  pyvcp.gira-ccw-py
 # ============================================================
 # LEDs
 # ============================================================
-net turret-lock    =>  pyvcp.LED-ABRE
-net turret-enable  =>  pyvcp.LED-FECHA
+net turret-lock         =>  pyvcp.LED-ABRE
+net turret-enable       =>  pyvcp.LED-FECHA
 net machine-is-enabled  =>  pyvcp.led-xz
 net estop-ext           =>  pyvcp.led-emg-but
 

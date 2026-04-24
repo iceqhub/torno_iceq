@@ -1,11 +1,10 @@
-o<.restaura>sub
+o<.restaura> sub
 
-m68e0q[#<_ini[JOINT_1]MIN_LIMIT>]
-m68e1q[#<_ini[JOINT_1]MAX_LIMIT>]
+; Restaura = desativa todos os encostos virtuais
+; Coloca valores extremos para liberar movimento em toda a faixa
+M68 E0 Q-9999
+M68 E1 Q9999
+M68 E2 Q-9999
+M68 E3 Q9999
 
-m68e2q[#<_ini[JOINT_0]MIN_LIMIT>]
-m68e3q[#<_ini[JOINT_0]MAX_LIMIT>]
-
-
-
-o<.restaura>endsub
+o<.restaura> endsub
