@@ -27,7 +27,6 @@ net spindle-fb-filtered-abs-rpm      scale.0.out    =>  pyvcp.spindle-speed
 net spindle-vel-cmd-rps-abs          =>  near.0.in1
 net spindle-vel-fb-rps               =>  near.0.in2
 setp near.0.scale 2.0
-net spindle-at-speed                 <=  near.0.out
 net spindle-at-speed                 =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
@@ -36,7 +35,7 @@ net spindle-at-speed                 =>  pyvcp.spindle-at-speed-led
 # ============================================================
 loadrt time
 addf time.0 servo-thread
-net cycle-timer    time.0.start   <=  not.0.out
+net prog-not-paused  =>  time.0.start
 net cycle-seconds  pyvcp.time-seconds  <=  time.0.seconds
 net cycle-minutes  pyvcp.time-minutes  <=  time.0.minutes
 net cycle-hours    pyvcp.time-hours    <=  time.0.hours
