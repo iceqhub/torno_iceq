@@ -1,44 +1,27 @@
 # custom_postgui.hal — TORNO ICEQ — 7i96S
-# Baseado diretamente na configuração funcional da porta paralela
-# Removido: classicladder, parport, encoder MPG
-# Versão: 2.0
-
-# ============================================================
-# ENCOSTOS VIRTUAIS
-# Direção correta: ini.N.min/max_limit => analog-out
-# ini.N é atualizado internamente pelo M68 via LinuxCNC
-# analog-out guarda o valor para leitura pelas subrotinas NGC
-# ============================================================
-net limit-z-min  ini.z.min_limit  =>  motion.analog-out-00
-net limit-z-max  ini.z.max_limit  =>  motion.analog-out-01
-net limit-x-min  ini.x.min_limit  =>  motion.analog-out-02
-net limit-x-max  ini.x.max_limit  =>  motion.analog-out-03
+# Versão: 2.1 — encostos virtuais DESATIVADOS
+# (reativar futuramente quando máquina estiver em produção)
 
 # ============================================================
 # RPM
 # ============================================================
 setp scale.0.gain 60
 setp lowpass.0.gain 0.100000
-net spindle-vel-fb-rps               =>  lowpass.0.in
-net spindle-fb-filtered-rps          lowpass.0.out  =>  abs.0.in
-net spindle-fb-filtered-abs-rps      abs.0.out      =>  scale.0.in
-net spindle-fb-filtered-abs-rpm      scale.0.out    =>  pyvcp.spindle-speed
-
-net spindle-vel-cmd-rps-abs          =>  near.0.in1
-net spindle-vel-fb-rps               =>  near.0.in2
-setp near.0.scale 2.0
-net spindle-at-speed                 =>  pyvcp.spindle-at-speed-led
+net spindle-vel-fb-rps          =>  lowpass.0.in
+net spindle-fb-filtered-rps     lowpass.0.out  =>  abs.0.in
+net spindle-fb-abs-rps          abs.0.out      =>  scale.0.in
+net spindle-fb-abs-rpm          scale.0.out    =>  pyvcp.spindle-speed
+net spindle-at-speed            =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
 # TEMPORIZADOR
-# not.0 já carregado no torno_iceq.hal
 # ============================================================
 loadrt time
 addf time.0 servo-thread
 net prog-not-paused  =>  time.0.start
-net cycle-seconds  pyvcp.time-seconds  <=  time.0.seconds
-net cycle-minutes  pyvcp.time-minutes  <=  time.0.minutes
-net cycle-hours    pyvcp.time-hours    <=  time.0.hours
+net cycle-seconds    pyvcp.time-seconds  <=  time.0.seconds
+net cycle-minutes    pyvcp.time-minutes  <=  time.0.minutes
+net cycle-hours      pyvcp.time-hours    <=  time.0.hours
 
 # ============================================================
 # FERRAMENTA ATIVA
