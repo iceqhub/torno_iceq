@@ -61,15 +61,18 @@
         </vbox>
     </hbox>
 
-    <!-- Seleção de escala (mm/pulso) -->
-    <label><text>"Escala (mm/pulso):"</text><font>("Helvetica",9)</font></label>
-    <radiobutton>
-        <choices>["0.001","0.010","0.100","1.000"]</choices>
-        <values>[0.001, 0.010, 0.100, 1.000]</values>
+
+    <!-- Escala mm/pulso via spinbox (0.001 a 1.000) -->
+    <label><text>"Escala mm/pulso:"</text><font>("Helvetica",9)</font></label>
+    <spinbox>
         <halpin>"mpg-scale"</halpin>
+        <min_>0.001</min_>
+        <max_>1.000</max_>
+        <resolution>0.001</resolution>
         <initval>0.010</initval>
-        <font>("Helvetica",9)</font>
-    </radiobutton>
+        <format>"5.3f"</format>
+        <font>("Helvetica",10)</font>
+    </spinbox>
 
 </labelframe>
 <!-- FIM HANDWHEEL MPG -->
