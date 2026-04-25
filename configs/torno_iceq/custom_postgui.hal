@@ -86,86 +86,61 @@ net dout-04  <=  motion.digital-out-04
 net dout-05  <=  motion.digital-out-05
 
 # ============================================================
+
+# ============================================================
 # HANDWHEEL MPG — lógica de seleção de eixo e escala  ← NOVO
 #
-# Botão pyvcp.mpg-btn-axis alterna X ↔ Z (toggle)
-# Radiobuttons pyvcp.mpg-scale enviam 0.001/0.01/0.1/1.0 direto
-# Modo JOG (programa parado): move eixo selecionado
-# Modo FO  (programa rodando): handwheel vira feed override
+# Componentes usados (já carregados no torno_iceq.hal):
+#   toggle.0       → alterna eixo X/Z a cada clique do botão
+#   not.1          → inverte: axis-is-z → axis-is-x
+#   and2.4         → jog-enable X: axis-is-x AND not-running
+#   and2.5         → jog-enable Z: axis-is-z AND not-running
+#   mult2.0        → velocidade proporcional: mpg.velocity × escala
+#   conv_s32_float.0 → converte mpg.counts (s32) para float (não usado em jog)
+#
+# Lógica:
+#   - not.0 já usado no hal principal (prog-not-paused)
+#   - not.1 disponível (not count=2 no hal)
+#   - and2.0..3 já usados; and2.4/5 livres (and2 count=6)
 # ============================================================
-loadrt toggle names=mpg-axis-toggle
-loadrt not    names=mpg-not-x
-loadrt and2   names=mpg-en-x,mpg-en-z,mpg-not-run
-loadrt mult2  names=mpg-scale-vel
-loadrt conv_s32_float names=mpg-counts-f
-
-addf mpg-axis-toggle  servo-thread
-addf mpg-not-x        servo-thread
-addf mpg-en-x         servo-thread
-addf mpg-en-z         servo-thread
-addf mpg-not-run      servo-thread
-addf mpg-scale-vel    servo-thread
-addf mpg-counts-f     servo-thread
 
 # Toggle eixo: botão do painel alterna X (false) ↔ Z (true)
-net mpg-btn-axis        <=  pyvcp.mpg-btn-axis
-net mpg-btn-axis        =>  mpg-axis-toggle.in
-net mpg-axis-is-z       <=  mpg-axis-toggle.out
+net mpg-btn-axis     <=  pyvcp.mpg-btn-axis
+net mpg-btn-axis     =>  toggle.0.in
+net mpg-axis-is-z    <=  toggle.0.out
 
-# LEDs indicadores de eixo selecionado
-net mpg-axis-is-z       =>  pyvcp.LED-SEL-Z
-net mpg-axis-is-z       =>  mpg-not-x.in
-net mpg-axis-is-x       <=  mpg-not-x.out
-net mpg-axis-is-x       =>  pyvcp.LED-SEL-X
+# LEDs indicadores
+net mpg-axis-is-z    =>  pyvcp.LED-SEL-Z
+net mpg-axis-is-z    =>  not.1.in
+net mpg-axis-is-x    <=  not.1.out
+net mpg-axis-is-x    =>  pyvcp.LED-SEL-X
 
-# Escala vinda do radiogroup do painel (0.001 / 0.01 / 0.1 / 1.0 mm/pulso)
-net mpg-scale-val       <=  pyvcp.mpg-scale
+# Escala float vinda do spinbox do painel
+net mpg-scale-val    <=  pyvcp.mpg-scale
 
-# Velocidade proporcional: velocity = mpg.velocity × escala
-net mpg-velocity        <=  mpg.velocity
-net mpg-scale-val       =>  mpg-scale-vel.in0
-net mpg-velocity        =>  mpg-scale-vel.in1
-net mpg-jog-out         <=  mpg-scale-vel.out
+# Velocidade proporcional: velocity do encoder × escala selecionada
+net mpg-velocity     <=  mpg.velocity
+net mpg-scale-val    =>  mult2.0.in0
+net mpg-velocity     =>  mult2.0.in1
+net mpg-jog-out      <=  mult2.0.out
 
-# Habilita jog somente quando programa NÃO está rodando
-net prog-is-running     =>  mpg-not-run.in0
-# (mpg-not-run.in1 fixo em 1 via setp abaixo)
-setp mpg-not-run.in1 1
-# Nota: and2 com in1=1 funciona como NOT(in0) na saída
-# mas and2 não tem NOT nativo; usamos lógica: en-x = not(running) AND axis-is-x
-# Simplificado: conectamos jog-enable direto — quando rodando o halui ignora analog se
-# feed-override.direct-value estiver sendo usado.
+# Jog speed = escala selecionada (mm/s)
+net mpg-scale-val    =>  halui.axis.jog-speed
 
-# Jog enable por eixo (só quando não está rodando)
-net mpg-axis-is-x       =>  mpg-en-x.in0
-net mpg-axis-is-z       =>  mpg-en-z.in0
-# in1 vem do sinal prog-not-running (= NOT prog-is-running via mpg-not-run)
-# Reutilizamos not.0 que já existe no hal principal via prog-not-paused
-# Para não conflitar, usamos diretamente a saída de mpg-not-run como
-# "não rodando" — definindo in1 como constante 1 e usando saída invertida:
-# Como and2 não inverte, conectamos prog-is-running ao in0 de mpg-not-run
-# e lemos a saída (que será 1 apenas quando prog-is-running=1 AND in1=1)
-# Então: mpg-not-run.out = prog-is-running (serve como flag "rodando")
-# Para "não rodando" usamos: jog-enable = axis-is-X AND NOT(prog-is-running)
-# Sem NOT extra disponível, simplesmente conectamos e o halui desabilita
-# o analog jog quando em modo de execução. O feed-override cuidará disso.
+# jog-enable por eixo: eixo selecionado AND programa não rodando
+# prog-not-paused já existe como net do hal principal (not.0.out)
+# Reutilizamos: quando paused=false E not-paused=true → máquina em idle
+# Para jog, usamos prog-is-idle que é mais seguro
+net prog-is-idle     =>  and2.4.in0
+net mpg-axis-is-x    =>  and2.4.in1
+net mpg-en-x         <=  and2.4.out
+net mpg-en-x         =>  halui.axis.x.jog-enable
 
-net mpg-en-x.out        =>  halui.axis.x.jog-enable
-net mpg-en-z.out        =>  halui.axis.z.jog-enable
+net prog-is-idle     =>  and2.5.in0
+net mpg-axis-is-z    =>  and2.5.in1
+net mpg-en-z         <=  and2.5.out
+net mpg-en-z         =>  halui.axis.z.jog-enable
 
-# Analog jog dos eixos
-net mpg-jog-out         =>  halui.axis.x.analog
-net mpg-jog-out         =>  halui.axis.z.analog
-
-# Escala de jog speed = escala MPG selecionada (mm/s convertido)
-net mpg-scale-val       =>  halui.axis.jog-speed
-
-# Feed override via MPG quando programa rodando (±1% por pulso aprox.)
-# mpg.counts é s32; converter para float e multiplicar por 0.01
-net mpg-counts-int      <=  mpg.counts
-net mpg-counts-int      =>  mpg-counts-f.in
-net mpg-counts-float    <=  mpg-counts-f.out
-# O halui.feed-override.direct-value usa 0.0~2.0 (0%~200%)
-# Não conectamos direto para não conflitar com o slider do AXIS
-# Feed override incremental via halui.feed-override.increase/decrease
-# é controlado pelo painel quando necessário (implementação futura simples)
+# Analog jog: mesmo valor para ambos os eixos (jog-enable garante qual move)
+net mpg-jog-out      =>  halui.axis.x.analog
+net mpg-jog-out      =>  halui.axis.z.analog

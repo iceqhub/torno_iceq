@@ -47,6 +47,9 @@ loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
 loadrt near count=1
+loadrt toggle count=1
+loadrt mult2 count=1
+loadrt conv_s32_float count=1
 
 # ============================================================
 # HANDWHEEL MPG — encoder software lendo TB3 input-04/05  ← NOVO
@@ -60,9 +63,9 @@ setp mpg.counter-mode   1
 # BOTÕES FÍSICOS (CYCLE-START como RUN/PAUSE/RESUME + STOP)
 # ============================================================
 loadrt oneshot count=2
-loadrt and2 count=4
+loadrt and2 count=6
 loadrt or2 count=1
-loadrt not count=1
+loadrt not count=2
 
 setp oneshot.0.width 0.05
 setp oneshot.1.width 0.05
@@ -91,6 +94,9 @@ addf and2.0                    servo-thread
 addf and2.1                    servo-thread
 addf and2.2                    servo-thread
 addf and2.3                    servo-thread
+addf toggle.0                  servo-thread
+addf mult2.0                   servo-thread
+addf conv_s32_float.0          servo-thread
 addf hm2_7i96s.0.write         servo-thread
 
 setp hm2_7i96s.0.dpll.01.timer-us -50
