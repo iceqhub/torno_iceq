@@ -47,8 +47,10 @@ loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
 loadrt near count=1
-loadrt toggle count=1
+loadrt toggle count=2
 loadrt mult2 count=1
+loadrt mux4 count=1
+loadrt updown count=1
 
 # ============================================================
 # HANDWHEEL MPG — encoder software lendo TB3 input-04/05  ← NOVO
@@ -94,6 +96,9 @@ addf and2.1                    servo-thread
 addf and2.2                    servo-thread
 addf and2.3                    servo-thread
 addf toggle.0                  servo-thread
+addf toggle.1                  servo-thread
+addf mux4.0                    servo-thread
+addf updown.0                  servo-thread
 addf mult2.0                   servo-thread
 addf hm2_7i96s.0.write         servo-thread
 

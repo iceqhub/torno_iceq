@@ -36,24 +36,24 @@
     <hbox>
         <button>
             <halpin>"mpg-btn-axis"</halpin>
-            <text>"TROCAR X/Z"</text>
-            <bd>4</bd>
+            <text>"EIXO X / Z"</text>
+            <bd>6</bd>
         </button>
         <vbox>
             <hbox>
-                <label><text>"X"</text><font>("Helvetica",9)</font></label>
+                <label><text>"X"</text><font>("Helvetica",11,"bold")</font></label>
                 <led>
                     <halpin>"LED-SEL-X"</halpin>
-                    <size>14</size>
+                    <size>18</size>
                     <on_color>"green"</on_color>
                     <off_color>"gray"</off_color>
                 </led>
             </hbox>
             <hbox>
-                <label><text>"Z"</text><font>("Helvetica",9)</font></label>
+                <label><text>"Z"</text><font>("Helvetica",11,"bold")</font></label>
                 <led>
                     <halpin>"LED-SEL-Z"</halpin>
-                    <size>14</size>
+                    <size>18</size>
                     <on_color>"green"</on_color>
                     <off_color>"gray"</off_color>
                 </led>
@@ -61,21 +61,38 @@
         </vbox>
     </hbox>
 
-
-    <!-- Escala mm/pulso via spinbox (0.001 a 1.000) -->
-    <label><text>"Escala mm/pulso:"</text><font>("Helvetica",9)</font></label>
-    <spinbox>
-        <halpin>"mpg-scale"</halpin>
-        <min_>0.001</min_>
-        <max_>1.000</max_>
-        <resolution>0.001</resolution>
-        <initval>0.010</initval>
-        <format>"5.3f"</format>
-        <font>("Helvetica",10)</font>
-    </spinbox>
+    <!-- Seleção de escala via botão cíclico -->
+    <hbox>
+        <button>
+            <halpin>"mpg-btn-scale"</halpin>
+            <text>"ESCALA"</text>
+            <bd>6</bd>
+        </button>
+        <vbox>
+                <label><text>"mm/pulso:"</text><font>("Helvetica",9)</font></label>
+                <number>
+                    <halpin>"mpg-scale-disp"</halpin>
+                    <font>("Helvetica",14,"bold")</font>
+                    <format>"%6.3f"</format>
+                </number>
+                <led>
+                    <halpin>"LED-SC-001"</halpin>
+                    <size>12</size>
+                    <on_color>"yellow"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+                <led>
+                    <halpin>"LED-SC-1000"</halpin>
+                    <size>12</size>
+                    <on_color>"red"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+        </vbox>
+    </hbox>
 
 </labelframe>
 <!-- FIM HANDWHEEL MPG -->
+
 
 <labelframe text="Troca Ferramenta">
 <font>("Helvetica",10)</font>
