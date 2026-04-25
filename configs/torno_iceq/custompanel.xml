@@ -29,64 +29,101 @@
 <!-- ======================================================== -->
 <!-- HANDWHEEL MPG — NOVO                                      -->
 <!-- ======================================================== -->
-<labelframe text="Handwheel">
+<labelframe text="Eixo MPG">
 <font>("Helvetica",10)</font>
-
-    <!-- Eixo -->
     <hbox>
-        <vbox>
-            <checkbutton>
-                <halpin>"btn-x"</halpin>
-                <text>"  X  "</text>
-                <font>("Helvetica",14,"bold")</font>
-            </checkbutton>
-            <led>
-                <halpin>"LED-SEL-X"</halpin>
-                <size>20</size>
-                <on_color>"green"</on_color>
-                <off_color>"gray"</off_color>
-            </led>
-        </vbox>
-        <vbox>
-            <checkbutton>
-                <halpin>"btn-z"</halpin>
-                <text>"  Z  "</text>
-                <font>("Helvetica",14,"bold")</font>
-            </checkbutton>
-            <led>
-                <halpin>"LED-SEL-Z"</halpin>
-                <size>20</size>
-                <on_color>"green"</on_color>
-                <off_color>"gray"</off_color>
-            </led>
-        </vbox>
+        <button>
+            <halpin>"btn-x"</halpin>
+            <text>"  Eixo X  "</text>
+            <font>("Helvetica",13,"bold")</font>
+            <bd>6</bd>
+        </button>
+        <led>
+            <halpin>"LED-SEL-X"</halpin>
+            <size>22</size>
+            <on_color>"green"</on_color>
+            <off_color>"gray"</off_color>
+        </led>
     </hbox>
+    <hbox>
+        <button>
+            <halpin>"btn-z"</halpin>
+            <text>"  Eixo Z  "</text>
+            <font>("Helvetica",13,"bold")</font>
+            <bd>6</bd>
+        </button>
+        <led>
+            <halpin>"LED-SEL-Z"</halpin>
+            <size>22</size>
+            <on_color>"green"</on_color>
+            <off_color>"gray"</off_color>
+        </led>
+    </hbox>
+</labelframe>
 
-    <!-- Escala -->
+<labelframe text="Escala MPG (mm/pulso)">
+<font>("Helvetica",10)</font>
     <number>
         <halpin>"mpg-scale-disp"</halpin>
         <font>("Helvetica",16,"bold")</font>
         <format>"6.3f"</format>
     </number>
     <hbox>
-        <vbox>
-            <checkbutton>
-                <halpin>"mpg-sel0"</halpin>
-                <text>"0.010"</text>
-                <font>("Helvetica",11)</font>
-            </checkbutton>
-        </vbox>
-        <vbox>
-            <checkbutton>
-                <halpin>"mpg-sel1"</halpin>
-                <text>"0.100"</text>
-                <font>("Helvetica",11)</font>
-            </checkbutton>
-        </vbox>
+        <button>
+            <halpin>"btn-001"</halpin>
+            <text>" 0.001 "</text>
+            <font>("Helvetica",12,"bold")</font>
+            <bd>5</bd>
+        </button>
+        <led>
+            <halpin>"LED-SC-001"</halpin>
+            <size>18</size>
+            <on_color>"yellow"</on_color>
+            <off_color>"gray"</off_color>
+        </led>
     </hbox>
-    <label><text>"OFF+OFF=0.001  ON+OFF=0.010"</text><font>("Helvetica",7)</font></label>
-    <label><text>"OFF+ON =0.100  ON+ON =1.000"</text><font>("Helvetica",7)</font></label>
-
+    <hbox>
+        <button>
+            <halpin>"btn-010"</halpin>
+            <text>" 0.010 "</text>
+            <font>("Helvetica",12,"bold")</font>
+            <bd>5</bd>
+        </button>
+        <led>
+            <halpin>"LED-SC-010"</halpin>
+            <size>18</size>
+            <on_color>"yellow"</on_color>
+            <off_color>"gray"</off_color>
+        </led>
+    </hbox>
+    <hbox>
+        <button>
+            <halpin>"btn-100"</halpin>
+            <text>" 0.100 "</text>
+            <font>("Helvetica",12,"bold")</font>
+            <bd>5</bd>
+        </button>
+        <led>
+            <halpin>"LED-SC-100"</halpin>
+            <size>18</size>
+            <on_color>"yellow"</on_color>
+            <off_color>"gray"</off_color>
+        </led>
+    </hbox>
+    <hbox>
+        <button>
+            <halpin>"btn-1k"</halpin>
+            <text>" 1.000 "</text>
+            <font>("Helvetica",12,"bold")</font>
+            <bd>5</bd>
+        </button>
+        <led>
+            <halpin>"LED-SC-1K"</halpin>
+            <size>18</size>
+            <on_color>"yellow"</on_color>
+            <off_color>"gray"</off_color>
+        </led>
+    </hbox>
 </labelframe>
 <!-- FIM HANDWHEEL MPG -->
 
