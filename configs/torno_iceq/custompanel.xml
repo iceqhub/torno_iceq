@@ -73,7 +73,7 @@
                 <number>
                     <halpin>"mpg-scale-disp"</halpin>
                     <font>("Helvetica",14,"bold")</font>
-                    <format>"%6.3f"</format>
+                    <format>"6.3f"</format>
                 </number>
                 <led>
                     <halpin>"LED-SC-001"</halpin>
