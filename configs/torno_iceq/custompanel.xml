@@ -77,42 +77,6 @@
 </labelframe>
 <!-- FIM HANDWHEEL MPG -->
 
-<labelframe text="Eixo Selecionado (AXIS)">
-<font>("Helvetica",10)</font>
-    <hbox>
-        <label>
-            <text>"X"</text>
-            <font>("Helvetica",8)</font>
-        </label>
-        <led>
-            <halpin>"LED-SEL-X"</halpin>
-            <size>15</size>
-            <on_color>"green"</on_color>
-            <off_color>"black"</off_color>
-        </led>
-        <label>
-            <text>"Z"</text>
-            <font>("Helvetica",8)</font>
-        </label>
-        <led>
-            <halpin>"LED-SEL-Z"</halpin>
-            <size>15</size>
-            <on_color>"green"</on_color>
-            <off_color>"black"</off_color>
-        </led>
-        <label>
-            <text>"OFF"</text>
-            <font>("Helvetica",8)</font>
-        </label>
-        <led>
-            <halpin>"LED-SEL-OFF"</halpin>
-            <size>15</size>
-            <on_color>"green"</on_color>
-            <off_color>"black"</off_color>
-        </led>
-    </hbox>
-</labelframe>
-
 <labelframe text="Troca Ferramenta">
 <font>("Helvetica",10)</font>
     <hbox>
