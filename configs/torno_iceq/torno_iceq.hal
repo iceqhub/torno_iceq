@@ -1,11 +1,13 @@
 # TORNO_ICEQ.hal
-# Versão: 3.0 — Spindle analógico 0-10V via pwmgen (TB2 SPINOUT)
+# Versão: 3.1 — Adicionado: Handwheel MPG via encoder software (TB3 input-04/05)
 #
 # Mapeamento TB3 (entradas InM):
 #   TB3-1  = input-00 = ESTOP (botão NF, IN COMMON = +24V)
 #   TB3-2  = input-01 = CYCLE-START
 #   TB3-3  = input-02 = HOME-X
 #   TB3-4  = input-03 = HOME-Z
+#   TB3-5  = input-04 = MPG fase A (via optoacoplador 5V→24V)  ← NOVO
+#   TB3-6  = input-05 = MPG fase B (via optoacoplador 5V→24V)  ← NOVO
 #
 # Mapeamento stepgens:
 #   stepgen.00 = Eixo X (Joint 0)
@@ -47,6 +49,14 @@ loadrt abs count=1
 loadrt near count=1
 
 # ============================================================
+# HANDWHEEL MPG — encoder software lendo TB3 input-04/05  ← NOVO
+# ============================================================
+loadrt encoder names=mpg
+setp mpg.position-scale [MPG]SCALE
+setp mpg.x4-mode        0
+setp mpg.counter-mode   1
+
+# ============================================================
 # BOTÕES FÍSICOS (CYCLE-START como RUN/PAUSE/RESUME + STOP)
 # ============================================================
 loadrt oneshot count=2
@@ -62,6 +72,8 @@ addf motion-command-handler    servo-thread
 addf motion-controller         servo-thread
 addf pid.x.do-pid-calcs        servo-thread
 addf pid.z.do-pid-calcs        servo-thread
+addf mpg.update-counters       servo-thread
+addf mpg.capture-position      servo-thread
 addf oneshot.0                 servo-thread
 addf oneshot.1                 servo-thread
 addf or2.0                     servo-thread
@@ -110,6 +122,12 @@ net estop-ext   <=  hm2_7i96s.0.inm.00.input-00
 net cycle-start <=  hm2_7i96s.0.inm.00.input-01
 net home-x      <=  hm2_7i96s.0.inm.00.input-02
 net home-z      <=  hm2_7i96s.0.inm.00.input-03
+
+# MPG fases A e B via optoacoplador 5V→24V  ← NOVO
+net mpg-phase-a <=  hm2_7i96s.0.inm.00.input-04
+net mpg-phase-b <=  hm2_7i96s.0.inm.00.input-05
+net mpg-phase-a =>  mpg.phase-A
+net mpg-phase-b =>  mpg.phase-B
 
 
 #*******************
@@ -226,21 +244,11 @@ net c-enable     => hm2_7i96s.0.stepgen.02.enable
 
 #*******************
 #  SPINDLE — Analógico 0-10V via pwmgen.00 (TB2 SPINOUT)
-#
-#  Drive HLTNC T3DF: P004=1 (velocidade), P005=1 (analógico)
-#  Fiação: TB2 SPINOUT+ → CN1 AS+
-#          TB2 SPINOUT- → CN1 AS-
-#
-#  OUTPUT_SCALE no INI = RPM máximo do spindle (ex: 1200)
-#  LinuxCNC envia 0.0~1.0 → pwmgen converte para 0~10V
 #*******************
 
-# Saída analógica para o drive
-# pwmgen recebe RPM absoluto e normaliza pelo OUTPUT_SCALE (1200 RPM = 10V)
 net spindle-vel-cmd-rpm-abs  =>  hm2_7i96s.0.pwmgen.00.value
 net spindle-enable           =>  hm2_7i96s.0.pwmgen.00.enable
 
-# --- Encoder feedback do spindle (para rosqueamento futuro) ---
 setp    hm2_7i96s.0.encoder.00.counter-mode 0
 setp    hm2_7i96s.0.encoder.00.filter 1
 setp    hm2_7i96s.0.encoder.00.index-invert 0
@@ -253,7 +261,6 @@ net spindle-vel-fb-rps   <=   hm2_7i96s.0.encoder.00.velocity
 net spindle-vel-fb-rpm   <=   hm2_7i96s.0.encoder.00.velocity-rpm
 net spindle-index-enable <=>  hm2_7i96s.0.encoder.00.index-enable
 
-# --- Sinais de controle do spindle ---
 net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
 net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
 net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
@@ -267,7 +274,6 @@ net spindle-at-speed           =>  spindle.0.at-speed
 net spindle-vel-fb-rps         =>  spindle.0.speed-in
 net spindle-index-enable      <=>  spindle.0.index-enable
 
-# at-speed sempre TRUE até ter sensor dedicado
 sets spindle-at-speed true
 
 
@@ -275,7 +281,6 @@ sets spindle-at-speed true
 # SINAIS DIVERSOS
 #******************************
 
-# --- HALUI ---
 net axis-select-x     halui.axis.x.select
 net jog-x-pos         halui.axis.x.plus
 net jog-x-neg         halui.axis.x.minus
@@ -341,22 +346,18 @@ net cycle-stop-pulse  => halui.program.stop
 net coolant-mist   <=  iocontrol.0.coolant-mist
 net coolant-flood  <=  iocontrol.0.coolant-flood
 
-
 # --- Probe ---
 net probe-in  =>  motion.probe-input
-
 
 # --- Motion ---
 net in-position        <=  motion.in-position
 net machine-is-enabled <=  motion.motion-enabled
-
 
 # ============================================================
 # ESTOP
 # ============================================================
 net estop-out  <=  iocontrol.0.user-enable-out
 net estop-ext  =>  iocontrol.0.emc-enable-in
-
 
 # --- Tool change ---
 net tool-prepare-loopback  iocontrol.0.tool-prepare   =>  iocontrol.0.tool-prepared

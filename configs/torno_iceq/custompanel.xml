@@ -24,10 +24,57 @@
             <off_color>"red"</off_color>
         </led>
     </hbox>
-<!-- GAMA removido: servo motor não precisa de troca de faixa -->
 </labelframe>
 
-<labelframe text="Eixo Selecionado">
+<!-- ======================================================== -->
+<!-- HANDWHEEL MPG — NOVO                                      -->
+<!-- ======================================================== -->
+<labelframe text="Handwheel">
+<font>("Helvetica",10)</font>
+
+    <!-- Seleção de eixo -->
+    <hbox>
+        <button>
+            <halpin>"mpg-btn-axis"</halpin>
+            <text>"TROCAR X/Z"</text>
+            <bd>4</bd>
+        </button>
+        <vbox>
+            <hbox>
+                <label><text>"X"</text><font>("Helvetica",9)</font></label>
+                <led>
+                    <halpin>"LED-SEL-X"</halpin>
+                    <size>14</size>
+                    <on_color>"green"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </hbox>
+            <hbox>
+                <label><text>"Z"</text><font>("Helvetica",9)</font></label>
+                <led>
+                    <halpin>"LED-SEL-Z"</halpin>
+                    <size>14</size>
+                    <on_color>"green"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </hbox>
+        </vbox>
+    </hbox>
+
+    <!-- Seleção de escala (mm/pulso) -->
+    <label><text>"Escala (mm/pulso):"</text><font>("Helvetica",9)</font></label>
+    <radiobutton>
+        <choices>["0.001","0.010","0.100","1.000"]</choices>
+        <values>[0.001, 0.010, 0.100, 1.000]</values>
+        <halpin>"mpg-scale"</halpin>
+        <initval>0.010</initval>
+        <font>("Helvetica",9)</font>
+    </radiobutton>
+
+</labelframe>
+<!-- FIM HANDWHEEL MPG -->
+
+<labelframe text="Eixo Selecionado (AXIS)">
 <font>("Helvetica",10)</font>
     <hbox>
         <label>
@@ -117,8 +164,6 @@
 <button><halpin>"seta-z-neg"</halpin><text>"SETA-Z-NEG-CONTRA-PONTA"</text><bd>8</bd></button>
 <button><halpin>"restaura"</halpin><text>"    RESTAURA         "</text><bd>8</bd></button>
 
-<!-- EMERGENCIA: led-xz agora cobre X Z SPINDLE C e B (feito via machine-is-enabled) -->
-<!-- led-emg-but-mani removido: MPG não tem botão de emergência -->
 <labelframe text="Emergencia">
 <font>("Helvetica",10)</font>
     <vbox>
