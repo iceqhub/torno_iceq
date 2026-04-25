@@ -116,16 +116,15 @@ net mpg-axis-is-x    <=  not.1.out
 net mpg-axis-is-x    =>  pyvcp.LED-SEL-X
 
 # Escala float vinda do spinbox do painel
-net mpg-scale-val    <=  pyvcp.mpg-scale
+# pyvcp.mpg-scale alimenta o signal jog-speed existente no hal principal
+net jog-speed        <=  pyvcp.mpg-scale
 
 # Velocidade proporcional: velocity do encoder × escala selecionada
 net mpg-velocity     <=  mpg.velocity
-net mpg-scale-val    =>  mult2.0.in0
+net jog-speed        =>  mult2.0.in0
 net mpg-velocity     =>  mult2.0.in1
 net mpg-jog-out      <=  mult2.0.out
 
-# Jog speed = escala selecionada (mm/s)
-net mpg-scale-val    =>  halui.axis.jog-speed
 
 # jog-enable por eixo: eixo selecionado AND programa não rodando
 # prog-not-paused já existe como net do hal principal (not.0.out)
