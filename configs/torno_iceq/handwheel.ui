@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="2.24"/>
+  <requires lib="gladevcp" version="0.0"/>
+  <object class="GtkWindow" id="window1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="spacing">4</property>
+
+        <!-- EIXO -->
+        <child>
+          <object class="GtkFrame" id="frame_eixo">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label">Eixo</property>
+            <child>
+              <object class="GtkVBox" id="vbox_eixo">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="spacing">2</property>
+
+                <child>
+                  <object class="HAL_RadioButton" id="btn-x">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label">  Eixo X  </property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <child>
+                      <object class="GtkLabel" id="label_x">
+                        <property name="visible">True</property>
+                        <property name="label">  Eixo X  </property>
+                        <attributes>
+                          <attribute name="scale" value="2"/>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="HAL_RadioButton" id="btn-z">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label">  Eixo Z  </property>
+                    <property name="group">btn-x</property>
+                    <property name="draw_indicator">True</property>
+                    <child>
+                      <object class="GtkLabel" id="label_z">
+                        <property name="visible">True</property>
+                        <property name="label">  Eixo Z  </property>
+                        <attributes>
+                          <attribute name="scale" value="2"/>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                  </packing>
+                </child>
+
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+          </packing>
+        </child>
+
+        <!-- ESCALA -->
+        <child>
+          <object class="GtkFrame" id="frame_escala">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label">Escala mm/pulso</property>
+            <child>
+              <object class="GtkVBox" id="vbox_escala">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="spacing">2</property>
+
+                <child>
+                  <object class="HAL_RadioButton" id="sc-001">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label">  0.001  </property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <child>
+                      <object class="GtkLabel" id="label_001">
+                        <property name="visible">True</property>
+                        <property name="label">  0.001  </property>
+                        <attributes>
+                          <attribute name="scale" value="1.8"/>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="HAL_RadioButton" id="sc-010">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label">  0.010  </property>
+                    <property name="group">sc-001</property>
+                    <property name="draw_indicator">True</property>
+                    <child>
+                      <object class="GtkLabel" id="label_010">
+                        <property name="visible">True</property>
+                        <property name="label">  0.010  </property>
+                        <attributes>
+                          <attribute name="scale" value="1.8"/>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="HAL_RadioButton" id="sc-100">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label">  0.100  </property>
+                    <property name="group">sc-001</property>
+                    <property name="draw_indicator">True</property>
+                    <child>
+                      <object class="GtkLabel" id="label_100">
+                        <property name="visible">True</property>
+                        <property name="label">  0.100  </property>
+                        <attributes>
+                          <attribute name="scale" value="1.8"/>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="HAL_RadioButton" id="sc-1k">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label">  1.000  </property>
+                    <property name="group">sc-001</property>
+                    <property name="draw_indicator">True</property>
+                    <child>
+                      <object class="GtkLabel" id="label_1k">
+                        <property name="visible">True</property>
+                        <property name="label">  1.000  </property>
+                        <attributes>
+                          <attribute name="scale" value="1.8"/>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                  </packing>
+                </child>
+
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+          </packing>
+        </child>
+
+      </object>
+    </child>
+  </object>
+</interface>

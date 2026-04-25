@@ -88,31 +88,43 @@ net dout-05  <=  motion.digital-out-05
 # ============================================================
 
 # ============================================================
-# HANDWHEEL MPG — checkbuttons diretos
+# HANDWHEEL MPG — GladeVCP radiobuttons
+# Pins: gladevcp.btn-x, gladevcp.btn-z
+#       gladevcp.sc-001, gladevcp.sc-010, gladevcp.sc-100, gladevcp.sc-1k
 # ============================================================
 
-# --- Eixo: checkbuttons BIT direto ao jog-enable ---
-net mpg-axis-x   <=  pyvcp.btn-x
+# --- Eixo: radiobuttons exclusivos (X ou Z) ---
+net mpg-axis-x   <=  gladevcp.btn-x
 net mpg-axis-x   =>  axis.x.jog-enable
 
-net mpg-axis-z   <=  pyvcp.btn-z
+net mpg-axis-z   <=  gladevcp.btn-z
 net mpg-axis-z   =>  axis.z.jog-enable
 
-# --- Escala: checkbuttons sel0/sel1 → mux4 → jog-scale ---
+# --- Escala: mux4 via or2 ---
+# sel0 = sc-010 OR sc-1k  → or2.0
+# sel1 = sc-100 OR sc-1k  → or2.1
 setp mux4.0.in0 0.001
 setp mux4.0.in1 0.010
 setp mux4.0.in2 0.100
 setp mux4.0.in3 1.000
 
-net mpg-sel0      <=  pyvcp.mpg-sel0
-net mpg-sel0      =>  mux4.0.sel0
-net mpg-sel1      <=  pyvcp.mpg-sel1
-net mpg-sel1      =>  mux4.0.sel1
+net mpg-sc-010   <=  gladevcp.sc-010
+net mpg-sc-100   <=  gladevcp.sc-100
+net mpg-sc-1k    <=  gladevcp.sc-1k
+
+net mpg-sc-010   =>  or2.0.in0
+net mpg-sc-1k    =>  or2.0.in1
+net mpg-sel0     <=  or2.0.out
+net mpg-sel0     =>  mux4.0.sel0
+
+net mpg-sc-100   =>  or2.1.in0
+net mpg-sc-1k    =>  or2.1.in1
+net mpg-sel1     <=  or2.1.out
+net mpg-sel1     =>  mux4.0.sel1
 
 net mpg-scale-val <=  mux4.0.out
 net mpg-scale-val =>  axis.x.jog-scale
 net mpg-scale-val =>  axis.z.jog-scale
-net mpg-scale-val =>  pyvcp.mpg-scale-disp
 
 # --- Modo velocity e counts ---
 setp axis.x.jog-vel-mode 1
