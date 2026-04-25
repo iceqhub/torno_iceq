@@ -93,63 +93,41 @@ net dout-05  <=  motion.digital-out-05
 # ============================================================
 #
 # SELEÇÃO DE EIXO: toggle.0
-#   - Padrão inicial: toggle.0.out = FALSE → X selecionado
-#   - Botão "TROCAR X/Z": cada clique inverte
-#   - X selecionado: mpg-axis-is-x = TRUE  (not.1 inverte toggle.0)
-#   - Z selecionado: mpg-axis-is-z = TRUE  (toggle.0.out direto)
+#   toggle.0.out=TRUE → X selecionado (padrão ao ligar, LED-X aceso)
+#   toggle.0.out=FALSE → Z selecionado
 #
-# SELEÇÃO DE ESCALA: toggle.1 + updown.0 + mux4.0
-#   - Botão "ESCALA" avança: 0.001 → 0.010 → 0.100 → 1.000 → volta
-#   - updown.0 conta 0..3, mux4.0 converte para float
-#   - LEDs indicam escala ativa
+# SELEÇÃO DE ESCALA: 2 checkbuttons → mux4.0.sel0/sel1
+#   sel0=0 sel1=0 → 0.001 mm/pulso
+#   sel0=1 sel1=0 → 0.010 mm/pulso
+#   sel0=0 sel1=1 → 0.100 mm/pulso
+#   sel0=1 sel1=1 → 1.000 mm/pulso
 # ============================================================
 
 # --- Seleção de eixo ---
 net mpg-btn-axis  <=  pyvcp.mpg-btn-axis
 net mpg-btn-axis  =>  toggle.0.in
-# toggle.0.out = TRUE → X selecionado (padrão ao abrir)
-# not.1.out    = TRUE → Z selecionado
 net mpg-axis-is-x <=  toggle.0.out
 net mpg-axis-is-x =>  pyvcp.LED-SEL-X
 net mpg-axis-is-x =>  not.1.in
 net mpg-axis-is-z <=  not.1.out
 net mpg-axis-is-z =>  pyvcp.LED-SEL-Z
 
-
-# --- Seleção de escala via botão cíclico ---
-# toggle.1 transforma botão momentâneo em pulso para updown
-net mpg-btn-scale <=  pyvcp.mpg-btn-scale
-net mpg-btn-scale =>  toggle.1.in
-net mpg-scale-pulse <= toggle.1.out
-net mpg-scale-pulse => updown.0.countup
-
-# updown conta 0..3 ciclicamente
-setp updown.0.max 3
-setp updown.0.min 0
-setp updown.0.wrap 1
-
-# mux4 converte índice 0..3 para float de escala
+# --- Seleção de escala via 2 checkbuttons (sel0 + sel1 = 4 combinações) ---
 setp mux4.0.in0 0.001
 setp mux4.0.in1 0.010
 setp mux4.0.in2 0.100
 setp mux4.0.in3 1.000
 
-net mpg-scale-idx <=  updown.0.count
-net mpg-scale-idx =>  mux4.0.sel
+net mpg-sel0      <=  pyvcp.mpg-sel0
+net mpg-sel0      =>  mux4.0.sel0
+net mpg-sel1      <=  pyvcp.mpg-sel1
+net mpg-sel1      =>  mux4.0.sel1
 
-# Saída float da escala → jog-scale e jog-speed
 net mpg-scale-val <=  mux4.0.out
 net mpg-scale-val =>  axis.x.jog-scale
-net mpg-scale-val =>  pyvcp.mpg-scale-disp
 net mpg-scale-val =>  axis.z.jog-scale
+net mpg-scale-val =>  pyvcp.mpg-scale-disp
 net jog-speed     <=  mpg-scale-val
-
-# LEDs de escala ativa
-# LED amarelo = escala mínima (0.001), LED vermelho = escala máxima (1.000)
-net mpg-sel-0     <=  updown.0.atmin
-net mpg-sel-0     =>  pyvcp.LED-SC-001
-net mpg-sel-3     <=  updown.0.atmax
-net mpg-sel-3     =>  pyvcp.LED-SC-1000
 
 # Modo velocity
 setp axis.x.jog-vel-mode 1
@@ -160,7 +138,7 @@ net mpg-counts    <=  mpg.counts
 net mpg-counts    =>  axis.x.jog-counts
 net mpg-counts    =>  axis.z.jog-counts
 
-# Jog-enable por eixo selecionado (and2.4 e and2.5)
+# Jog-enable por eixo selecionado
 net prog-is-idle  =>  and2.4.in0
 net mpg-axis-is-x =>  and2.4.in1
 net mpg-en-x      <=  and2.4.out
