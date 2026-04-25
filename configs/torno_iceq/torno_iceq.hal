@@ -72,8 +72,8 @@ addf motion-command-handler    servo-thread
 addf motion-controller         servo-thread
 addf pid.x.do-pid-calcs        servo-thread
 addf pid.z.do-pid-calcs        servo-thread
-addf mpg.update-counters       servo-thread
-addf mpg.capture-position      servo-thread
+addf encoder.update-counters    servo-thread
+addf encoder.capture-position   servo-thread
 addf oneshot.0                 servo-thread
 addf oneshot.1                 servo-thread
 addf or2.0                     servo-thread
