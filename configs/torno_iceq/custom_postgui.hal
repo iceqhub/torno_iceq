@@ -88,80 +88,26 @@ net dout-05  <=  motion.digital-out-05
 # ============================================================
 
 # ============================================================
-# HANDWHEEL MPG
-# Botão momentâneo (button) → toggle → LED + ação
-#
-# toggle.0 = Eixo X
-# toggle.1 = Eixo Z
-# toggle.2 = Escala 0.001
-# toggle.3 = Escala 0.010
-# toggle.4 = Escala 0.100
-# toggle.5 = Escala 1.000
-#
-# mux4.sel0 = sc-010 OR sc-1k  (via or2.0)
-# mux4.sel1 = sc-100 OR sc-1k  (via or2.1)
-# Resultado:
-#   sc-001 ativo → sel0=0 sel1=0 → mux4 out = 0.001
-#   sc-010 ativo → sel0=1 sel1=0 → mux4 out = 0.010
-#   sc-100 ativo → sel0=0 sel1=1 → mux4 out = 0.100
-#   sc-1k  ativo → sel0=1 sel1=1 → mux4 out = 1.000
+# HANDWHEEL MPG — checkbuttons diretos
 # ============================================================
 
-# --- Eixo X ---
-net btn-x-pulse  <=  pyvcp.btn-x
-net btn-x-pulse  =>  toggle.0.in
-net mpg-axis-x   <=  toggle.0.out
+# --- Eixo: checkbuttons BIT direto ao jog-enable ---
+net mpg-axis-x   <=  pyvcp.btn-x
 net mpg-axis-x   =>  axis.x.jog-enable
-net mpg-axis-x   =>  pyvcp.LED-SEL-X
 
-# --- Eixo Z ---
-net btn-z-pulse  <=  pyvcp.btn-z
-net btn-z-pulse  =>  toggle.1.in
-net mpg-axis-z   <=  toggle.1.out
+net mpg-axis-z   <=  pyvcp.btn-z
 net mpg-axis-z   =>  axis.z.jog-enable
-net mpg-axis-z   =>  pyvcp.LED-SEL-Z
 
-# --- Escala 0.001 ---
-net btn-001      <=  pyvcp.btn-001
-net btn-001      =>  toggle.2.in
-net mpg-sc-001   <=  toggle.2.out
-net mpg-sc-001   =>  pyvcp.LED-SC-001
-
-# --- Escala 0.010 ---
-net btn-010      <=  pyvcp.btn-010
-net btn-010      =>  toggle.3.in
-net mpg-sc-010   <=  toggle.3.out
-net mpg-sc-010   =>  pyvcp.LED-SC-010
-
-# --- Escala 0.100 ---
-net btn-100      <=  pyvcp.btn-100
-net btn-100      =>  toggle.4.in
-net mpg-sc-100   <=  toggle.4.out
-net mpg-sc-100   =>  pyvcp.LED-SC-100
-
-# --- Escala 1.000 ---
-net btn-1k       <=  pyvcp.btn-1k
-net btn-1k       =>  toggle.5.in
-net mpg-sc-1k    <=  toggle.5.out
-net mpg-sc-1k    =>  pyvcp.LED-SC-1K
-
-# --- mux4: sel0 = sc-010 OR sc-1k ---
-net mpg-sc-010   =>  or2.0.in0
-net mpg-sc-1k    =>  or2.0.in1
-net mpg-mux-sel0 <=  or2.0.out
-net mpg-mux-sel0 =>  mux4.0.sel0
-
-# --- mux4: sel1 = sc-100 OR sc-1k ---
-net mpg-sc-100   =>  or2.1.in0
-net mpg-sc-1k    =>  or2.1.in1
-net mpg-mux-sel1 <=  or2.1.out
-net mpg-mux-sel1 =>  mux4.0.sel1
-
-# --- mux4 valores e saída ---
+# --- Escala: checkbuttons sel0/sel1 → mux4 → jog-scale ---
 setp mux4.0.in0 0.001
 setp mux4.0.in1 0.010
 setp mux4.0.in2 0.100
 setp mux4.0.in3 1.000
+
+net mpg-sel0      <=  pyvcp.mpg-sel0
+net mpg-sel0      =>  mux4.0.sel0
+net mpg-sel1      <=  pyvcp.mpg-sel1
+net mpg-sel1      =>  mux4.0.sel1
 
 net mpg-scale-val <=  mux4.0.out
 net mpg-scale-val =>  axis.x.jog-scale
