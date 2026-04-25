@@ -1,301 +1,363 @@
-# TORNO_ICEQ.hal — Versão 4.0
-# Adicionado: Handwheel MPG via encoder software (TB3 input-04/05)
+# TORNO_ICEQ.hal
+# Versão: 3.0 — Spindle analógico 0-10V via pwmgen (TB2 SPINOUT)
 #
-# MAPEAMENTO TB3 (de baixo para cima, RJ-45 à esquerda):
-#   input-00 = ESTOP físico (NF, IN COMMON = +24V)
-#   input-01 = CYCLE-START
-#   input-02 = HOME-X
-#   input-03 = HOME-Z
-#   input-04 = MPG fase A (via optoacoplador 5V→24V)
-#   input-05 = MPG fase B (via optoacoplador 5V→24V)
+# Mapeamento TB3 (entradas InM):
+#   TB3-1  = input-00 = ESTOP (botão NF, IN COMMON = +24V)
+#   TB3-2  = input-01 = CYCLE-START
+#   TB3-3  = input-02 = HOME-X
+#   TB3-4  = input-03 = HOME-Z
+#
+# Mapeamento stepgens:
+#   stepgen.00 = Eixo X (Joint 0)
+#   stepgen.01 = Eixo Z (Joint 1)
+#   stepgen.02 = Eixo C / Torre (Joint 2)
+#
+# Spindle:
+#   pwmgen.00  = saída analógica 0-10V (TB2 SPINOUT+ / SPINOUT-)
+#                → AS+ / AS- do drive HLTNC T3DF
+#   Drive: P004=1 (velocidade), P005=1 (analógico)
+#
+# SSR outputs:
+#   ssr.00.out-00 = TURRET-LOCK  (solenoide torre P6)
+#   ssr.00.out-01 = TURRET-ENABLE (enable drive torre P7)
+#   ssr.00.out-02 = SPINDLE-ENABLE
+#   ssr.00.out-03 = COOLANT-FLOOD
 
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=16
 loadrt hostmot2
+
+# num_stepgens=3: X, Z, C(torre)
+# num_pwmgens=1:  spindle analógico
+# num_encoders=1: encoder spindle (rosqueamento)
 loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_pwmgens=1 num_stepgens=3"
 
-setp hm2_7i96s.0.watchdog.timeout_ns 100000000
+setp    hm2_7i96s.0.watchdog.timeout_ns 100000000
 
-# pwmgen = saída analógica spindle
-setp hm2_7i96s.0.pwmgen.pwm_frequency  20000
-setp hm2_7i96s.0.pwmgen.pdm_frequency  6000000
-setp hm2_7i96s.0.pwmgen.00.output-type 1
-setp hm2_7i96s.0.pwmgen.00.scale       [SPINDLE_0]OUTPUT_SCALE
+# Configura pwmgen como saída analógica (PDM → 0-10V)
+setp    hm2_7i96s.0.pwmgen.pwm_frequency   20000
+setp    hm2_7i96s.0.pwmgen.pdm_frequency   6000000
+setp    hm2_7i96s.0.pwmgen.00.output-type  1
+setp    hm2_7i96s.0.pwmgen.00.scale        [SPINDLE_0]OUTPUT_SCALE
 
 loadrt pid names=pid.x,pid.z
-loadrt scale count=3
+loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
 loadrt near count=1
 
 # ============================================================
-# HANDWHEEL MPG — encoder software lendo TB3 input-04/05
+# BOTÕES FÍSICOS (CYCLE-START como RUN/PAUSE/RESUME + STOP)
 # ============================================================
-loadrt encoder names=mpg
-setp mpg.position-scale [MPG]SCALE
-setp mpg.x4-mode        0
-setp mpg.counter-mode   1
-
-# Lógica de seleção de eixo e escala (feita no custom_postgui.hal via pyvcp/gladevcp)
-# Aqui apenas declaramos os nets que o postgui irá conectar:
-#   mpg-axis-select   (0=X, 1=Z)
-#   mpg-scale-value   (0.001 / 0.01 / 0.1 / 1.0)
-#   mpg-feed-override (quando programa rodando)
-
-# Multiplicadores
-loadrt mult2 count=2
-# mux: seleciona eixo destino do jog
-loadrt mux2  count=1
-
 loadrt oneshot count=2
-loadrt and2   count=4
-loadrt not    count=1
+loadrt and2 count=4
+loadrt or2 count=1
+loadrt not count=1
 
 setp oneshot.0.width 0.05
 setp oneshot.1.width 0.05
 
-# ============================================================
-# THREAD — addf
-# ============================================================
 addf hm2_7i96s.0.read          servo-thread
 addf motion-command-handler    servo-thread
 addf motion-controller         servo-thread
 addf pid.x.do-pid-calcs        servo-thread
 addf pid.z.do-pid-calcs        servo-thread
-addf mpg.update-counters       servo-thread
-addf mpg.capture-position      servo-thread
-addf mult2.0                   servo-thread
-addf mult2.1                   servo-thread
-addf mux2.0                    servo-thread
 addf oneshot.0                 servo-thread
 addf oneshot.1                 servo-thread
+addf or2.0                     servo-thread
 addf not.0                     servo-thread
+addf scale.0                   servo-thread
+addf scale.1                   servo-thread
+addf scale.2                   servo-thread
+addf scale.3                   servo-thread
+addf scale.4                   servo-thread
+addf scale.5                   servo-thread
+addf lowpass.0                 servo-thread
+addf abs.0                     servo-thread
+addf near.0                    servo-thread
 addf and2.0                    servo-thread
 addf and2.1                    servo-thread
 addf and2.2                    servo-thread
 addf and2.3                    servo-thread
-addf scale.0                   servo-thread
-addf scale.1                   servo-thread
-addf scale.2                   servo-thread
-addf lowpass.0                 servo-thread
-addf near.0                    servo-thread
-addf abs.0                     servo-thread
 addf hm2_7i96s.0.write         servo-thread
 
 setp hm2_7i96s.0.dpll.01.timer-us -50
 setp hm2_7i96s.0.stepgen.timer-number 1
 
+
 # ============================================================
-# SAÍDAS DIGITAIS (SSR — TB4)
+# SAÍDAS DIGITAIS (SSR)
 # ============================================================
-net spindle-enable  => hm2_7i96s.0.ssr.00.out-02
-net coolant-flood   => hm2_7i96s.0.ssr.00.out-03
+
+# --- TURRET (torre) ---
+net turret-lock   <= motion.digital-out-06  =>  hm2_7i96s.0.ssr.00.out-00
+net turret-enable <= motion.digital-out-07  =>  hm2_7i96s.0.ssr.00.out-01
+
+# --- SPINDLE ENABLE ---
+net spindle-enable  =>  hm2_7i96s.0.ssr.00.out-02
+
+# --- COOLANT ---
+net coolant-flood   =>  hm2_7i96s.0.ssr.00.out-03
+
 
 # ============================================================
 # ENTRADAS DIGITAIS (InM — TB3)
+# IN COMMON ligado ao +24V
+# Botão NF: solto=TRUE=OK, pressionado=FALSE=ESTOP
 # ============================================================
-net estop-ext   <= hm2_7i96s.0.inm.00.input-00
-net cycle-start <= hm2_7i96s.0.inm.00.input-01
-net home-x      <= hm2_7i96s.0.inm.00.input-02
-net home-z      <= hm2_7i96s.0.inm.00.input-03
 
-# Fases MPG via optoacoplador
-net mpg-phase-a <= hm2_7i96s.0.inm.00.input-04
-net mpg-phase-b <= hm2_7i96s.0.inm.00.input-05
-net mpg-phase-a => mpg.phase-A
-net mpg-phase-b => mpg.phase-B
+net estop-ext   <=  hm2_7i96s.0.inm.00.input-00
+net cycle-start <=  hm2_7i96s.0.inm.00.input-01
+net home-x      <=  hm2_7i96s.0.inm.00.input-02
+net home-z      <=  hm2_7i96s.0.inm.00.input-03
 
-# ============================================================
-# EIXO X — JOINT 0
-# ============================================================
-setp pid.x.Pgain     [JOINT_0]P
-setp pid.x.Igain     [JOINT_0]I
-setp pid.x.Dgain     [JOINT_0]D
-setp pid.x.bias      [JOINT_0]BIAS
-setp pid.x.FF0       [JOINT_0]FF0
-setp pid.x.FF1       [JOINT_0]FF1
-setp pid.x.FF2       [JOINT_0]FF2
-setp pid.x.deadband  [JOINT_0]DEADBAND
-setp pid.x.maxoutput [JOINT_0]MAX_OUTPUT
-setp pid.x.error-previous-target true
-setp pid.x.maxerror  0.012700
 
-net x-index-enable  => pid.x.index-enable
-net x-enable        => pid.x.enable
-net x-pos-cmd       => pid.x.command
-net x-pos-fb        => pid.x.feedback
-net x-output        <= pid.x.output
+#*******************
+#  EIXO X — JOINT 0
+#*******************
 
-setp hm2_7i96s.0.stepgen.00.dirsetup       [JOINT_0]DIRSETUP
-setp hm2_7i96s.0.stepgen.00.dirhold        [JOINT_0]DIRHOLD
-setp hm2_7i96s.0.stepgen.00.steplen        [JOINT_0]STEPLEN
-setp hm2_7i96s.0.stepgen.00.stepspace      [JOINT_0]STEPSPACE
-setp hm2_7i96s.0.stepgen.00.position-scale [JOINT_0]STEP_SCALE
-setp hm2_7i96s.0.stepgen.00.step_type      0
-setp hm2_7i96s.0.stepgen.00.control-type   1
-setp hm2_7i96s.0.stepgen.00.maxaccel       [JOINT_0]STEPGEN_MAXACCEL
-setp hm2_7i96s.0.stepgen.00.maxvel         [JOINT_0]STEPGEN_MAXVEL
+setp   pid.x.Pgain     [JOINT_0]P
+setp   pid.x.Igain     [JOINT_0]I
+setp   pid.x.Dgain     [JOINT_0]D
+setp   pid.x.bias      [JOINT_0]BIAS
+setp   pid.x.FF0       [JOINT_0]FF0
+setp   pid.x.FF1       [JOINT_0]FF1
+setp   pid.x.FF2       [JOINT_0]FF2
+setp   pid.x.deadband  [JOINT_0]DEADBAND
+setp   pid.x.maxoutput [JOINT_0]MAX_OUTPUT
+setp   pid.x.error-previous-target true
+setp   pid.x.maxerror 0.012700
 
-net x-pos-cmd <= joint.0.motor-pos-cmd
-net x-output  => hm2_7i96s.0.stepgen.00.velocity-cmd
-net x-pos-fb  <= hm2_7i96s.0.stepgen.00.position-fb
-net x-pos-fb  => joint.0.motor-pos-fb
-net x-enable  <= joint.0.amp-enable-out
-net x-enable  => hm2_7i96s.0.stepgen.00.enable
-net home-x    => joint.0.home-sw-in
+net x-index-enable  =>  pid.x.index-enable
+net x-enable        =>  pid.x.enable
+net x-pos-cmd       =>  pid.x.command
+net x-pos-fb        =>  pid.x.feedback
+net x-output        <=  pid.x.output
 
-# ============================================================
-# EIXO Z — JOINT 1
-# ============================================================
-setp pid.z.Pgain     [JOINT_1]P
-setp pid.z.Igain     [JOINT_1]I
-setp pid.z.Dgain     [JOINT_1]D
-setp pid.z.bias      [JOINT_1]BIAS
-setp pid.z.FF0       [JOINT_1]FF0
-setp pid.z.FF1       [JOINT_1]FF1
-setp pid.z.FF2       [JOINT_1]FF2
-setp pid.z.deadband  [JOINT_1]DEADBAND
-setp pid.z.maxoutput [JOINT_1]MAX_OUTPUT
-setp pid.z.error-previous-target true
-setp pid.z.maxerror  0.012700
+setp   hm2_7i96s.0.stepgen.00.dirsetup        [JOINT_0]DIRSETUP
+setp   hm2_7i96s.0.stepgen.00.dirhold         [JOINT_0]DIRHOLD
+setp   hm2_7i96s.0.stepgen.00.steplen         [JOINT_0]STEPLEN
+setp   hm2_7i96s.0.stepgen.00.stepspace       [JOINT_0]STEPSPACE
+setp   hm2_7i96s.0.stepgen.00.position-scale  [JOINT_0]STEP_SCALE
+setp   hm2_7i96s.0.stepgen.00.step_type        0
+setp   hm2_7i96s.0.stepgen.00.control-type     1
+setp   hm2_7i96s.0.stepgen.00.maxaccel         [JOINT_0]STEPGEN_MAXACCEL
+setp   hm2_7i96s.0.stepgen.00.maxvel           [JOINT_0]STEPGEN_MAXVEL
 
-net z-index-enable  => pid.z.index-enable
-net z-enable        => pid.z.enable
-net z-pos-cmd       => pid.z.command
-net z-pos-fb        => pid.z.feedback
-net z-output        <= pid.z.output
+net x-pos-cmd    <= joint.0.motor-pos-cmd
+net x-vel-cmd    <= joint.0.vel-cmd
+net x-output     => hm2_7i96s.0.stepgen.00.velocity-cmd
+net x-pos-fb     <= hm2_7i96s.0.stepgen.00.position-fb
+net x-pos-fb     => joint.0.motor-pos-fb
+net x-enable     <= joint.0.amp-enable-out
+net x-enable     => hm2_7i96s.0.stepgen.00.enable
 
-setp hm2_7i96s.0.stepgen.01.dirsetup       [JOINT_1]DIRSETUP
-setp hm2_7i96s.0.stepgen.01.dirhold        [JOINT_1]DIRHOLD
-setp hm2_7i96s.0.stepgen.01.steplen        [JOINT_1]STEPLEN
-setp hm2_7i96s.0.stepgen.01.stepspace      [JOINT_1]STEPSPACE
-setp hm2_7i96s.0.stepgen.01.position-scale [JOINT_1]STEP_SCALE
-setp hm2_7i96s.0.stepgen.01.step_type      0
-setp hm2_7i96s.0.stepgen.01.control-type   1
-setp hm2_7i96s.0.stepgen.01.maxaccel       [JOINT_1]STEPGEN_MAXACCEL
-setp hm2_7i96s.0.stepgen.01.maxvel         [JOINT_1]STEPGEN_MAXVEL
+net home-x       =>  joint.0.home-sw-in
+net x-neg-limit  =>  joint.0.neg-lim-sw-in
+net x-pos-limit  =>  joint.0.pos-lim-sw-in
 
-net z-pos-cmd <= joint.1.motor-pos-cmd
-net z-output  => hm2_7i96s.0.stepgen.01.velocity-cmd
-net z-pos-fb  <= hm2_7i96s.0.stepgen.01.position-fb
-net z-pos-fb  => joint.1.motor-pos-fb
-net z-enable  <= joint.1.amp-enable-out
-net z-enable  => hm2_7i96s.0.stepgen.01.enable
-net home-z    => joint.1.home-sw-in
 
-# ============================================================
-# EIXO C (TORRE) — JOINT 2
-# ============================================================
-setp hm2_7i96s.0.stepgen.02.dirsetup       [JOINT_2]DIRSETUP
-setp hm2_7i96s.0.stepgen.02.dirhold        [JOINT_2]DIRHOLD
-setp hm2_7i96s.0.stepgen.02.steplen        [JOINT_2]STEPLEN
-setp hm2_7i96s.0.stepgen.02.stepspace      [JOINT_2]STEPSPACE
-setp hm2_7i96s.0.stepgen.02.position-scale [JOINT_2]STEP_SCALE
-setp hm2_7i96s.0.stepgen.02.step_type      0
-setp hm2_7i96s.0.stepgen.02.control-type   0
-setp hm2_7i96s.0.stepgen.02.maxaccel       [JOINT_2]STEPGEN_MAXACCEL
-setp hm2_7i96s.0.stepgen.02.maxvel         [JOINT_2]STEPGEN_MAXVEL
+#*******************
+#  EIXO Z — JOINT 1
+#*******************
 
-net c-pos-cmd <= joint.2.motor-pos-cmd
-net c-pos-cmd => hm2_7i96s.0.stepgen.02.position-cmd
-net c-pos-fb  <= hm2_7i96s.0.stepgen.02.position-fb
-net c-pos-fb  => joint.2.motor-pos-fb
-net c-enable  <= joint.2.amp-enable-out
-net c-enable  => hm2_7i96s.0.stepgen.02.enable
+setp   pid.z.Pgain     [JOINT_1]P
+setp   pid.z.Igain     [JOINT_1]I
+setp   pid.z.Dgain     [JOINT_1]D
+setp   pid.z.bias      [JOINT_1]BIAS
+setp   pid.z.FF0       [JOINT_1]FF0
+setp   pid.z.FF1       [JOINT_1]FF1
+setp   pid.z.FF2       [JOINT_1]FF2
+setp   pid.z.deadband  [JOINT_1]DEADBAND
+setp   pid.z.maxoutput [JOINT_1]MAX_OUTPUT
+setp   pid.z.error-previous-target true
+setp   pid.z.maxerror 0.012700
 
-# ============================================================
-# SPINDLE — analógico 0-10V
-# ============================================================
-net spindle-vel-cmd-rpm-abs => hm2_7i96s.0.pwmgen.00.value
-net spindle-enable          => hm2_7i96s.0.pwmgen.00.enable
+net z-index-enable  =>  pid.z.index-enable
+net z-enable        =>  pid.z.enable
+net z-pos-cmd       =>  pid.z.command
+net z-pos-fb        =>  pid.z.feedback
+net z-output        <=  pid.z.output
 
-setp hm2_7i96s.0.encoder.00.counter-mode      0
-setp hm2_7i96s.0.encoder.00.filter            1
-setp hm2_7i96s.0.encoder.00.index-invert      0
-setp hm2_7i96s.0.encoder.00.index-mask        0
-setp hm2_7i96s.0.encoder.00.index-mask-invert 0
-setp hm2_7i96s.0.encoder.00.scale             [SPINDLE_0]ENCODER_SCALE
+setp   hm2_7i96s.0.stepgen.01.dirsetup        [JOINT_1]DIRSETUP
+setp   hm2_7i96s.0.stepgen.01.dirhold         [JOINT_1]DIRHOLD
+setp   hm2_7i96s.0.stepgen.01.steplen         [JOINT_1]STEPLEN
+setp   hm2_7i96s.0.stepgen.01.stepspace       [JOINT_1]STEPSPACE
+setp   hm2_7i96s.0.stepgen.01.position-scale  [JOINT_1]STEP_SCALE
+setp   hm2_7i96s.0.stepgen.01.step_type        0
+setp   hm2_7i96s.0.stepgen.01.control-type     1
+setp   hm2_7i96s.0.stepgen.01.maxaccel         [JOINT_1]STEPGEN_MAXACCEL
+setp   hm2_7i96s.0.stepgen.01.maxvel           [JOINT_1]STEPGEN_MAXVEL
 
-net spindle-revs           <= hm2_7i96s.0.encoder.00.position
-net spindle-vel-fb-rps     <= hm2_7i96s.0.encoder.00.velocity
-net spindle-vel-fb-rpm     <= hm2_7i96s.0.encoder.00.velocity-rpm
-net spindle-index-enable  <=> hm2_7i96s.0.encoder.00.index-enable
+net z-pos-cmd    <= joint.1.motor-pos-cmd
+net z-vel-cmd    <= joint.1.vel-cmd
+net z-output     => hm2_7i96s.0.stepgen.01.velocity-cmd
+net z-pos-fb     <= hm2_7i96s.0.stepgen.01.position-fb
+net z-pos-fb     => joint.1.motor-pos-fb
+net z-enable     <= joint.1.amp-enable-out
+net z-enable     => hm2_7i96s.0.stepgen.01.enable
 
-net spindle-vel-cmd-rps-abs <= spindle.0.speed-out-rps-abs
-net spindle-vel-cmd-rpm-abs <= spindle.0.speed-out-abs
-net spindle-enable          <= spindle.0.on
-net spindle-revs            => spindle.0.revs
-net spindle-at-speed        => spindle.0.at-speed
-net spindle-vel-fb-rps      => spindle.0.speed-in
-net spindle-index-enable   <=> spindle.0.index-enable
+net home-z       =>  joint.1.home-sw-in
+net z-neg-limit  =>  joint.1.neg-lim-sw-in
+net z-pos-limit  =>  joint.1.pos-lim-sw-in
 
+
+#*******************
+#  EIXO C (TORRE) — JOINT 2
+#*******************
+
+setp   hm2_7i96s.0.stepgen.02.dirsetup        [JOINT_2]DIRSETUP
+setp   hm2_7i96s.0.stepgen.02.dirhold         [JOINT_2]DIRHOLD
+setp   hm2_7i96s.0.stepgen.02.steplen         [JOINT_2]STEPLEN
+setp   hm2_7i96s.0.stepgen.02.stepspace       [JOINT_2]STEPSPACE
+setp   hm2_7i96s.0.stepgen.02.position-scale  [JOINT_2]STEP_SCALE
+setp   hm2_7i96s.0.stepgen.02.step_type        0
+setp   hm2_7i96s.0.stepgen.02.control-type     0
+setp   hm2_7i96s.0.stepgen.02.maxaccel         [JOINT_2]STEPGEN_MAXACCEL
+setp   hm2_7i96s.0.stepgen.02.maxvel           [JOINT_2]STEPGEN_MAXVEL
+
+net c-pos-cmd    <= joint.2.motor-pos-cmd
+net c-pos-cmd    => hm2_7i96s.0.stepgen.02.position-cmd
+net c-pos-fb     <= hm2_7i96s.0.stepgen.02.position-fb
+net c-pos-fb     => joint.2.motor-pos-fb
+net c-enable     <= joint.2.amp-enable-out
+net c-enable     => hm2_7i96s.0.stepgen.02.enable
+
+
+#*******************
+#  SPINDLE — Analógico 0-10V via pwmgen.00 (TB2 SPINOUT)
+#
+#  Drive HLTNC T3DF: P004=1 (velocidade), P005=1 (analógico)
+#  Fiação: TB2 SPINOUT+ → CN1 AS+
+#          TB2 SPINOUT- → CN1 AS-
+#
+#  OUTPUT_SCALE no INI = RPM máximo do spindle (ex: 1200)
+#  LinuxCNC envia 0.0~1.0 → pwmgen converte para 0~10V
+#*******************
+
+# Saída analógica para o drive
+# pwmgen recebe RPM absoluto e normaliza pelo OUTPUT_SCALE (1200 RPM = 10V)
+net spindle-vel-cmd-rpm-abs  =>  hm2_7i96s.0.pwmgen.00.value
+net spindle-enable           =>  hm2_7i96s.0.pwmgen.00.enable
+
+# --- Encoder feedback do spindle (para rosqueamento futuro) ---
+setp    hm2_7i96s.0.encoder.00.counter-mode 0
+setp    hm2_7i96s.0.encoder.00.filter 1
+setp    hm2_7i96s.0.encoder.00.index-invert 0
+setp    hm2_7i96s.0.encoder.00.index-mask 0
+setp    hm2_7i96s.0.encoder.00.index-mask-invert 0
+setp    hm2_7i96s.0.encoder.00.scale  [SPINDLE_0]ENCODER_SCALE
+
+net spindle-revs         <=   hm2_7i96s.0.encoder.00.position
+net spindle-vel-fb-rps   <=   hm2_7i96s.0.encoder.00.velocity
+net spindle-vel-fb-rpm   <=   hm2_7i96s.0.encoder.00.velocity-rpm
+net spindle-index-enable <=>  hm2_7i96s.0.encoder.00.index-enable
+
+# --- Sinais de controle do spindle ---
+net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
+net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
+net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
+net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
+net spindle-enable             <=  spindle.0.on
+net spindle-cw                 <=  spindle.0.forward
+net spindle-ccw                <=  spindle.0.reverse
+net spindle-brake              <=  spindle.0.brake
+net spindle-revs               =>  spindle.0.revs
+net spindle-at-speed           =>  spindle.0.at-speed
+net spindle-vel-fb-rps         =>  spindle.0.speed-in
+net spindle-index-enable      <=>  spindle.0.index-enable
+
+# at-speed sempre TRUE até ter sensor dedicado
 sets spindle-at-speed true
 
+
+#******************************
+# SINAIS DIVERSOS
+#******************************
+
+# --- HALUI ---
+net axis-select-x     halui.axis.x.select
+net jog-x-pos         halui.axis.x.plus
+net jog-x-neg         halui.axis.x.minus
+net jog-x-analog      halui.axis.x.analog
+net x-is-homed        halui.joint.0.is-homed
+net axis-select-z     halui.axis.z.select
+net jog-z-pos         halui.axis.z.plus
+net jog-z-neg         halui.axis.z.minus
+net jog-z-analog      halui.axis.z.analog
+net z-is-homed        halui.joint.1.is-homed
+net jog-selected-pos  halui.axis.selected.plus
+net jog-selected-neg  halui.axis.selected.minus
+net spindle-manual-cw    halui.spindle.0.forward
+net spindle-manual-ccw   halui.spindle.0.reverse
+net spindle-manual-stop  halui.spindle.0.stop
+net machine-is-on        halui.machine.is-on
+net jog-speed            halui.axis.jog-speed
+net MDI-mode             halui.mode.is-mdi
+
+
 # ============================================================
-# CYCLE-START FÍSICO → RUN / PAUSE / RESUME
+# CYCLE-START FÍSICO: RUN / PAUSE / RESUME
 # ============================================================
-net cycle-start       => oneshot.0.in
-net cs-pulse          <= oneshot.0.out
+net cycle-start           => oneshot.0.in
+net cycle-start-pulse     <= oneshot.0.out
 
-net prog-is-idle      <= halui.program.is-idle
-net prog-is-running   <= halui.program.is-running
-net prog-is-paused    <= halui.program.is-paused
+net prog-is-idle          <= halui.program.is-idle
+net prog-is-running       <= halui.program.is-running
+net prog-is-paused        <= halui.program.is-paused
 
-net prog-not-paused   <= not.0.out
-net prog-is-paused    => not.0.in
+net prog-not-paused       <= not.0.out
+net prog-is-paused        => not.0.in
 
-# RUN: cs-pulse AND idle
-net do-run   <= and2.0.out
-net cs-pulse => and2.0.in0
-net prog-is-idle => and2.0.in1
-net do-run   => halui.program.run
+net running-not-paused    <= and2.1.out
+net prog-is-running       => and2.1.in0
+net prog-not-paused       => and2.1.in1
 
-# Auxiliar: running AND not-paused
-net running-not-paused <= and2.1.out
-net prog-is-running    => and2.1.in0
-net prog-not-paused    => and2.1.in1
+net do-run                <= and2.0.out
+net cycle-start-pulse     => and2.0.in0
+net prog-is-idle          => and2.0.in1
+net do-run                => halui.program.run
 
-# PAUSE: cs-pulse AND running-not-paused
-net do-pause           <= and2.2.out
-net cs-pulse           => and2.2.in0
-net running-not-paused => and2.2.in1
-net do-pause           => halui.program.pause
+net do-pause              <= and2.2.out
+net cycle-start-pulse     => and2.2.in0
+net running-not-paused    => and2.2.in1
+net do-pause              => halui.program.pause
 
-# RESUME: cs-pulse AND paused
-net do-resume    <= and2.3.out
-net cs-pulse     => and2.3.in0
-net prog-is-paused => and2.3.in1
-net do-resume    => halui.program.resume
+net do-resume             <= and2.3.out
+net cycle-start-pulse     => and2.3.in0
+net prog-is-paused        => and2.3.in1
+net do-resume             => halui.program.resume
 
-# STOP físico
+
+# ============================================================
+# CYCLE-STOP FÍSICO
+# ============================================================
 net cycle-stop        => oneshot.1.in
 net cycle-stop-pulse  <= oneshot.1.out
 net cycle-stop-pulse  => halui.program.stop
 
-# ============================================================
-# SINAIS HALUI (jog, eixo, spindle manual)
-# ============================================================
-net axis-select-x    halui.axis.x.select
-net axis-select-z    halui.axis.z.select
-net jog-x-analog     halui.axis.x.analog
-net jog-z-analog     halui.axis.z.analog
-net jog-speed        halui.axis.jog-speed
-net machine-is-on    halui.machine.is-on
-net MDI-mode         halui.mode.is-mdi
-net spindle-manual-cw   halui.spindle.0.forward
-net spindle-manual-ccw  halui.spindle.0.reverse
-net spindle-manual-stop halui.spindle.0.stop
+
+# --- Coolant ---
+net coolant-mist   <=  iocontrol.0.coolant-mist
+net coolant-flood  <=  iocontrol.0.coolant-flood
+
+
+# --- Probe ---
+net probe-in  =>  motion.probe-input
+
+
+# --- Motion ---
+net in-position        <=  motion.in-position
+net machine-is-enabled <=  motion.motion-enabled
+
 
 # ============================================================
-# ESTOP / COOLANT / PROBE / TOOL
+# ESTOP
 # ============================================================
-net estop-out <= iocontrol.0.user-enable-out
-net estop-ext => iocontrol.0.emc-enable-in
+net estop-out  <=  iocontrol.0.user-enable-out
+net estop-ext  =>  iocontrol.0.emc-enable-in
 
-net coolant-flood <= iocontrol.0.coolant-flood
-net coolant-mist  <= iocontrol.0.coolant-mist
 
-net probe-in => motion.probe-input
-
-net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
-net tool-change-loopback  iocontrol.0.tool-change  => iocontrol.0.tool-changed
+# --- Tool change ---
+net tool-prepare-loopback  iocontrol.0.tool-prepare   =>  iocontrol.0.tool-prepared
+net tool-change-loopback   iocontrol.0.tool-change    =>  iocontrol.0.tool-changed
