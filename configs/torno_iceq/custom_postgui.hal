@@ -88,31 +88,35 @@ net dout-05  <=  motion.digital-out-05
 # ============================================================
 
 # ============================================================
-# ============================================================
-# HANDWHEEL MPG
+# HANDWHEEL MPG — lógica simplificada
 # ============================================================
 #
-# SELEÇÃO DE EIXO: toggle.0
-#   toggle.0.out=TRUE → X selecionado (padrão ao ligar, LED-X aceso)
-#   toggle.0.out=FALSE → Z selecionado
+# EIXO: botão X liga X, botão Z liga Z (checkbuttons BIT)
+#   pyvcp.btn-x → axis.x.jog-enable
+#   pyvcp.btn-z → axis.z.jog-enable
+#   LEDs mostram qual está ativo
 #
-# SELEÇÃO DE ESCALA: 2 checkbuttons → mux4.0.sel0/sel1
-#   sel0=0 sel1=0 → 0.001 mm/pulso
-#   sel0=1 sel1=0 → 0.010 mm/pulso
-#   sel0=0 sel1=1 → 0.100 mm/pulso
-#   sel0=1 sel1=1 → 1.000 mm/pulso
+# ESCALA: 4 checkbuttons, cada um com LED
+#   pyvcp.sc-001 → setp axis.x.jog-scale 0.001 (via mux4)
+#   pyvcp.sc-010 → setp axis.x.jog-scale 0.010
+#   pyvcp.sc-100 → setp axis.x.jog-scale 0.100
+#   pyvcp.sc-1k  → setp axis.x.jog-scale 1.000
+#   sel0 = sc-010 OR sc-1k (bit0 do índice)
+#   sel1 = sc-100 OR sc-1k (bit1 do índice)
 # ============================================================
 
-# --- Seleção de eixo ---
-net mpg-btn-axis  <=  pyvcp.mpg-btn-axis
-net mpg-btn-axis  =>  toggle.0.in
-net mpg-axis-is-x <=  toggle.0.out
-net mpg-axis-is-x =>  pyvcp.LED-SEL-X
-net mpg-axis-is-x =>  not.1.in
-net mpg-axis-is-z <=  not.1.out
-net mpg-axis-is-z =>  pyvcp.LED-SEL-Z
+# --- Eixo X ---
+net mpg-btn-x     <=  pyvcp.btn-x
+net mpg-btn-x     =>  axis.x.jog-enable
+net mpg-btn-x     =>  pyvcp.LED-SEL-X
 
-# --- Seleção de escala via 2 checkbuttons (sel0 + sel1 = 4 combinações) ---
+# --- Eixo Z ---
+net mpg-btn-z     <=  pyvcp.btn-z
+net mpg-btn-z     =>  axis.z.jog-enable
+net mpg-btn-z     =>  pyvcp.LED-SEL-Z
+
+# --- Escala via mux4 ---
+# sel0 e sel1 conectados a checkbuttons do painel
 setp mux4.0.in0 0.001
 setp mux4.0.in1 0.010
 setp mux4.0.in2 0.100
@@ -132,18 +136,7 @@ net mpg-scale-val =>  pyvcp.mpg-scale-disp
 setp axis.x.jog-vel-mode 1
 setp axis.z.jog-vel-mode 1
 
-# Counts do encoder MPG
+# Counts do encoder MPG → ambos os eixos (jog-enable decide qual move)
 net mpg-counts    <=  mpg.counts
 net mpg-counts    =>  axis.x.jog-counts
 net mpg-counts    =>  axis.z.jog-counts
-
-# Jog-enable por eixo selecionado
-net prog-is-idle  =>  and2.4.in0
-net mpg-axis-is-x =>  and2.4.in1
-net mpg-en-x      <=  and2.4.out
-net mpg-en-x      =>  axis.x.jog-enable
-
-net prog-is-idle  =>  and2.5.in0
-net mpg-axis-is-z =>  and2.5.in1
-net mpg-en-z      <=  and2.5.out
-net mpg-en-z      =>  axis.z.jog-enable
