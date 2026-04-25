@@ -1,7 +1,5 @@
 # TORNO_ICEQ.hal
-# Baseado na configuração funcional do protótipo (PNCconf 2.9.7)
-# Adaptado para spindle servo HLTNC 3.8kW via step/dir (stepgen.03)
-# Versão: 2.0 — Spindle step/dir, sem PWM
+# Versão: 3.0 — Spindle analógico 0-10V via pwmgen (TB2 SPINOUT)
 #
 # Mapeamento TB3 (entradas InM):
 #   TB3-1  = input-00 = ESTOP (botão NF, IN COMMON = +24V)
@@ -13,22 +11,36 @@
 #   stepgen.00 = Eixo X (Joint 0)
 #   stepgen.01 = Eixo Z (Joint 1)
 #   stepgen.02 = Eixo C / Torre (Joint 2)
-#   stepgen.03 = Spindle servo HLTNC (step/dir)
 #
-# SSR outputs (TB3):
-#   ssr.00.out-00 = SPINDLE-ENABLE
-#   ssr.00.out-01 = SPINDLE-CW
-#   ssr.00.out-02 = SPINDLE-CCW
+# Spindle:
+#   pwmgen.00  = saída analógica 0-10V (TB2 SPINOUT+ / SPINOUT-)
+#                → AS+ / AS- do drive HLTNC T3DF
+#   Drive: P004=1 (velocidade), P005=1 (analógico)
+#
+# SSR outputs:
+#   ssr.00.out-00 = TURRET-LOCK  (solenoide torre P6)
+#   ssr.00.out-01 = TURRET-ENABLE (enable drive torre P7)
+#   ssr.00.out-02 = SPINDLE-ENABLE
 #   ssr.00.out-03 = COOLANT-FLOOD
 
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=16
 loadrt hostmot2
-# num_stepgens=4: stepgen.00=X, 01=Z, 02=C(torre), 03=Spindle servo
-# num_pwmgens=0: spindle é step/dir, não PWM
-loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_pwmgens=0 num_stepgens=4"
+
+# num_stepgens=3: X, Z, C(torre)
+# num_pwmgens=1:  spindle analógico
+# num_encoders=1: encoder spindle (rosqueamento)
+loadrt hm2_eth board_ip="192.168.1.121" config="num_encoders=1 num_pwmgens=1 num_stepgens=3"
+
 setp    hm2_7i96s.0.watchdog.timeout_ns 100000000
-loadrt pid names=pid.x,pid.z,pid.s
+
+# Configura pwmgen como saída analógica (PDM → 0-10V)
+setp    hm2_7i96s.0.pwmgen.pwm_frequency   20000
+setp    hm2_7i96s.0.pwmgen.pdm_frequency   6000000
+setp    hm2_7i96s.0.pwmgen.00.output-type  1
+setp    hm2_7i96s.0.pwmgen.00.scale        [SPINDLE_0]OUTPUT_SCALE
+
+loadrt pid names=pid.x,pid.z
 loadrt scale count=6
 loadrt lowpass count=1
 loadrt abs count=1
@@ -42,7 +54,6 @@ loadrt and2 count=4
 loadrt or2 count=1
 loadrt not count=1
 
-# Pulso curto (evita repetição se botão ficar pressionado)
 setp oneshot.0.width 0.05
 setp oneshot.1.width 0.05
 
@@ -51,7 +62,6 @@ addf motion-command-handler    servo-thread
 addf motion-controller         servo-thread
 addf pid.x.do-pid-calcs        servo-thread
 addf pid.z.do-pid-calcs        servo-thread
-addf pid.s.do-pid-calcs        servo-thread
 addf oneshot.0                 servo-thread
 addf oneshot.1                 servo-thread
 addf or2.0                     servo-thread
@@ -70,44 +80,36 @@ addf and2.1                    servo-thread
 addf and2.2                    servo-thread
 addf and2.3                    servo-thread
 addf hm2_7i96s.0.write         servo-thread
+
 setp hm2_7i96s.0.dpll.01.timer-us -50
 setp hm2_7i96s.0.stepgen.timer-number 1
 
 
 # ============================================================
-# SAÍDAS DIGITAIS (SSR — TB3)
+# SAÍDAS DIGITAIS (SSR)
 # ============================================================
 
-# --- SPINDLE-ENABLE ---
-#net spindle-enable  =>  hm2_7i96s.0.ssr.00.out-00
+# --- TURRET (torre) ---
+net turret-lock   <= motion.digital-out-06  =>  hm2_7i96s.0.ssr.00.out-00
+net turret-enable <= motion.digital-out-07  =>  hm2_7i96s.0.ssr.00.out-01
 
-# --- SPINDLE-CW ---
-#net spindle-cw      =>  hm2_7i96s.0.ssr.00.out-01
+# --- SPINDLE ENABLE ---
+net spindle-enable  =>  hm2_7i96s.0.ssr.00.out-02
 
-# --- SPINDLE-CCW ---
-#net spindle-ccw     =>  hm2_7i96s.0.ssr.00.out-02
-
-# --- COOLANT-FLOOD ---
-#net coolant-flood   =>  hm2_7i96s.0.ssr.00.out-03
+# --- COOLANT ---
+net coolant-flood   =>  hm2_7i96s.0.ssr.00.out-03
 
 
 # ============================================================
 # ENTRADAS DIGITAIS (InM — TB3)
-# IN COMMON deve estar ligado ao +24V
-# Botão NF: solto=TRUE, pressionado=FALSE
+# IN COMMON ligado ao +24V
+# Botão NF: solto=TRUE=OK, pressionado=FALSE=ESTOP
 # ============================================================
 
-# --- ESTOP-EXT (botão NF: solto=TRUE=OK, pressionado=FALSE=ESTOP) ---
-net estop-ext       <=  hm2_7i96s.0.inm.00.input-00
-
-# --- CYCLE-START ---
-net cycle-start     <=  hm2_7i96s.0.inm.00.input-01
-
-# --- HOME-X ---
-net home-x          <=  hm2_7i96s.0.inm.00.input-02
-
-# --- HOME-Z ---
-net home-z          <=  hm2_7i96s.0.inm.00.input-03
+net estop-ext   <=  hm2_7i96s.0.inm.00.input-00
+net cycle-start <=  hm2_7i96s.0.inm.00.input-01
+net home-x      <=  hm2_7i96s.0.inm.00.input-02
+net home-z      <=  hm2_7i96s.0.inm.00.input-03
 
 
 #*******************
@@ -223,50 +225,22 @@ net c-enable     => hm2_7i96s.0.stepgen.02.enable
 
 
 #*******************
-#  SPINDLE — Servo HLTNC 3.8kW via step/dir (stepgen.03)
+#  SPINDLE — Analógico 0-10V via pwmgen.00 (TB2 SPINOUT)
 #
-#  O driver HLTNC recebe:
-#    STEP  = pulsos de velocidade (frequência = RPM)
-#    DIR   = sentido de rotação (CW/CCW)
-#    EN    = enable do drive (via SSR out-00)
+#  Drive HLTNC T3DF: P004=1 (velocidade), P005=1 (analógico)
+#  Fiação: TB2 SPINOUT+ → CN1 AS+
+#          TB2 SPINOUT- → CN1 AS-
 #
-#  SCALE = pulsos por revolução do motor configurado no driver
-#  Ajuste [SPINDLE_0]STEP_SCALE conforme parâmetro do seu driver HLTNC
-#  Exemplo: se driver configurado para 1000 pulsos/rev → STEP_SCALE = 1000
+#  OUTPUT_SCALE no INI = RPM máximo do spindle (ex: 1200)
+#  LinuxCNC envia 0.0~1.0 → pwmgen converte para 0~10V
 #*******************
 
-setp   pid.s.Pgain     [SPINDLE_0]P
-setp   pid.s.Igain     [SPINDLE_0]I
-setp   pid.s.Dgain     [SPINDLE_0]D
-setp   pid.s.bias      [SPINDLE_0]BIAS
-setp   pid.s.FF0       [SPINDLE_0]FF0
-setp   pid.s.FF1       [SPINDLE_0]FF1
-setp   pid.s.FF2       [SPINDLE_0]FF2
-setp   pid.s.deadband  [SPINDLE_0]DEADBAND
-setp   pid.s.maxoutput [SPINDLE_0]MAX_OUTPUT
-setp   pid.s.error-previous-target true
+# Saída analógica para o drive
+# pwmgen recebe RPM absoluto e normaliza pelo OUTPUT_SCALE (1200 RPM = 10V)
+net spindle-vel-cmd-rpm-abs  =>  hm2_7i96s.0.pwmgen.00.value
+net spindle-enable           =>  hm2_7i96s.0.pwmgen.00.enable
 
-net spindle-index-enable  =>  pid.s.index-enable
-net spindle-enable        =>  pid.s.enable
-net spindle-vel-cmd-rps-abs     => pid.s.command
-net spindle-vel-fb-rps          => pid.s.feedback
-net spindle-output        <=  pid.s.output
-
-# --- StepGen para spindle servo ---
-setp   hm2_7i96s.0.stepgen.03.dirsetup        [SPINDLE_0]DIRSETUP
-setp   hm2_7i96s.0.stepgen.03.dirhold         [SPINDLE_0]DIRHOLD
-setp   hm2_7i96s.0.stepgen.03.steplen         [SPINDLE_0]STEPLEN
-setp   hm2_7i96s.0.stepgen.03.stepspace       [SPINDLE_0]STEPSPACE
-setp   hm2_7i96s.0.stepgen.03.position-scale  [SPINDLE_0]STEP_SCALE
-setp   hm2_7i96s.0.stepgen.03.step_type        0
-setp   hm2_7i96s.0.stepgen.03.control-type     1
-setp   hm2_7i96s.0.stepgen.03.maxaccel         [SPINDLE_0]STEPGEN_MAXACCEL
-setp   hm2_7i96s.0.stepgen.03.maxvel           [SPINDLE_0]STEPGEN_MAXVEL
-
-net spindle-output   => hm2_7i96s.0.stepgen.03.velocity-cmd
-net spindle-enable   => hm2_7i96s.0.stepgen.03.enable
-
-# --- Encoder feedback do spindle (para rosqueamento) ---
+# --- Encoder feedback do spindle (para rosqueamento futuro) ---
 setp    hm2_7i96s.0.encoder.00.counter-mode 0
 setp    hm2_7i96s.0.encoder.00.filter 1
 setp    hm2_7i96s.0.encoder.00.index-invert 0
@@ -274,10 +248,10 @@ setp    hm2_7i96s.0.encoder.00.index-mask 0
 setp    hm2_7i96s.0.encoder.00.index-mask-invert 0
 setp    hm2_7i96s.0.encoder.00.scale  [SPINDLE_0]ENCODER_SCALE
 
-net spindle-revs             <=   hm2_7i96s.0.encoder.00.position
-net spindle-vel-fb-rps       <=   hm2_7i96s.0.encoder.00.velocity
-net spindle-vel-fb-rpm       <=   hm2_7i96s.0.encoder.00.velocity-rpm
-net spindle-index-enable     <=>  hm2_7i96s.0.encoder.00.index-enable
+net spindle-revs         <=   hm2_7i96s.0.encoder.00.position
+net spindle-vel-fb-rps   <=   hm2_7i96s.0.encoder.00.velocity
+net spindle-vel-fb-rpm   <=   hm2_7i96s.0.encoder.00.velocity-rpm
+net spindle-index-enable <=>  hm2_7i96s.0.encoder.00.index-enable
 
 # --- Sinais de controle do spindle ---
 net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
@@ -293,7 +267,7 @@ net spindle-at-speed           =>  spindle.0.at-speed
 net spindle-vel-fb-rps         =>  spindle.0.speed-in
 net spindle-index-enable      <=>  spindle.0.index-enable
 
-# Spindle at-speed sempre TRUE (sem sensor de velocidade dedicado)
+# at-speed sempre TRUE até ter sensor dedicado
 sets spindle-at-speed true
 
 
@@ -357,33 +331,19 @@ net do-resume             => halui.program.resume
 
 # ============================================================
 # CYCLE-STOP FÍSICO
-# (descomente e conecte ao input quando tiver o botão físico)
 # ============================================================
-#net cycle-stop        <=  hm2_7i96s.0.inm.00.input-04
-net cycle-stop            => oneshot.1.in
-net cycle-stop-pulse      <= oneshot.1.out
-net cycle-stop-pulse      => halui.program.stop
+net cycle-stop        => oneshot.1.in
+net cycle-stop-pulse  <= oneshot.1.out
+net cycle-stop-pulse  => halui.program.stop
 
 
 # --- Coolant ---
-net coolant-mist      <=  iocontrol.0.coolant-mist
-net coolant-flood     <=  iocontrol.0.coolant-flood
-
-
-# --- TURRET / TOOLCHANGE ---
-# Solenoide torre (P6)
-#net turret-lock <= motion.digital-out-06
-#net turret-lock => hm2_7i96s.0.gpio.025.out
-net turret-lock   <= motion.digital-out-06  =>  hm2_7i96s.0.ssr.00.out-00
-net turret-enable <= motion.digital-out-07  =>  hm2_7i96s.0.ssr.00.out-01
-
-# Enable drive torre (P7)
-#net turret-enable <= motion.digital-out-07
-#net turret-enable => hm2_7i96s.0.gpio.026.out
+net coolant-mist   <=  iocontrol.0.coolant-mist
+net coolant-flood  <=  iocontrol.0.coolant-flood
 
 
 # --- Probe ---
-net probe-in     =>  motion.probe-input
+net probe-in  =>  motion.probe-input
 
 
 # --- Motion ---
@@ -393,8 +353,6 @@ net machine-is-enabled <=  motion.motion-enabled
 
 # ============================================================
 # ESTOP
-# Botão NF: solto=input-00=TRUE -> emc-enable-in=TRUE -> OK
-#           pressionado=input-00=FALSE -> emc-enable-in=FALSE -> ESTOP
 # ============================================================
 net estop-out  <=  iocontrol.0.user-enable-out
 net estop-ext  =>  iocontrol.0.emc-enable-in
