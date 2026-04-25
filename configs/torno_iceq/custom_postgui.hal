@@ -127,7 +127,6 @@ net mpg-scale-val <=  mux4.0.out
 net mpg-scale-val =>  axis.x.jog-scale
 net mpg-scale-val =>  axis.z.jog-scale
 net mpg-scale-val =>  pyvcp.mpg-scale-disp
-net jog-speed     <=  mpg-scale-val
 
 # Modo velocity
 setp axis.x.jog-vel-mode 1
