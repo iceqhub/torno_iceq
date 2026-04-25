@@ -49,7 +49,6 @@ loadrt abs count=1
 loadrt near count=1
 loadrt toggle count=1
 loadrt mult2 count=1
-loadrt conv_s32_float count=1
 
 # ============================================================
 # HANDWHEEL MPG — encoder software lendo TB3 input-04/05  ← NOVO
@@ -96,7 +95,6 @@ addf and2.2                    servo-thread
 addf and2.3                    servo-thread
 addf toggle.0                  servo-thread
 addf mult2.0                   servo-thread
-addf conv_s32_float.0          servo-thread
 addf hm2_7i96s.0.write         servo-thread
 
 setp hm2_7i96s.0.dpll.01.timer-us -50
