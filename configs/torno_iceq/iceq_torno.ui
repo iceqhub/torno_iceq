@@ -326,7 +326,7 @@
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>500</height>
+           <height>250</height>
           </size>
          </property>
          <property name="cursor">
@@ -3232,7 +3232,7 @@
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>250</height>
+        <height>150</height>
        </size>
       </property>
       <property name="title">
