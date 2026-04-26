@@ -323,6 +323,12 @@
            <height>0</height>
           </size>
          </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>500</height>
+          </size>
+         </property>
          <property name="cursor">
           <cursorShape>ArrowCursor</cursorShape>
          </property>
@@ -3218,10 +3224,16 @@
     <item>
      <widget class="QGroupBox" name="grp_subroutines">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>1</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>250</height>
+       </size>
       </property>
       <property name="title">
        <string/>
