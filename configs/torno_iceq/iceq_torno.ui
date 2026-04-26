@@ -5442,13 +5442,13 @@ QSpinBox::down-button {
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>119</height>
+        <height>79</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>175</height>
+        <height>79</height>
        </size>
       </property>
       <property name="frameShape">
