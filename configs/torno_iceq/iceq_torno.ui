@@ -282,21 +282,21 @@
     <item>
      <widget class="QFrame" name="frm_top_area">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
         <horstretch>1</horstretch>
-        <verstretch>1</verstretch>
+        <verstretch>0</verstretch>
        </sizepolicy>
       </property>
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>600</height>
+        <height>300</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>850</height>
+        <height>300</height>
        </size>
       </property>
       <property name="frameShape">
@@ -3238,7 +3238,7 @@
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>150</height>
+        <height>300</height>
        </size>
       </property>
       <property name="title">
