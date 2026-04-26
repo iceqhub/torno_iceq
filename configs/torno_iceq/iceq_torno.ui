@@ -101,7 +101,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>30</width>
-           <height>15</height>
+           <height>12</height>
           </size>
          </property>
         </spacer>
@@ -3839,13 +3839,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>256</height>
+          <height>282</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>486</width>
-          <height>256</height>
+          <height>282</height>
          </size>
         </property>
         <property name="title">
@@ -3872,13 +3872,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>256</height>
+             <height>282</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>256</height>
+             <height>282</height>
             </size>
            </property>
            <property name="currentIndex">
@@ -4725,13 +4725,13 @@ QSpinBox::down-button {
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>256</height>
+          <height>282</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>256</height>
+          <height>282</height>
          </size>
         </property>
         <property name="title">
@@ -4758,13 +4758,13 @@ QSpinBox::down-button {
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>256</height>
+             <height>282</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>256</height>
+             <height>282</height>
             </size>
            </property>
            <property name="currentIndex">
@@ -5446,17 +5446,20 @@ QSpinBox::down-button {
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="lay_status">
+       <property name="spacing">
+        <number>2</number>
+       </property>
        <property name="leftMargin">
-        <number>10</number>
+        <number>6</number>
        </property>
        <property name="topMargin">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="rightMargin">
-        <number>10</number>
+        <number>6</number>
        </property>
        <property name="bottomMargin">
-        <number>1</number>
+        <number>2</number>
        </property>
        <item>
         <widget class="QLabel" name="lbl_status_title">
@@ -5469,10 +5472,10 @@ QSpinBox::down-button {
         <widget class="QWidget" name="w_status_leds" native="true">
          <layout class="QGridLayout" name="lay_status_leds">
           <property name="horizontalSpacing">
-           <number>15</number>
+           <number>8</number>
           </property>
           <property name="verticalSpacing">
-           <number>4</number>
+           <number>1</number>
           </property>
           <item row="0" column="0">
            <widget class="QWidget" name="w_led_emerg" native="true">
@@ -5507,7 +5510,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5551,7 +5554,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5595,7 +5598,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5639,7 +5642,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5683,7 +5686,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5727,7 +5730,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5771,7 +5774,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5815,7 +5818,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5859,7 +5862,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5903,7 +5906,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5947,7 +5950,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -5991,7 +5994,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -6035,7 +6038,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -6079,7 +6082,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -6123,7 +6126,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -6167,7 +6170,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -6211,7 +6214,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
@@ -6255,7 +6258,7 @@ QSpinBox::down-button {
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>15</height>
+                 <height>12</height>
                 </size>
                </property>
                <property name="text">
