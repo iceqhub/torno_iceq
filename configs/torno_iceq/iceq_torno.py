@@ -2935,49 +2935,35 @@ class IceqMainWindow(QtWidgets.QMainWindow):
             a = str(axis).strip().upper()
             d = 1 if int(direction) >= 1 else -1
 
-            ok, reason = self._jog_machine_ready()
-            if not ok:
-                print(f"[ICEQ][JOG] contínuo bloqueado: {reason}")
+            joint_idx = self._JOINT_MAP.get(a)
+            if joint_idx is None:
                 return
 
             vcur = float(getattr(self, "_jog_speed_current_mm_min", 0.0) or 0.0)
             if vcur <= 0.0:
-                vcur = float(getattr(self, "_jog_speed_max_mm_min", 0.0) or 0.0)
-            if vcur <= 0.0:
-                print(f"[ICEQ][JOG] contínuo bloqueado: velocidade JOG = 0")
-                return
-
-            # Converter mm/min para unidades/s do LinuxCNC
-            try:
-                self.stat.poll()
-                lu = float(getattr(self.stat, "linear_units", 1.0))
-            except Exception:
-                lu = 1.0
-
-            def mm_min_to_units_s(v):
-                v_mm_s = v / 60.0
-                if lu < 0.999:
-                    return v_mm_s * lu
-                elif lu > 1.001:
-                    return v_mm_s / lu
-                return v_mm_s
-
-            speed_units_s = mm_min_to_units_s(vcur)
-
-            joint_idx = self._JOINT_MAP.get(a)
-            if joint_idx is None:
-                print(f"[ICEQ][JOG] eixo {a} não mapeado")
-                return
-
-            try:
-                self.cmd.mode(linuxcnc.MODE_MANUAL)
-            except Exception:
-                pass
-            self.cmd.jog(linuxcnc.JOG_CONTINUOUS, 0, joint_idx, d * speed_units_s)
+                vcur = float(getattr(self, "_jog_speed_max_mm_min", 1000.0) or 1000.0)
 
             self._jog_cont_active = True
             self._jog_cont_axis = a
-            print(f"[ICEQ][JOG] contínuo CMD: joint={joint_idx} dir={d} vel={speed_units_s:.2f} u/s")
+
+            def _do_jog():
+                try:
+                    try:
+                        lu = float(getattr(self.stat, "linear_units", 1.0))
+                    except Exception:
+                        lu = 1.0
+                    speed_units_s = (vcur / 60.0)
+                    if lu < 0.999:
+                        speed_units_s *= lu
+                    elif lu > 1.001:
+                        speed_units_s /= lu
+                    self.cmd.mode(linuxcnc.MODE_MANUAL)
+                    self.cmd.jog(linuxcnc.JOG_CONTINUOUS, 0, joint_idx, d * speed_units_s)
+                except Exception as e:
+                    print(f"[ICEQ][JOG] contínuo thread erro: {e}")
+
+            threading.Thread(target=_do_jog, daemon=True).start()
+
         except Exception as e:
             print(f"[ICEQ][JOG] contínuo erro ao iniciar ({axis}): {e}")
 
@@ -2987,15 +2973,58 @@ class IceqMainWindow(QtWidgets.QMainWindow):
             joint_idx = self._JOINT_MAP.get(a)
             if joint_idx is None:
                 return
-            try:
-                self.cmd.jog(linuxcnc.JOG_STOP, 0, joint_idx)
-            except Exception:
-                pass
             self._jog_cont_active = False
             self._jog_cont_axis = ""
-            print(f"[ICEQ][JOG] contínuo STOP: joint={joint_idx}")
+
+            def _do_stop():
+                try:
+                    self.cmd.jog(linuxcnc.JOG_STOP, 0, joint_idx)
+                except Exception as e:
+                    print(f"[ICEQ][JOG] contínuo stop erro: {e}")
+
+            threading.Thread(target=_do_stop, daemon=True).start()
         except Exception as e:
             print(f"[ICEQ][JOG] contínuo erro ao parar ({axis}): {e}")
+
+    def keyPressEvent(self, event):
+        """Setas do teclado fazem JOG contínuo — igual ao Axis."""
+        try:
+            key = event.key()
+            if event.isAutoRepeat():
+                return
+            mapping = {
+                QtCore.Qt.Key_Left:  ("Z", -1),
+                QtCore.Qt.Key_Right: ("Z", +1),
+                QtCore.Qt.Key_Up:    ("X", -1),
+                QtCore.Qt.Key_Down:  ("X", +1),
+            }
+            if key in mapping:
+                axis, direction = mapping[key]
+                self._jog_continuous_press(axis, direction)
+                return
+        except Exception:
+            pass
+        super().keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        """Soltar seta para o JOG."""
+        try:
+            key = event.key()
+            if event.isAutoRepeat():
+                return
+            mapping = {
+                QtCore.Qt.Key_Left:  "Z",
+                QtCore.Qt.Key_Right: "Z",
+                QtCore.Qt.Key_Up:    "X",
+                QtCore.Qt.Key_Down:  "X",
+            }
+            if key in mapping:
+                axis = mapping[key]
+                self._jog_continuous_release(axis)
+                return
+        except Exception:
+            pass
+        super().keyReleaseEvent(event)
 
     def _jog_click(self, axis_letter: str, direction: int):
         """
