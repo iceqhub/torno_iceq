@@ -1668,35 +1668,24 @@ class IceqMainWindow(QtWidgets.QMainWindow):
         except Exception:
             self._set_tool_buttons_enabled(False)
 
-        # RPM spindle (rodapé) — usa encoder como fonte primária
+        # RPM spindle (rodapé)
         try:
-            # 1. RPM real via encoder (spindle.0.speed-in = RPS → × 60 = RPM)
-            fb_rps = abs(float(self._hal_float("spindle.0.speed-in") or 0.0))
-            rpm_encoder = fb_rps * 60.0
-
-            # 2. Estado ON/OFF via stat
             sp_on = False
-            sp_dir = 0
+            sp_speed_base = 0.0
             try:
                 sp = self.stat.spindle[0]
                 sp_enabled = bool(sp.get("enabled", 0))
                 sp_dir = int(sp.get("direction", 0))
-                sp_on = (sp_enabled and sp_dir != 0)
+                sp_speed_base = abs(float(sp.get("speed", 0.0)))
+                sp_on = (sp_enabled and sp_dir != 0 and sp_speed_base > 0.1)
             except Exception:
                 pass
 
-            # 3. Se encoder retorna RPM válido, usa ele; senão usa setpoint
-            if rpm_encoder > 5.0:
-                rpm_disp = rpm_encoder
-                sp_on = True
-            elif sp_on:
-                rpm_disp = abs(float(self._spindle_rpm_setpoint))
-            else:
-                rpm_disp = 0.0
-
-            if sp_on and rpm_disp > 0.1:
-                self._set_label_if_exists("lbl_spindle_rpm", f"{rpm_disp:.0f} RPM")
-                self._update_spindle_rpm_bar(rpm_disp)
+            ovr = max(0, min(120, int(getattr(self, "_spindle_ovr_pct", 100))))
+            if sp_on:
+                rpm_eff = sp_speed_base * (float(ovr) / 100.0)
+                self._set_label_if_exists("lbl_spindle_rpm", f"{rpm_eff:.0f} RPM")
+                self._update_spindle_rpm_bar(rpm_eff)
             else:
                 self._set_label_if_exists("lbl_spindle_rpm", "0 RPM")
                 self._update_spindle_rpm_bar(0.0)
@@ -3544,82 +3533,8 @@ class IceqMainWindow(QtWidgets.QMainWindow):
 # ─────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────
-# ADAPTADOR DE RESOLUÇÃO
-# O .ui foi projetado em portrait 1080x1983.
-# Em monitores menores (ex: 1024x768 landscape), envolve a IHM
-# num QScrollArea para que tudo fique acessível sem cortes.
-# ─────────────────────────────────────────────────────────────
-
-class IceqScrollWrapper(QtWidgets.QWidget):
-    """
-    Wrapper que detecta a resolução disponível e, se necessária,
-    envolve a IHM num QScrollArea com scroll suave (touch-friendly).
-    """
-
-    # Resolução mínima para exibir sem scroll (portrait nativo)
-    MIN_W_NATIVE = 1080
-    MIN_H_NATIVE = 1920
-
-    def __init__(self):
-        super().__init__()
-
-        screen = QtWidgets.QApplication.primaryScreen()
-        screen_geom = screen.availableGeometry()
-        sw = int(screen_geom.width())
-        sh = int(screen_geom.height())
-        print(f"[ICEQ] Resolução disponível: {sw}x{sh}")
-
-        self._ihm = IceqMainWindow()
-
-        needs_scroll = (sw < self.MIN_W_NATIVE or sh < self.MIN_H_NATIVE)
-
-        if needs_scroll:
-            print(f"[ICEQ] Modo scroll ativado (tela menor que {self.MIN_W_NATIVE}x{self.MIN_H_NATIVE})")
-
-            scroll = QtWidgets.QScrollArea(self)
-            scroll.setWidget(self._ihm)
-            scroll.setWidgetResizable(False)   # mantém tamanho original do .ui
-            scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-            scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-
-            # Scroll suave para touch
-            try:
-                from PyQt5.QtWidgets import QScroller
-                QScroller.grabGesture(
-                    scroll.viewport(),
-                    QScroller.LeftMouseButtonGesture
-                )
-            except Exception:
-                pass
-
-            lay = QtWidgets.QVBoxLayout(self)
-            lay.setContentsMargins(0, 0, 0, 0)
-            lay.addWidget(scroll)
-            self.setLayout(lay)
-
-            # Janela ocupa toda a tela disponível
-            self.setGeometry(screen_geom)
-            self.setWindowTitle("ICEQ CNC - IHM")
-            self.showMaximized()
-
-        else:
-            # Resolução suficiente — exibe a IHM diretamente
-            lay = QtWidgets.QVBoxLayout(self)
-            lay.setContentsMargins(0, 0, 0, 0)
-            lay.addWidget(self._ihm)
-            self.setLayout(lay)
-            self.setWindowTitle("ICEQ CNC - IHM")
-            self.showMaximized()
-
-    def closeEvent(self, event):
-        try:
-            self._ihm.close()
-        except Exception:
-            pass
-        super().closeEvent(event)
-
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    wrapper = IceqScrollWrapper()
+    win = IceqMainWindow()
+    win.show()
     sys.exit(app.exec_())
