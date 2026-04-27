@@ -2848,14 +2848,7 @@ class IceqMainWindow(QtWidgets.QMainWindow):
                 return False, "programa em execução (AUTO)"
         except Exception:
             pass
-        try:
-            if hasattr(self.stat, "homed"):
-                hx = bool(self.stat.homed[0])
-                hz = bool(self.stat.homed[1])
-                if not (hx and hz):
-                    return False, "não referenciado (X/Z)"
-        except Exception:
-            pass
+        # Home não é obrigatório para JOG (NO_FORCE_HOMING = 1 no INI)
         if bool(getattr(self, "_jog_busy", False)):
             return False, "JOG ocupado"
         return True, ""
