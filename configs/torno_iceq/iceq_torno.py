@@ -2935,11 +2935,10 @@ class IceqMainWindow(QtWidgets.QMainWindow):
             a = str(axis).strip().upper()
             d = 1 if int(direction) >= 1 else -1
 
-            try:
-                with self._cmd_lock:
-                    self.cmd.mode(linuxcnc.MODE_MANUAL)
-            except Exception:
-                pass
+            ok, reason = self._jog_machine_ready()
+            if not ok:
+                print(f"[ICEQ][JOG] contínuo bloqueado: {reason}")
+                return
 
             vcur = float(getattr(self, "_jog_speed_current_mm_min", 0.0) or 0.0)
             if vcur <= 0.0:
@@ -2948,26 +2947,50 @@ class IceqMainWindow(QtWidgets.QMainWindow):
                 print(f"[ICEQ][JOG] contínuo bloqueado: velocidade JOG = 0")
                 return
 
-            sig_on, sig_off = self._jog_cont_signal_names(a)
-            self._hal_sets_signal(sig_off, 0)
-            self._hal_sets_signal(sig_on, 1)
-            self._hal_sets_signal("jog-speed", vcur)
+            # Converter mm/min para unidades/s do LinuxCNC
+            try:
+                self.stat.poll()
+                lu = float(getattr(self.stat, "linear_units", 1.0))
+            except Exception:
+                lu = 1.0
 
-            if d >= 1:
-                self._hal_sets_signal("jog-selected-neg", 0)
-                self._hal_sets_signal("jog-selected-pos", 1)
-            else:
-                self._hal_sets_signal("jog-selected-pos", 0)
-                self._hal_sets_signal("jog-selected-neg", 1)
+            def mm_min_to_units_s(v):
+                v_mm_s = v / 60.0
+                if lu < 0.999:
+                    return v_mm_s * lu
+                elif lu > 1.001:
+                    return v_mm_s / lu
+                return v_mm_s
 
-            print(f"[ICEQ][JOG] HALUI SETS: {a} dir={d} (Vel: {vcur:.1f})")
+            speed_units_s = mm_min_to_units_s(vcur)
+
+            joint_idx = self._JOINT_MAP.get(a)
+            if joint_idx is None:
+                print(f"[ICEQ][JOG] eixo {a} não mapeado")
+                return
+
+            with self._cmd_lock:
+                self.cmd.mode(linuxcnc.MODE_MANUAL)
+                self.cmd.wait_complete()
+                self.cmd.jog(linuxcnc.JOG_CONTINUOUS, 0, joint_idx, d * speed_units_s)
+
+            self._jog_cont_active = True
+            self._jog_cont_axis = a
+            print(f"[ICEQ][JOG] contínuo CMD: joint={joint_idx} dir={d} vel={speed_units_s:.2f} u/s")
         except Exception as e:
             print(f"[ICEQ][JOG] contínuo erro ao iniciar ({axis}): {e}")
 
     def _jog_continuous_release(self, axis):
         try:
-            self._hal_sets_signal("jog-selected-pos", 0)
-            self._hal_sets_signal("jog-selected-neg", 0)
+            a = str(axis).strip().upper()
+            joint_idx = self._JOINT_MAP.get(a)
+            if joint_idx is None:
+                return
+            with self._cmd_lock:
+                self.cmd.jog(linuxcnc.JOG_STOP, 0, joint_idx)
+            self._jog_cont_active = False
+            self._jog_cont_axis = ""
+            print(f"[ICEQ][JOG] contínuo STOP: joint={joint_idx}")
         except Exception as e:
             print(f"[ICEQ][JOG] contínuo erro ao parar ({axis}): {e}")
 
