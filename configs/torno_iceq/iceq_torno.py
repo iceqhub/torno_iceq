@@ -2519,6 +2519,12 @@ class IceqMainWindow(QtWidgets.QMainWindow):
             self._spindle_rpm_setpoint = int(self._spindle_rpm_setpoint) + int(self._spindle_step)
             if self._spindle_rpm_setpoint < 0:
                 self._spindle_rpm_setpoint = 0
+            # Limite máximo lido do INI (MAX_OUTPUT), fallback 1100
+            rpm_max = int(getattr(self, "_spindle_rpm_max_val", 0) or 1100)
+            if rpm_max <= 0:
+                rpm_max = 1100
+            if self._spindle_rpm_setpoint > rpm_max:
+                self._spindle_rpm_setpoint = rpm_max
             if self._spindle_dir != 0:
                 self._spindle_apply()
         except Exception as e:
