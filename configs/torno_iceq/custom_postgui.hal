@@ -1,106 +1,123 @@
 # custom_postgui.hal — TORNO ICEQ — 7i96S
-# Versão: 3.0 — Tela PyQt5 (sem PyVCP)
-#
-# Este arquivo é carregado APÓS a GUI iniciar (POSTGUI_HALFILE).
-# Responsabilidades:
-#   - Conectar o componente HAL 'iceqjog' (criado pelo Python) ao HALUI
-#   - Manter o encoder MPG (já carregado no torno_iceq.hal)
-#   - Conectar sinais de JOG contínuo (axis-select-x/z, jog-selected-pos/neg)
-#   - Conectar RPM/spindle ao Python via sinais existentes
-#
-# O que NÃO está aqui (era PyVCP, agora é responsabilidade do Python):
-#   - scale.0 (RPM display)   → Python lê stat.spindle[0]
-#   - lowpass.0 / abs.0       → Python lê diretamente
-#   - pyvcp.*                 → substituído por widgets Qt
-#   - time.0                  → Python controla tempo de ciclo
-#   - Botões de ferramenta    → Python usa cmd.mdi()
-#   - Botões de encosto/seta  → Python usa cmd.mdi()
+# Versão: 2.2 — Adicionado: lógica MPG handwheel
+# (encostos virtuais DESATIVADOS — reativar futuramente)
 
 # ============================================================
-# JOG CONTÍNUO VIA HALUI — componente 'iceqjog' (Python)
-#
-# O Python cria o componente 'iceqjog' com os pinos:
-#   iceqjog.jog-x-pos  (BIT OUT)
-#   iceqjog.jog-x-neg  (BIT OUT)
-#   iceqjog.jog-z-pos  (BIT OUT)
-#   iceqjog.jog-z-neg  (BIT OUT)
-#   iceqjog.jog-speed  (FLOAT OUT)
-#
-# O Python usa 'halcmd sets' para os sinais de HALUI diretamente:
-#   axis-select-x, axis-select-z
-#   jog-selected-pos, jog-selected-neg
-#   jog-speed
-#
-# Esses sinais já existem no torno_iceq.hal via:
-#   net axis-select-x  halui.axis.x.select
-#   net axis-select-z  halui.axis.z.select
-#   net jog-selected-pos  halui.axis.selected.plus
-#   net jog-selected-neg  halui.axis.selected.minus
-#   net jog-speed         halui.axis.jog-speed
-#
-# NOTA: 'halcmd sets' só funciona em sinais sem writer (bit/float).
-# Os sinais acima são criados sem driver no .hal principal,
-# portanto aceitam 'sets' do Python. Nenhuma conexão extra necessária aqui.
+# RPM
 # ============================================================
+setp scale.0.gain 60
+setp lowpass.0.gain 0.100000
+net spindle-vel-fb-rps          =>  lowpass.0.in
+net spindle-fb-filtered-rps     lowpass.0.out  =>  abs.0.in
+net spindle-fb-abs-rps          abs.0.out      =>  scale.0.in
+net spindle-fb-abs-rpm          scale.0.out    =>  pyvcp.spindle-speed
+net spindle-at-speed            =>  pyvcp.spindle-at-speed-led
 
 # ============================================================
-# HANDWHEEL MPG — encoder software (TB3 input-04/05)
-# Conecta o encoder MPG (carregado no torno_iceq.hal) ao JOG
-# via axis.x.jog-counts e axis.z.jog-counts
-#
-# O torno_iceq.hal já faz:
-#   loadrt encoder names=mpg
-#   net mpg-phase-a <= hm2_7i96s.0.inm.00.input-04 => mpg.phase-A
-#   net mpg-phase-b <= hm2_7i96s.0.inm.00.input-05 => mpg.phase-B
-#
-# Aqui conectamos os pinos de JOG do MPG que dependem do PyVCP
-# (checkbuttons btn-x, btn-z, mpg-sel0, mpg-sel1) — agora
-# controlados pelo painel PyQt5 via 'halcmd sets' ou pinos HAL.
-#
-# Para a tela PyQt5, o MPG físico continua funcional:
-#   - axis.x.jog-enable e axis.z.jog-enable são setados
-#     pelo Python via halcmd setp quando o usuário seleciona o eixo
-#   - jog-scale vem do mux4 já configurado no .hal principal
+# TEMPORIZADOR
 # ============================================================
-
-# Escala MPG — mux4 já configurado no torno_iceq.hal:
-#   setp mux4.0.in0 0.001
-#   setp mux4.0.in1 0.010
-#   setp mux4.0.in2 0.100
-#   setp mux4.0.in3 1.000
-# Sem necessidade de reconectar aqui.
+loadrt time
+addf time.0 servo-thread
+net prog-is-running  =>  time.0.start
+net cycle-seconds    pyvcp.time-seconds  <=  time.0.seconds
+net cycle-minutes    pyvcp.time-minutes  <=  time.0.minutes
+net cycle-hours      pyvcp.time-hours    <=  time.0.hours
 
 # ============================================================
-# SPINDLE AT SPEED — sinaliza ao LinuxCNC que o spindle
-# está na velocidade correta (necessário para G33/rosca).
-# O Python monitora via stat, mas o HAL precisa do sinal.
-# Mantido do torno_iceq.hal: sets spindle-at-speed true
+# FERRAMENTA ATIVA
 # ============================================================
-# (já feito no torno_iceq.hal — não duplicar aqui)
+net tool_numb  iocontrol.0.tool-number  =>  pyvcp.tool-number
 
 # ============================================================
-# DIGITAL OUTS (dout-00..05) — motion.digital-out-XX
-# Já definidos no torno_iceq.hal.
-# O Python monitora via _hal_bit("motion.digital-out-06") etc.
+# BOTÕES FERRAMENTAS
 # ============================================================
+net tool-1   halui.mdi-command-00  <=  pyvcp.tool-1
+net tool-2   halui.mdi-command-01  <=  pyvcp.tool-2
+net tool-3   halui.mdi-command-02  <=  pyvcp.tool-3
+net tool-4   halui.mdi-command-03  <=  pyvcp.tool-4
+net tool-5   halui.mdi-command-04  <=  pyvcp.tool-5
+net tool-6   halui.mdi-command-05  <=  pyvcp.tool-6
+net tool-7   halui.mdi-command-06  <=  pyvcp.tool-7
+net tool-8   halui.mdi-command-07  <=  pyvcp.tool-8
+net tool-9   halui.mdi-command-08  <=  pyvcp.tool-9
+net tool-10  halui.mdi-command-09  <=  pyvcp.tool-10
+net tool-11  halui.mdi-command-10  <=  pyvcp.tool-11
+net tool-12  halui.mdi-command-11  <=  pyvcp.tool-12
+net tool-13  halui.mdi-command-12  <=  pyvcp.tool-13
+net tool-14  halui.mdi-command-13  <=  pyvcp.tool-14
+net tool-15  halui.mdi-command-14  <=  pyvcp.tool-15
+net tool-16  halui.mdi-command-30  <=  pyvcp.tool-16
 
 # ============================================================
-# TURRET — sinais de lock/enable já no torno_iceq.hal:
-#   net turret-lock  <= motion.digital-out-06 => hm2_7i96s.0.ssr.00.out-00
-#   net turret-enable <= motion.digital-out-07 => hm2_7i96s.0.ssr.00.out-01
-# O Python lê motion.digital-out-06/07 via _hal_bit().
+# ENCOSTOS / SETA
+# ============================================================
+net SETARX      halui.mdi-command-18  <=  pyvcp.seta-x
+net SETARXNEG   halui.mdi-command-19  <=  pyvcp.seta-xneg
+net SETARZ      halui.mdi-command-20  <=  pyvcp.seta-z
+net RESTAURAR   halui.mdi-command-21  <=  pyvcp.restaura
+net SETARZ-NEG  halui.mdi-command-23  <=  pyvcp.seta-z-neg
+
+# ============================================================
+# MANUTENÇÃO
+# ============================================================
+net reset-py    halui.mdi-command-24  <=  pyvcp.resetar
+net ativa-py    halui.mdi-command-25  <=  pyvcp.ativa
+net desativa-py halui.mdi-command-26  <=  pyvcp.desativa
+net sole-py     halui.mdi-command-27  <=  pyvcp.solenoide
+net cw-py       halui.mdi-command-28  <=  pyvcp.gira-cw-py
+net ccw-py      halui.mdi-command-29  <=  pyvcp.gira-ccw-py
+
+# ============================================================
+# LEDs
+# ============================================================
+net turret-lock         =>  pyvcp.LED-ABRE
+net turret-enable       =>  pyvcp.LED-FECHA
+net machine-is-enabled  =>  pyvcp.led-xz
+net estop-ext           =>  pyvcp.led-emg-but
+
+# ============================================================
+# DIGITAL OUTS
+# ============================================================
+net dout-00  <=  motion.digital-out-00
+net dout-01  <=  motion.digital-out-01
+net dout-02  <=  motion.digital-out-02
+net dout-03  <=  motion.digital-out-03
+net dout-04  <=  motion.digital-out-04
+net dout-05  <=  motion.digital-out-05
+
 # ============================================================
 
 # ============================================================
-# ESTOP — já no torno_iceq.hal:
-#   net estop-out <= iocontrol.0.user-enable-out
-#   net estop-ext => iocontrol.0.emc-enable-in
+# HANDWHEEL MPG — checkbuttons diretos
 # ============================================================
 
-# ============================================================
-# FIM DO custom_postgui.hal
-# Todos os sinais operacionais já estão no torno_iceq.hal.
-# Este arquivo é intencionalmente mínimo para a tela PyQt5:
-# a IHM Python gerencia estado via linuxcnc.command() e
-# linuxcnc.stat(), complementado por halcmd para sinais HAL.
-# ============================================================
+# --- Eixo: checkbuttons BIT direto ao jog-enable ---
+net mpg-axis-x   <=  pyvcp.btn-x
+net mpg-axis-x   =>  axis.x.jog-enable
+
+net mpg-axis-z   <=  pyvcp.btn-z
+net mpg-axis-z   =>  axis.z.jog-enable
+
+# --- Escala: checkbuttons sel0/sel1 → mux4 → jog-scale ---
+setp mux4.0.in0 0.001
+setp mux4.0.in1 0.010
+setp mux4.0.in2 0.100
+setp mux4.0.in3 1.000
+
+net mpg-sel0      <=  pyvcp.mpg-sel0
+net mpg-sel0      =>  mux4.0.sel0
+net mpg-sel1      <=  pyvcp.mpg-sel1
+net mpg-sel1      =>  mux4.0.sel1
+
+net mpg-scale-val <=  mux4.0.out
+net mpg-scale-val =>  axis.x.jog-scale
+net mpg-scale-val =>  axis.z.jog-scale
+net mpg-scale-val =>  pyvcp.mpg-scale-disp
+
+# --- Modo velocity e counts ---
+setp axis.x.jog-vel-mode 1
+setp axis.z.jog-vel-mode 1
+
+net mpg-counts   <=  mpg.counts
+net mpg-counts   =>  axis.x.jog-counts
+net mpg-counts   =>  axis.z.jog-counts
