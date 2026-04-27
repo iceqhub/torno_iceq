@@ -2969,10 +2969,11 @@ class IceqMainWindow(QtWidgets.QMainWindow):
                 print(f"[ICEQ][JOG] eixo {a} não mapeado")
                 return
 
-            with self._cmd_lock:
+            try:
                 self.cmd.mode(linuxcnc.MODE_MANUAL)
-                self.cmd.wait_complete()
-                self.cmd.jog(linuxcnc.JOG_CONTINUOUS, 0, joint_idx, d * speed_units_s)
+            except Exception:
+                pass
+            self.cmd.jog(linuxcnc.JOG_CONTINUOUS, 0, joint_idx, d * speed_units_s)
 
             self._jog_cont_active = True
             self._jog_cont_axis = a
@@ -2986,8 +2987,10 @@ class IceqMainWindow(QtWidgets.QMainWindow):
             joint_idx = self._JOINT_MAP.get(a)
             if joint_idx is None:
                 return
-            with self._cmd_lock:
+            try:
                 self.cmd.jog(linuxcnc.JOG_STOP, 0, joint_idx)
+            except Exception:
+                pass
             self._jog_cont_active = False
             self._jog_cont_axis = ""
             print(f"[ICEQ][JOG] contínuo STOP: joint={joint_idx}")
