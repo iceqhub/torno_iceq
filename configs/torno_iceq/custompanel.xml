@@ -27,36 +27,7 @@
 </labelframe>
 
 <!-- ======================================================== -->
-<!-- LIBERAR SPINDLE                                           -->
-<!-- ======================================================== -->
-<labelframe text="Spindle">
-<font>("Helvetica",10)</font>
-    <checkbutton>
-        <halpin>"liberar-spindle"</halpin>
-        <text>"  LIBERAR SPINDLE (SON OFF)  "</text>
-        <font>("Helvetica",13,"bold")</font>
-    </checkbutton>
-    <label>
-        <text>"Funcao fora do padrao CNC — adicionada"</text>
-        <font>("Helvetica",8)</font>
-    </label>
-    <label>
-        <text>"por opcao do operador para permitir"</text>
-        <font>("Helvetica",8)</font>
-    </label>
-    <label>
-        <text>"rotacao manual da placa (troca de peca)."</text>
-        <font>("Helvetica",8)</font>
-    </label>
-    <label>
-        <text>"NAO marcar com spindle em movimento."</text>
-        <font>("Helvetica",8,"bold")</font>
-    </label>
-</labelframe>
-<!-- FIM LIBERAR SPINDLE -->
-
-<!-- ======================================================== -->
-<!-- HANDWHEEL MPG                                             -->
+<!-- HANDWHEEL MPG — NOVO                                      -->
 <!-- ======================================================== -->
 <labelframe text="Handwheel">
 <font>("Helvetica",10)</font>
@@ -87,6 +58,10 @@
         <format>"6.3f"</format>
     </number>
 </labelframe>
+<!-- FIM HANDWHEEL MPG -->
+
+
+
 
 <labelframe text="Troca Ferramenta">
 <font>("Helvetica",10)</font>

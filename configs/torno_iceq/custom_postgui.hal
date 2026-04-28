@@ -3,11 +3,8 @@
 # (encostos virtuais DESATIVADOS — reativar futuramente)
 
 # ============================================================
-# LIBERAR SPINDLE — checkbox PyVCP
+# RPM
 # ============================================================
-net liberar-spindle  <=  pyvcp.liberar-spindle
-
-
 setp scale.0.gain 60
 setp lowpass.0.gain 0.100000
 net spindle-vel-fb-rps          =>  lowpass.0.in
