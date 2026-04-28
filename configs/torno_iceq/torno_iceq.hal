@@ -95,6 +95,8 @@ addf and2.0                    servo-thread
 addf and2.1                    servo-thread
 addf and2.2                    servo-thread
 addf and2.3                    servo-thread
+addf and2.4                    servo-thread
+addf not.1                     servo-thread
 addf toggle.0                  servo-thread
 addf toggle.1                  servo-thread
 addf toggle.2                  servo-thread
@@ -278,7 +280,15 @@ net spindle-vel-cmd-rps        <=  spindle.0.speed-out-rps
 net spindle-vel-cmd-rps-abs    <=  spindle.0.speed-out-rps-abs
 net spindle-vel-cmd-rpm        <=  spindle.0.speed-out
 net spindle-vel-cmd-rpm-abs    <=  spindle.0.speed-out-abs
-net spindle-enable             <=  spindle.0.on
+# spindle-enable agora passa por lógica: (spindle.0.on) AND NOT(liberar-spindle)
+# not.1: inverte o sinal da checkbox "Liberar Spindle"
+# and2.4: spindle.0.on AND not.1.out → spindle-enable
+net spindle-on-raw         <=  spindle.0.on
+net spindle-on-raw         =>  and2.4.in0
+net liberar-spindle        =>  not.1.in
+net liberar-spindle-n      <=  not.1.out
+net liberar-spindle-n      =>  and2.4.in1
+net spindle-enable         <=  and2.4.out
 net spindle-cw                 <=  spindle.0.forward
 net spindle-ccw                <=  spindle.0.reverse
 net spindle-brake              <=  spindle.0.brake
