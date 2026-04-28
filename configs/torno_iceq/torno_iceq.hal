@@ -23,7 +23,7 @@
 #   ssr.00.out-00 = TURRET-LOCK  (solenoide torre P6)
 #   ssr.00.out-01 = TURRET-ENABLE (enable drive torre P7)
 #   ssr.00.out-02 = SPINDLE-ENABLE
-#   ssr.00.out-03 = COOLANT-FLOOD
+#   ssr.00.out-03 = SPINDLE-CINV (M4 anti-horário → DI4 pino 2 do DB25 → P-103=9)
 
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=16
@@ -120,8 +120,9 @@ net turret-enable <= motion.digital-out-07  =>  hm2_7i96s.0.ssr.00.out-01
 # --- SPINDLE ENABLE ---
 net spindle-enable  =>  hm2_7i96s.0.ssr.00.out-02
 
-# --- COOLANT ---
-net coolant-flood   =>  hm2_7i96s.0.ssr.00.out-03
+# --- SPINDLE CINV (M4 anti-horário) ---
+# spindle.0.reverse = TRUE quando M4 ativo → aciona DI4 do drive (P-103=9 = CINV)
+net spindle-ccw  =>  hm2_7i96s.0.ssr.00.out-03
 
 
 # ============================================================
@@ -355,8 +356,8 @@ net cycle-stop-pulse  => halui.program.stop
 
 
 # --- Coolant ---
+# (coolant-flood desativado — SSR out-03 realocado para SPINDLE-CINV)
 net coolant-mist   <=  iocontrol.0.coolant-mist
-net coolant-flood  <=  iocontrol.0.coolant-flood
 
 # --- Probe ---
 net probe-in  =>  motion.probe-input
