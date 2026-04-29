@@ -21,10 +21,14 @@ o<ja_tem> if [#<tool> EQ #<_current_tool>]
   o<.m6> return
 o<ja_tem> endif
 
-; Inicializa posição se necessário
-o<initpos> if [#5390 EQ 0]
-  #5390 = 1
+; #31 = posição atual da torre (1-8), persistente no linuxcnc.var
+; Se inválido (0 ou fora de range), assume posição 1
+o<initpos> if [#31 LT 1]
+  #31 = 1
 o<initpos> endif
+o<initpos2> if [#31 GT 8]
+  #31 = 1
+o<initpos2> endif
 
 #<pocket> = [#<tool> - 8 * FIX[#<tool> / 9]]
 
@@ -32,7 +36,7 @@ M64 P6
 M64 P7
 G4 P3
 
-#<tombos> = [#<pocket> - #5390]
+#<tombos> = [#<pocket> - #31]
 
 o<aj1> if [#<tombos> GT 4]
   #<tombos> = [#<tombos> - 8]
@@ -49,7 +53,8 @@ G90
 
 G4 P2
 
-#5390 = #<pocket>
+; Atualiza posição persistente APÓS o giro completar
+#31 = #<pocket>
 
 M65 P6
 M65 P7
