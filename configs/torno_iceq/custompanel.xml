@@ -5,7 +5,7 @@
     <names>["Geral", "Tempo e Contador", "Limites", "Manutencao"]</names>
     <vbox> <!-- Geral -->
 
-<!-- RPM: max ajustado para 1500 conforme relação de polia do servo -->
+<!-- RPM -->
 <labelframe text="RPM">
 <font>("Helvetica",10)</font>
     <bar>
@@ -27,40 +27,149 @@
 </labelframe>
 
 <!-- ======================================================== -->
-<!-- HANDWHEEL MPG — NOVO                                      -->
+<!-- HANDWHEEL MPG                                             -->
 <!-- ======================================================== -->
 <labelframe text="Handwheel">
 <font>("Helvetica",10)</font>
-    <checkbutton>
-        <halpin>"btn-x"</halpin>
-        <text>"  Eixo X  "</text>
-        <font>("Helvetica",15,"bold")</font>
-    </checkbutton>
-    <checkbutton>
-        <halpin>"btn-z"</halpin>
-        <text>"  Eixo Z  "</text>
-        <font>("Helvetica",15,"bold")</font>
-    </checkbutton>
-    <label><text>" "</text></label>
-    <checkbutton>
-        <halpin>"mpg-sel0"</halpin>
-        <text>"  x10  (0.010 / 1.000)  "</text>
-        <font>("Helvetica",12)</font>
-    </checkbutton>
-    <checkbutton>
-        <halpin>"mpg-sel1"</halpin>
-        <text>"  x100 (0.100 / 1.000)  "</text>
-        <font>("Helvetica",12)</font>
-    </checkbutton>
-    <number>
-        <halpin>"mpg-scale-disp"</halpin>
-        <font>("Helvetica",18,"bold")</font>
-        <format>"6.3f"</format>
-    </number>
+
+    <!-- EIXO -->
+    <labelframe text="Eixo">
+    <font>("Helvetica",10)</font>
+        <hbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-eixo-off"</halpin>
+                    <group>"mpg-eixo"</group>
+                    <text>"Desativ."</text>
+                    <font>("Helvetica",11,"bold")</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-eixo-off"</halpin>
+                    <size>12</size>
+                    <on_color>"orange"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-eixo-x"</halpin>
+                    <group>"mpg-eixo"</group>
+                    <text>"  X  "</text>
+                    <font>("Helvetica",14,"bold")</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-eixo-x"</halpin>
+                    <size>12</size>
+                    <on_color>"green"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-eixo-z"</halpin>
+                    <group>"mpg-eixo"</group>
+                    <text>"  Z  "</text>
+                    <font>("Helvetica",14,"bold")</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-eixo-z"</halpin>
+                    <size>12</size>
+                    <on_color>"green"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+        </hbox>
+    </labelframe>
+
+    <!-- ESCALA -->
+    <labelframe text="Escala">
+    <font>("Helvetica",10)</font>
+        <hbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-esc-off"</halpin>
+                    <group>"mpg-escala"</group>
+                    <text>"Desativ."</text>
+                    <font>("Helvetica",10,"bold")</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-esc-off"</halpin>
+                    <size>12</size>
+                    <on_color>"orange"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-esc-1"</halpin>
+                    <group>"mpg-escala"</group>
+                    <text>"0.001"</text>
+                    <font>("Helvetica",11)</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-esc-1"</halpin>
+                    <size>12</size>
+                    <on_color>"cyan"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-esc-2"</halpin>
+                    <group>"mpg-escala"</group>
+                    <text>"0.010"</text>
+                    <font>("Helvetica",11)</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-esc-2"</halpin>
+                    <size>12</size>
+                    <on_color>"cyan"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-esc-3"</halpin>
+                    <group>"mpg-escala"</group>
+                    <text>"0.100"</text>
+                    <font>("Helvetica",11)</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-esc-3"</halpin>
+                    <size>12</size>
+                    <on_color>"cyan"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+            <vbox>
+                <radiobutton>
+                    <halpin>"mpg-esc-4"</halpin>
+                    <group>"mpg-escala"</group>
+                    <text>"1.000"</text>
+                    <font>("Helvetica",11)</font>
+                </radiobutton>
+                <led>
+                    <halpin>"mpg-esc-4"</halpin>
+                    <size>12</size>
+                    <on_color>"cyan"</on_color>
+                    <off_color>"gray"</off_color>
+                </led>
+            </vbox>
+        </hbox>
+    </labelframe>
+
+    <!-- Escala atual -->
+    <hbox>
+        <label><text>"Escala atual:"</text><font>("Helvetica",11)</font></label>
+        <number>
+            <halpin>"mpg-scale-disp"</halpin>
+            <font>("Helvetica",14,"bold")</font>
+            <format>"6.3f"</format>
+        </number>
+    </hbox>
+
 </labelframe>
 <!-- FIM HANDWHEEL MPG -->
-
-
 
 
 <labelframe text="Troca Ferramenta">

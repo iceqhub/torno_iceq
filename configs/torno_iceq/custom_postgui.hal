@@ -1,6 +1,5 @@
 # custom_postgui.hal — TORNO ICEQ — 7i96S
-# Versão: 2.2 — Adicionado: lógica MPG handwheel
-# (encostos virtuais DESATIVADOS — reativar futuramente)
+# Versão: 3.0 — MPG reescrito com radiobuttons (eixo e escala)
 
 # ============================================================
 # RPM
@@ -86,38 +85,74 @@ net dout-04  <=  motion.digital-out-04
 net dout-05  <=  motion.digital-out-05
 
 # ============================================================
-
+# HANDWHEEL MPG — radiobuttons eixo e escala
+#
+# Eixo:
+#   mpg-eixo-x  → jog-enable X
+#   mpg-eixo-z  → jog-enable Z
+#   mpg-eixo-off → nenhum ativo (radiobutton garante exclusividade)
+#
+# Escala:
+#   mpg-esc-off → escala zerada (volante trava)
+#   mpg-esc-1   → 0.001 mm/pulso
+#   mpg-esc-2   → 0.010 mm/pulso  (sel0=1)
+#   mpg-esc-3   → 0.100 mm/pulso  (sel1=1)
+#   mpg-esc-4   → 1.000 mm/pulso  (sel0=1 sel1=1)
 # ============================================================
-# HANDWHEEL MPG — checkbuttons diretos
-# ============================================================
 
-# --- Eixo: checkbuttons BIT direto ao jog-enable ---
-net mpg-axis-x   <=  pyvcp.btn-x
-net mpg-axis-x   =>  axis.x.jog-enable
+# --- Eixo ---
+net mpg-eixo-x   <=  pyvcp.mpg-eixo-x
+net mpg-eixo-x   =>  axis.x.jog-enable
 
-net mpg-axis-z   <=  pyvcp.btn-z
-net mpg-axis-z   =>  axis.z.jog-enable
+net mpg-eixo-z   <=  pyvcp.mpg-eixo-z
+net mpg-eixo-z   =>  axis.z.jog-enable
 
-# --- Escala: checkbuttons sel0/sel1 → mux4 → jog-scale ---
-setp mux4.0.in0 0.001
-setp mux4.0.in1 0.010
-setp mux4.0.in2 0.100
-setp mux4.0.in3 1.000
+# --- Escala: mux4 ---
+setp mux4.0.in0  0.001
+setp mux4.0.in1  0.010
+setp mux4.0.in2  0.100
+setp mux4.0.in3  1.000
 
-net mpg-sel0      <=  pyvcp.mpg-sel0
-net mpg-sel0      =>  mux4.0.sel0
-net mpg-sel1      <=  pyvcp.mpg-sel1
-net mpg-sel1      =>  mux4.0.sel1
+# sel0 = mpg-esc-2, sel1 = mpg-esc-3
+# Tabela resultante:
+#   esc-1 (0.001): sel1=0 sel0=0  ← estado inicial, ambos desligados
+#   esc-2 (0.010): sel1=0 sel0=1
+#   esc-3 (0.100): sel1=1 sel0=0
+#   esc-4 (1.000): sel1=1 sel0=1
+net mpg-sel0  <=  pyvcp.mpg-esc-2
+net mpg-sel0  =>  mux4.0.sel0
+net mpg-sel1  <=  pyvcp.mpg-esc-3
+net mpg-sel1  =>  mux4.0.sel1
 
-net mpg-scale-val <=  mux4.0.out
-net mpg-scale-val =>  axis.x.jog-scale
-net mpg-scale-val =>  axis.z.jog-scale
-net mpg-scale-val =>  pyvcp.mpg-scale-disp
+# Gate: quando mpg-esc-off ativo, zera escala via mult2
+# not.1 inverte mpg-esc-off → "escala habilitada" (bit)
+loadrt not count=1
+addf not.1 servo-thread
+net mpg-esc-off-sig   <=  pyvcp.mpg-esc-off
+net mpg-esc-off-sig   =>  not.1.in
+net mpg-esc-hab-bit   <=  not.1.out
 
-# --- Modo velocity e counts ---
+# scale.1 converte bit→float para multiplicar com mux4.out
+setp scale.1.gain    1.0
+setp scale.1.offset  0.0
+net mpg-esc-hab-bit    =>  scale.1.in
+net mpg-esc-hab-float  <=  scale.1.out
+
+# mult2.0: escala final = mux4.out × (0 ou 1)
+net mpg-mux-raw      <=  mux4.0.out
+net mpg-mux-raw      =>  mult2.0.in0
+net mpg-esc-hab-float =>  mult2.0.in1
+net mpg-scale-final  <=  mult2.0.out
+
+# Distribui escala
+net mpg-scale-final  =>  axis.x.jog-scale
+net mpg-scale-final  =>  axis.z.jog-scale
+net mpg-scale-final  =>  pyvcp.mpg-scale-disp
+
+# --- Vel mode e counts ---
 setp axis.x.jog-vel-mode 1
 setp axis.z.jog-vel-mode 1
 
-net mpg-counts   <=  mpg.counts
-net mpg-counts   =>  axis.x.jog-counts
-net mpg-counts   =>  axis.z.jog-counts
+net mpg-counts  <=  mpg.counts
+net mpg-counts  =>  axis.x.jog-counts
+net mpg-counts  =>  axis.z.jog-counts
