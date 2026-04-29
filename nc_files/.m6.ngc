@@ -14,7 +14,9 @@ o<erro3> if [#<tool> LE 0]
 o<erro3> endif
 
 ; Se a ferramenta pedida já está no spindle, pula a troca física
+; mas sincroniza #31 com a posição física real antes de retornar
 o<ja_tem> if [#<tool> EQ #<_current_tool>]
+  #31 = [#<tool> - 8 * FIX[#<tool> / 9]]
   M6 T#<tool>
   G43 H#<tool>
   G18 G7 G90 G95
