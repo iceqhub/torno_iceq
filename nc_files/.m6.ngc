@@ -13,13 +13,15 @@ o<erro3> if [#<tool> LE 0]
   M2
 o<erro3> endif
 
-; #3901 = posição atual da torre (1-8), persistente no linuxcnc.var
-; Se inválido (0 ou fora de range), assume posição 1
-o<initpos> if [#3901 LT 1]
-  #3901 = 1
+; #<_torre> = posição atual da torre (1-8)
+; carregado do arquivo torre.txt pelo Python na inicialização
+; salvo automaticamente no torre.txt ao fechar o LinuxCNC
+
+o<initpos> if [#<_torre> LT 1]
+  #<_torre> = 1
 o<initpos> endif
-o<initpos2> if [#3901 GT 8]
-  #3901 = 1
+o<initpos2> if [#<_torre> GT 8]
+  #<_torre> = 1
 o<initpos2> endif
 
 ; Se a ferramenta pedida já está no spindle, pula a troca física
@@ -36,7 +38,7 @@ M64 P6
 M64 P7
 G4 P3
 
-#<tombos> = [#<pocket> - #3901]
+#<tombos> = [#<pocket> - #<_torre>]
 
 o<aj1> if [#<tombos> GT 4]
   #<tombos> = [#<tombos> - 8]
@@ -53,8 +55,8 @@ G90
 
 G4 P2
 
-; Atualiza posição persistente APÓS o giro completar
-#3901 = #<pocket>
+; Atualiza posição da torre — será salva no torre.txt ao fechar
+#<_torre> = #<pocket>
 
 M65 P6
 M65 P7
