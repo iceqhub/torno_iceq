@@ -2,7 +2,6 @@ from stdglue import *
 import datetime
 import os
 
-# Caminho do arquivo torre.txt — fica em configs/torno_iceq/
 TORRE_FILE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "torre.txt"
@@ -10,7 +9,6 @@ TORRE_FILE = os.path.join(
 
 def init_stdglue(self):
     self.sticky_params = dict()
-    # Carrega posição da torre na inicialização (apenas milltask)
     if self.task:
         try:
             with open(TORRE_FILE, "r") as f:
@@ -25,7 +23,7 @@ def init_stdglue(self):
 
 def salva_torre(self):
     try:
-        pos = int(self.params.get("_torre", 1))
+        pos = int(self.params["_torre"])
         with open(TORRE_FILE, "w") as f:
             f.write(str(pos))
         print("Torre salva: posicao %d" % pos)
