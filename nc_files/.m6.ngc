@@ -13,50 +13,30 @@ o<erro3> if [#<tool> LE 0]
   M2
 o<erro3> endif
 
-; Verifica se torre foi referenciada (#5390 = 0 indica sem referência)
-o<ref> if [#5390 EQ 0]
-  (debug,REFERENCIE A TORRE)
-  (debug,REFERENCIE A TORRE)
-  (debug,REFERENCIE A TORRE)
-  (debug,REFERENCIE A TORRE)
-  (debug,REFERENCIE A TORRE)
-  G4 P999
-o<ref> endif
+; #3901 = posição atual da torre (1-8), persistente no linuxcnc.var
+; Se inválido (0 ou fora de range), assume posição 1
+o<initpos> if [#3901 LT 1]
+  #3901 = 1
+o<initpos> endif
+o<initpos2> if [#3901 GT 8]
+  #3901 = 1
+o<initpos2> endif
 
 ; Se a ferramenta pedida já está no spindle, pula a troca física
 o<ja_tem> if [#<tool> EQ #<_current_tool>]
-  (debug, ja_tem ativo — tool=#<tool> current=#<_current_tool> 5390=#5390)
-  #5390 = [#<tool> - 8 * FIX[#<tool> / 9]]
   M6 T#<tool>
   G43 H#<tool>
   G18 G7 G90 G94
   o<.m6> return
 o<ja_tem> endif
 
-(debug, iniciando troca — tool=#<tool> current=#<_current_tool> 5390=#5390)
-
-; #5390 = posição atual da torre (1-8), persistente no linuxcnc.var
-; Se inválido (0 ou fora de range), assume posição 1
-o<initpos> if [#5390 LT 1]
-  (debug, 5390 estava em #5390 corrigindo para 1)
-  #5390 = 1
-o<initpos> endif
-o<initpos2> if [#5390 GT 8]
-  (debug, 5390 estava em #5390 corrigindo para 1)
-  #5390 = 1
-o<initpos2> endif
-
-(debug, posicao atual torre 5390=#5390 pocket calculado segue)
-
 #<pocket> = [#<tool> - 8 * FIX[#<tool> / 9]]
-
-(debug, pocket=#<pocket> tombos seguem)
 
 M64 P6
 M64 P7
 G4 P3
 
-#<tombos> = [#<pocket> - #5390]
+#<tombos> = [#<pocket> - #3901]
 
 o<aj1> if [#<tombos> GT 4]
   #<tombos> = [#<tombos> - 8]
@@ -67,8 +47,6 @@ o<aj2> endif
 
 #<angulo> = [#<tombos> * 45.0]
 
-(debug, tombos=#<tombos> angulo=#<angulo>)
-
 G91
 G0 C#<angulo>
 G90
@@ -76,9 +54,7 @@ G90
 G4 P2
 
 ; Atualiza posição persistente APÓS o giro completar
-#5390 = #<pocket>
-
-(debug, 5390 atualizado para #5390)
+#3901 = #<pocket>
 
 M65 P6
 M65 P7
@@ -89,8 +65,6 @@ M6 T#<tool>
 G43 H#<tool>
 
 G18 G7 G90 G94
-
-(debug, troca concluida 5390=#5390)
 
 o<.m6> endsub
 M2
