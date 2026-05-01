@@ -22,17 +22,17 @@ def init_stdglue(self):
         print("Torre carregada: posicao %d" % int(self.params["_torre"]))
 
 def salva_torre(self, **words):
-    """Chamado via M500 P<pocket>"""
+    """Chamado via M500 P<pocket> com argspec=p"""
     try:
-        c = self.blocks[self.remap_level]
-        if c.p_flag:
-            pos = int(c.p_number)
+        print("salva_torre chamado, words=%s task=%d" % (str(words), self.task))
+        if 'p' in words:
+            pos = int(words['p'])
         else:
             pos = 1
         if 1 <= pos <= 8:
             with open(TORRE_FILE, "w") as f:
                 f.write(str(pos))
-            print("Torre salva: posicao %d (task=%d)" % (pos, self.task))
+            print("Torre salva: posicao %d" % pos)
         else:
             print("Torre: posicao invalida %d" % pos)
     except Exception as e:
