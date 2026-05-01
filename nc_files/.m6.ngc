@@ -13,7 +13,7 @@ o<erro3> if [#<tool> LE 0]
   M2
 o<erro3> endif
 
-; #<_torre> = posição atual da torre (1-8)
+; #<_torre> carregado do torre.txt pelo Python no __init__
 o<initpos> if [#<_torre> LT 1]
   #<_torre> = 1
 o<initpos> endif
@@ -24,6 +24,7 @@ o<initpos2> endif
 ; Se a ferramenta pedida já está no spindle, pula a troca física
 o<ja_tem> if [#<tool> EQ #<_current_tool>]
   #<_torre> = [#<tool> - 8 * FIX[#<tool> / 9]]
+  M500
   G18 G7 G90 G94
   o<.m6> return
 o<ja_tem> endif
@@ -51,7 +52,9 @@ G90
 
 G4 P2
 
+; Atualiza e salva posição via Python M500
 #<_torre> = #<pocket>
+M500
 
 M65 P6
 M65 P7
