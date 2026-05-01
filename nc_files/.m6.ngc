@@ -24,7 +24,7 @@ o<initpos2> endif
 ; Se a ferramenta pedida já está no spindle, pula a troca física
 o<ja_tem> if [#<tool> EQ #<_current_tool>]
   #<pocket> = [#<tool> - 8 * FIX[#<tool> / 9]]
-  M500 P#<pocket>
+  o<.grava> call [#<pocket>]
   G18 G7 G90 G94
   o<.m6> return
 o<ja_tem> endif
@@ -52,8 +52,8 @@ G90
 
 G4 P2
 
-; Salva posição via M500 P<pocket>
-M500 P#<pocket>
+; Salva posição via subrotina externa
+o<.grava> call [#<pocket>]
 
 M65 P6
 M65 P7
