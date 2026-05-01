@@ -57,7 +57,7 @@ loadrt mux4 count=1
 loadrt encoder names=mpg
 setp mpg.position-scale [MPG]SCALE
 setp mpg.x4-mode        0
-setp mpg.counter-mode   1
+setp mpg.counter-mode   0
 
 # ============================================================
 # BOTÕES FÍSICOS (CYCLE-START como RUN/PAUSE/RESUME + STOP)
