@@ -25,7 +25,9 @@ o<initpos2> if [#<_torre> GT 8]
 o<initpos2> endif
 
 ; Se a ferramenta pedida já está no spindle, pula a troca física
+; mas atualiza #<_torre> para manter consistência
 o<ja_tem> if [#<tool> EQ #<_current_tool>]
+  #<_torre> = [#<tool> - 8 * FIX[#<tool> / 9]]
   M6 T#<tool>
   G43 H#<tool>
   G18 G7 G90 G94
