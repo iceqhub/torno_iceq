@@ -22,22 +22,21 @@ def init_stdglue(self):
         print("Torre carregada: posicao %d" % int(self.params["_torre"]))
 
 def salva_torre(self, **words):
-    """Chamado via M500 P<pocket> — recebe posição pelo parâmetro P"""
-    if self.task:
-        try:
-            c = self.blocks[self.remap_level]
-            if c.p_flag:
-                pos = int(c.p_number)
-            else:
-                pos = int(self.params["_torre"])
-            if 1 <= pos <= 8:
-                with open(TORRE_FILE, "w") as f:
-                    f.write(str(pos))
-                print("Torre salva: posicao %d" % pos)
-            else:
-                print("Torre: posicao invalida %d" % pos)
-        except Exception as e:
-            print("Erro ao salvar torre: %s" % e)
+    """Chamado via M500 P<pocket>"""
+    try:
+        c = self.blocks[self.remap_level]
+        if c.p_flag:
+            pos = int(c.p_number)
+        else:
+            pos = 1
+        if 1 <= pos <= 8:
+            with open(TORRE_FILE, "w") as f:
+                f.write(str(pos))
+            print("Torre salva: posicao %d (task=%d)" % (pos, self.task))
+        else:
+            print("Torre: posicao invalida %d" % pos)
+    except Exception as e:
+        print("Erro ao salvar torre: %s" % e)
     return INTERP_OK
 
 def m400(self, *args):
