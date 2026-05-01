@@ -1,3 +1,9 @@
 # custom.hal — TORNO ICEQ
 # Reservado para customizações futuras
 # Conexões de encosto virtual estão no custom_postgui.hal
+
+# ============================================================
+# MONITOR DE FERRAMENTA — salva posição da torre em torre.txt
+# ============================================================
+loadusr -W python3 /home/iceq/torno_iceq/configs/torno_iceq/torre_monitor.py
+net tool_numb torre_monitor.tool-number
