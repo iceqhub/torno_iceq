@@ -14,9 +14,6 @@ o<erro3> if [#<tool> LE 0]
 o<erro3> endif
 
 ; #<_torre> = posição atual da torre (1-8)
-; Carregado do torre.txt pelo Python no __init__
-; Salvo no torre.txt pelo Python no __delete__ ao fechar
-
 o<initpos> if [#<_torre> LT 1]
   #<_torre> = 1
 o<initpos> endif
@@ -25,11 +22,8 @@ o<initpos2> if [#<_torre> GT 8]
 o<initpos2> endif
 
 ; Se a ferramenta pedida já está no spindle, pula a troca física
-; mas atualiza #<_torre> para manter consistência
 o<ja_tem> if [#<tool> EQ #<_current_tool>]
   #<_torre> = [#<tool> - 8 * FIX[#<tool> / 9]]
-  M6 T#<tool>
-  G43 H#<tool>
   G18 G7 G90 G94
   o<.m6> return
 o<ja_tem> endif
@@ -57,7 +51,6 @@ G90
 
 G4 P2
 
-; Atualiza posição da torre — salva ao fechar o LinuxCNC
 #<_torre> = #<pocket>
 
 M65 P6
