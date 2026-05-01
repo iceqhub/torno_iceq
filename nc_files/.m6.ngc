@@ -14,12 +14,16 @@ o<erro3> if [#<tool> LE 0]
 o<erro3> endif
 
 ; #<_torre> carregado do torre.txt pelo Python no __init__
+(debug, INICIO: _torre=#<_torre>)
+
 o<initpos> if [#<_torre> LT 1]
   #<_torre> = 1
 o<initpos> endif
 o<initpos2> if [#<_torre> GT 8]
   #<_torre> = 1
 o<initpos2> endif
+
+(debug, APOS INIT: _torre=#<_torre>)
 
 ; Se a ferramenta pedida já está no spindle, pula a troca física
 o<ja_tem> if [#<tool> EQ #<_current_tool>]
@@ -31,11 +35,15 @@ o<ja_tem> endif
 
 #<pocket> = [#<tool> - 8 * FIX[#<tool> / 9]]
 
+(debug, TROCA: tool=#<tool> pocket=#<pocket> _torre=#<_torre> tombos calculado segue)
+
 M64 P6
 M64 P7
 G4 P3
 
 #<tombos> = [#<pocket> - #<_torre>]
+
+(debug, tombos=#<tombos>)
 
 o<aj1> if [#<tombos> GT 4]
   #<tombos> = [#<tombos> - 8]
@@ -46,13 +54,14 @@ o<aj2> endif
 
 #<angulo> = [#<tombos> * 45.0]
 
+(debug, angulo=#<angulo>)
+
 G91
 G0 C#<angulo>
 G90
 
 G4 P2
 
-; Salva posição via subrotina externa
 o<.grava> call [#<pocket>]
 
 M65 P6
