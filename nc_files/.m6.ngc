@@ -14,8 +14,8 @@ o<erro3> if [#<tool> LE 0]
 o<erro3> endif
 
 ; #<_torre> = posição atual da torre (1-8)
-; carregado do arquivo torre.txt pelo Python na inicialização
-; salvo automaticamente no torre.txt ao fechar o LinuxCNC
+; Carregado do torre.txt pelo Python no __init__
+; Salvo no torre.txt pelo Python no __delete__ ao fechar
 
 o<initpos> if [#<_torre> LT 1]
   #<_torre> = 1
@@ -55,7 +55,7 @@ G90
 
 G4 P2
 
-; Atualiza posição da torre — será salva no torre.txt ao fechar
+; Atualiza posição da torre — salva ao fechar o LinuxCNC
 #<_torre> = #<pocket>
 
 M65 P6
